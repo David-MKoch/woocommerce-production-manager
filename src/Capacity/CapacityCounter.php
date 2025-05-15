@@ -1,16 +1,14 @@
 <?php
 namespace WPM\Capacity;
 
-use WPM\Capacity\CapacityManager;
-
 defined('ABSPATH') || exit;
 
 class CapacityCounter {
     public static function init() {
-        // Update capacity count when order item status changes
-        add_action('wpm_order_item_status_changed', [__CLASS__, 'handle_status_change'], 10, 2);
         // Update capacity count when order is placed
         add_action('woocommerce_checkout_order_processed', [__CLASS__, 'update_capacity_on_order'], 10, 3);
+        // Free capacity when order status changes to completed
+        add_action('woocommerce_order_status_changed', [__CLASS__, 'handle_order_status_change'], 10, 4);
     }
 
     public static function get_reserved_count($entity_type, $entity_id, $date) {
@@ -58,7 +56,7 @@ class CapacityCounter {
                     'date' => $date,
                     'entity_type' => $entity_type,
                     'entity_id' => $entity_id,
-                    'reserved_count' => max(0, $quantity)
+                    'reserved_count' => max(0, abs($quantity))
                 ],
                 ['%s', '%s', '%d', '%d']
             );
@@ -66,84 +64,77 @@ class CapacityCounter {
 
         // Clear cache
         \WPM\Utils\Cache::clear("capacity_count_{$entity_type}_{$entity_id}_" . $date);
+        \WPM\Utils\Cache::clear("capacity_data_"); // Clear cached capacity data
     }
 
-    public static function handle_status_change($order_item_id, $new_status) {
+    public static function handle_order_status_change($order_id, $old_status, $new_status, $order) {
         if ($new_status !== 'completed') {
             return;
         }
 
         global $wpdb;
 
-        // Get order item details
-        $order_item = $wpdb->get_row($wpdb->prepare(
-            "SELECT order_id, product_id, variation_id, quantity FROM {$wpdb->prefix}woocommerce_order_items WHERE order_item_id = %d",
-            $order_item_id
-        ));
+        foreach ($order->get_items() as $item_id => $item) {
+            $product_id = $item->get_product_id();
+            $variation_id = $item->get_variation_id();
+            $quantity = $item->get_quantity();
 
-        if (!$order_item) {
-            return;
-        }
+            // Get delivery date
+            $delivery_date = $wpdb->get_var($wpdb->prepare(
+                "SELECT delivery_date FROM {$wpdb->prefix}wpm_order_items_status WHERE order_item_id = %d",
+                $item_id
+            ));
 
-        $product_id = $order_item->variation_id ?: $order_item->product_id;
-        $entity_type = $order_item->variation_id ? 'variation' : 'product';
-        $entity_id = $product_id;
-
-        // Get delivery date
-        $delivery_date = $wpdb->get_var($wpdb->prepare(
-            "SELECT delivery_date FROM {$wpdb->prefix}wpm_order_items_status WHERE order_item_id = %d",
-            $order_item_id
-        ));
-
-        if (!$delivery_date) {
-            return;
-        }
-
-        // If completed early, reset capacity
-        $today = current_time('Y-m-d');
-        if ($delivery_date > $today) {
-            self::update_capacity_count($entity_type, $entity_id, $delivery_date, -$order_item->quantity);
-        }
-
-        // Update category capacity
-        $categories = wp_get_post_terms($order_item->product_id, 'product_cat', ['fields' => 'ids']);
-        foreach ($categories as $category_id) {
-            if ($delivery_date > $today) {
-                self::update_capacity_count('category', $category_id, $delivery_date, -$order_item->quantity);
+            if (!$delivery_date) {
+                continue;
             }
+
+			// If completed early, reset capacity
+			$today = current_time('Y-m-d');
+			if ($delivery_date > $today) {
+				// Free capacity for product/variation
+				$entity_type = $variation_id ? 'variation' : 'product';
+				$entity_id = $variation_id ?: $product_id;
+				self::update_capacity_count($entity_type, $entity_id, $delivery_date, -$quantity);
+			}
         }
     }
 
     public static function update_capacity_on_order($order_id, $posted_data, $order) {
+        global $wpdb;
+
         foreach ($order->get_items() as $item_id => $item) {
-            $product_id = $item->get_variation_id() ?: $item->get_product_id();
-            $entity_type = $item->get_variation_id() ? 'variation' : 'product';
-            $entity_id = $product_id;
+            $product_id = $item->get_product_id();
+            $variation_id = $item->get_variation_id();
             $quantity = $item->get_quantity();
 
-            // Calculate delivery date (will be implemented in Delivery module)
-            $delivery_date = \WPM\Delivery\DeliveryCalculator::calculate_delivery_date($product_id, $quantity);
+            // Calculate delivery date
+            $delivery_date = \WPM\Delivery\DeliveryCalculator::calculate_delivery_date($product_id, $variation_id, $quantity);
 
             if ($delivery_date) {
+                $entity_type = $variation_id ? 'variation' : 'product';
+                $entity_id = $variation_id ?: $product_id;
                 self::update_capacity_count($entity_type, $entity_id, $delivery_date, $quantity);
 
-                // Update category capacity
-                $categories = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']);
-                foreach ($categories as $category_id) {
-                    self::update_capacity_count('category', $category_id, $delivery_date, $quantity);
-                }
+                // Store delivery date
+                $default_status = get_option('wpm_statuses', [['name' => __('Received', WPM_TEXT_DOMAIN), 'color' => '#0073aa']])[0]['name'];
+				$user_id = get_current_user_id();
+                $wpdb->insert(
+                    "{$wpdb->prefix}wpm_order_items_status",
+                    [
+                        'order_id' => $order_id,
+                        'order_item_id' => $item_id,
+                        'status' => $default_status,
+                        'delivery_date' => $delivery_date,
+                        'updated_by' => $user_id,
+                        'updated_at' => current_time('mysql')
+                    ],
+                    ['%d', '%d', '%s', '%s', '%d', '%s']
+                );
+				
+				\WPM\Settings\StatusManager::log_status_change($item_id, $default_status, $user_id, __('Initial status set', WPM_TEXT_DOMAIN));
             }
         }
-    }
-
-    public static function has_capacity($entity_type, $entity_id, $date, $quantity) {
-        $max_capacity = CapacityManager::get_capacity($entity_type, $entity_id);
-        if (!$max_capacity) {
-            return true; // No limit set
-        }
-
-        $reserved = self::get_reserved_count($entity_type, $entity_id, $date);
-        return ($reserved + $quantity) <= $max_capacity;
     }
 }
 ?>

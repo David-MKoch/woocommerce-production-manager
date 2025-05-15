@@ -290,34 +290,6 @@ jQuery(document).ready(function($) {
             }
         });
     });
-
-    // Initialize Sortable for Holidays
-    $('#wpm-holidays-sortable').sortable({
-        update: function(event, ui) {
-            var $table = $(this).closest('table');
-            showLoading($table);
-            var order = $(this).sortable('toArray', {attribute: 'data-index'}).map(Number);
-            $.ajax({
-                url: wpmAdmin.ajaxUrl,
-                type: 'POST',
-                data: {
-                    action: 'wpm_reorder_holidays',
-                    nonce: wpmAdmin.nonce,
-                    order: order
-                },
-                success: function(response) {
-                    hideLoading($table);
-                    if (!response.success) {
-                        alert(response.data.message);
-                    }
-                },
-                error: function() {
-                    hideLoading($table);
-                    alert(wpmAdmin.i18n.error);
-                }
-            });
-        }
-    }).disableSelection();
     
     // Initialize Sortable for Statuses
     $('#wpm-statuses-sortable').sortable({

@@ -7,7 +7,7 @@ class StatusManager {
     public static function init() {
         add_action('wp_ajax_wpm_update_order_item_status', [__CLASS__, 'update_order_item_status']);
         add_action('wp_ajax_wpm_update_order_item_delivery_date', [__CLASS__, 'update_order_item_delivery_date']);
-        add_action('woocommerce_checkout_order_processed', [__CLASS__, 'set_initial_status'], 20, 3);
+        
         add_action('wp_ajax_wpm_save_status', [__CLASS__, 'save_status']);
         add_action('wp_ajax_wpm_delete_status', [__CLASS__, 'delete_status']);
         add_action('wp_ajax_wpm_update_status', [__CLASS__, 'update_status']);
@@ -157,36 +157,6 @@ class StatusManager {
 
         update_option('wpm_statuses', $reordered);
         wp_send_json_success(['message' => __('Statuses reordered', WPM_TEXT_DOMAIN)]);
-    }
-
-    public static function set_initial_status($order_id, $posted_data, $order) {
-        global $wpdb;
-
-        $default_status = get_option('wpm_statuses', [['name' => __('Received', WPM_TEXT_DOMAIN), 'color' => '#0073aa']])[0]['name'];
-        $user_id = get_current_user_id();
-
-        foreach ($order->get_items() as $item_id => $item) {
-            $product_id = $item->get_product_id();
-			$quantity = $item->get_quantity();
-			$variation_id = $item->get_variation_id();
-
-			$delivery_date = \WPM\Delivery\DeliveryCalculator::calculate_delivery_date($product_id, $quantity, $variation_id);
-
-            $wpdb->insert(
-                "{$wpdb->prefix}wpm_order_items_status",
-                [
-                    'order_id' => $order_id,
-                    'order_item_id' => $item_id,
-                    'status' => $default_status,
-                    'delivery_date' => $delivery_date,
-                    'updated_by' => $user_id,
-                    'updated_at' => current_time('mysql')
-                ],
-                ['%d', '%d', '%s', '%s', '%d', '%s']
-            );
-
-            self::log_status_change($item_id, $default_status, $user_id, __('Initial status set', WPM_TEXT_DOMAIN));
-        }
     }
 
     public static function update_order_item_status() {

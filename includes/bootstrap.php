@@ -76,7 +76,6 @@ class Bootstrap {
             "CREATE TABLE {$wpdb->prefix}wpm_holidays (
                 id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
                 date DATE NOT NULL,
-                type ENUM('weekly', 'custom') NOT NULL,
                 description VARCHAR(255),
                 PRIMARY KEY (id),
                 INDEX date_idx (date)

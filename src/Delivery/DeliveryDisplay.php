@@ -7,12 +7,10 @@ defined('ABSPATH') || exit;
 
 class DeliveryDisplay {
     public static function init() {
+        // Display delivery date in cart and checkout
+        add_filter('woocommerce_cart_item_name', [__CLASS__, 'display_cart_delivery_date'], 10, 3);
         // Display delivery date in product page
         add_action('woocommerce_single_product_summary', [__CLASS__, 'display_product_delivery_date'], 25);
-        // Display delivery date in cart
-        add_filter('woocommerce_cart_item_name', [__CLASS__, 'display_cart_delivery_date'], 10, 3);
-        // Display delivery date in checkout
-        add_filter('woocommerce_cart_item_name', [__CLASS__, 'display_checkout_delivery_date'], 10, 3);
         // Enqueue scripts
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_scripts']);
         // Add delivery days fields
@@ -49,10 +47,6 @@ class DeliveryDisplay {
         return $item_name;
     }
 
-    public static function display_checkout_delivery_date($item_name, $cart_item, $cart_item_key) {
-        return self::display_cart_delivery_date($item_name, $cart_item, $cart_item_key);
-    }
-
     public static function enqueue_scripts() {
         if (is_product()) {
             wp_enqueue_script('wpm-frontend-js', WPM_PLUGIN_URL . 'assets/js/frontend.js', ['jquery'], '1.0.0', true);
@@ -71,9 +65,9 @@ class DeliveryDisplay {
     public static function add_product_delivery_days_field() {
         woocommerce_wp_text_input([
             'id'          => 'wpm_delivery_days',
-            'label'       => __('Delivery Days', WPM_TEXT_DOMAIN),
+            'label'       => __('Production Days', WPM_TEXT_DOMAIN),
             'desc_tip'    => true,
-            'description' => __('Number of days for delivery. Overrides category and default settings.', WPM_TEXT_DOMAIN),
+            'description' => __('Number of days required to produce this product. Overrides category and default settings.', WPM_TEXT_DOMAIN),
             'type'        => 'number',
             'value'       => get_post_meta(get_the_ID(), 'wpm_delivery_days', true)
         ]);
@@ -82,9 +76,9 @@ class DeliveryDisplay {
     public static function add_category_delivery_days_field() {
         ?>
         <div class="form-field">
-            <label for="wpm_delivery_days"><?php esc_html_e('Delivery Days', WPM_TEXT_DOMAIN); ?></label>
+            <label for="wpm_delivery_days"><?php esc_html_e('Production Days', WPM_TEXT_DOMAIN); ?></label>
             <input type="number" name="wpm_delivery_days" id="wpm_delivery_days" min="0">
-            <p><?php esc_html_e('Number of days for delivery for products in this category.', WPM_TEXT_DOMAIN); ?></p>
+            <p><?php esc_html_e('Number of days required to produce products in this category.', WPM_TEXT_DOMAIN); ?></p>
         </div>
         <?php
     }
@@ -93,10 +87,10 @@ class DeliveryDisplay {
         $delivery_days = get_term_meta($term->term_id, 'wpm_delivery_days', true);
         ?>
         <tr class="form-field">
-            <th><label for="wpm_delivery_days"><?php esc_html_e('Delivery Days', WPM_TEXT_DOMAIN); ?></label></th>
+            <th><label for="wpm_delivery_days"><?php esc_html_e('Production Days', WPM_TEXT_DOMAIN); ?></label></th>
             <td>
                 <input type="number" name="wpm_delivery_days" id="wpm_delivery_days" value="<?php echo esc_attr($delivery_days); ?>" min="0">
-                <p><?php esc_html_e('Number of days for delivery for products in this category.', WPM_TEXT_DOMAIN); ?></p>
+                <p><?php esc_html_e('Number of days required to produce products in this category.', WPM_TEXT_DOMAIN); ?></p>
             </td>
         </tr>
         <?php

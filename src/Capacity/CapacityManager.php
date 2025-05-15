@@ -1,8 +1,6 @@
 <?php
 namespace WPM\Capacity;
 
-//use WPM\Utils\PersianDate;
-
 defined('ABSPATH') || exit;
 
 class CapacityManager {
@@ -18,9 +16,6 @@ class CapacityManager {
         add_action('woocommerce_save_product_variation', [__CLASS__, 'save_variation_capacity'], 10, 2);
         add_action('created_product_cat', [__CLASS__, 'save_category_capacity']);
         add_action('edited_product_cat', [__CLASS__, 'save_category_capacity']);
-
-        // Register capacity in database
-        add_action('init', [__CLASS__, 'register_capacity']);
     }
 
     public static function add_product_capacity_field() {
@@ -28,9 +23,9 @@ class CapacityManager {
             'id'          => 'wpm_product_capacity',
             'label'       => __('Daily Production Capacity', WPM_TEXT_DOMAIN),
             'desc_tip'    => true,
-            'description' => __('Maximum number of this product that can be produced daily. Overrides category setting.', WPM_TEXT_DOMAIN),
+            'description' => __('Maximum number of this product that can be produced daily. Leave empty to inherit from category.', WPM_TEXT_DOMAIN),
             'type'        => 'number',
-            'value'       => get_post_meta(get_the_ID(), 'wpm_product_capacity', true)
+            'value'       => self::get_capacity('product', get_the_ID())
         ]);
     }
 
@@ -39,9 +34,9 @@ class CapacityManager {
             'id'          => 'wpm_variation_capacity_' . $variation->ID,
             'label'       => __('Daily Production Capacity', WPM_TEXT_DOMAIN),
             'desc_tip'    => true,
-            'description' => __('Maximum number of this variation that can be produced daily. Overrides product setting.', WPM_TEXT_DOMAIN),
+            'description' => __('Maximum number of this variation that can be produced daily. Leave empty to inherit from product.', WPM_TEXT_DOMAIN),
             'type'        => 'number',
-            'value'       => get_post_meta($variation->ID, 'wpm_variation_capacity', true)
+            'value'       => self::get_capacity('variation', $variation->ID)
         ]);
     }
 
@@ -50,39 +45,52 @@ class CapacityManager {
         <div class="form-field">
             <label for="wpm_category_capacity"><?php esc_html_e('Daily Production Capacity', WPM_TEXT_DOMAIN); ?></label>
             <input type="number" name="wpm_category_capacity" id="wpm_category_capacity" min="0">
-            <p><?php esc_html_e('Maximum number of products in this category that can be produced daily.', WPM_TEXT_DOMAIN); ?></p>
+            <p><?php esc_html_e('Maximum number of products in this category that can be produced daily. Leave empty for no limit.', WPM_TEXT_DOMAIN); ?></p>
         </div>
         <?php
     }
 
     public static function edit_category_capacity_field($term) {
-        $capacity = get_term_meta($term->term_id, 'wpm_category_capacity', true);
+        $capacity = self::get_capacity('category', $term->term_id);
         ?>
         <tr class="form-field">
             <th><label for="wpm_category_capacity"><?php esc_html_e('Daily Production Capacity', WPM_TEXT_DOMAIN); ?></label></th>
             <td>
                 <input type="number" name="wpm_category_capacity" id="wpm_category_capacity" value="<?php echo esc_attr($capacity); ?>" min="0">
-                <p><?php esc_html_e('Maximum number of products in this category that can be produced daily.', WPM_TEXT_DOMAIN); ?></p>
+                <p><?php esc_html_e('Maximum number of products in this category that can be produced daily. Leave empty for no limit.', WPM_TEXT_DOMAIN); ?></p>
             </td>
         </tr>
         <?php
     }
 
     public static function save_product_capacity($post_id) {
-        $capacity = isset($_POST['wpm_product_capacity']) ? absint($_POST['wpm_product_capacity']) : 0;
-        update_post_meta($post_id, 'wpm_product_capacity', $capacity);
+        $capacity = isset($_POST['wpm_product_capacity']) && $_POST['wpm_product_capacity'] !== '' ? absint($_POST['wpm_product_capacity']) : null;
         self::update_capacity_record('product', $post_id, $capacity);
     }
 
     public static function save_variation_capacity($variation_id, $i) {
-        $capacity = isset($_POST['wpm_variation_capacity_' . $variation_id]) ? absint($_POST['wpm_variation_capacity_' . $variation_id]) : 0;
-        update_post_meta($variation_id, 'wpm_variation_capacity', $capacity);
+        $capacity = isset($_POST['wpm_variation_capacity_' . $variation_id]) && $_POST['wpm_variation_capacity_' . $variation_id] !== '' ? absint($_POST['wpm_variation_capacity_' . $variation_id]) : null;
         self::update_capacity_record('variation', $variation_id, $capacity);
     }
 
     public static function save_category_capacity($term_id) {
-        $capacity = isset($_POST['wpm_category_capacity']) ? absint($_POST['wpm_category_capacity']) : 0;
-        update_term_meta($term_id, 'wpm_category_capacity', $capacity);
+        $capacity = isset($_POST['wpm_category_capacity']) && $_POST['wpm_category_capacity'] !== '' ? absint($_POST['wpm_category_capacity']) : null;
+
+        // Check parent capacity
+        if ($capacity !== null) {
+            $ancestors = get_ancestors($term_id, 'product_cat', 'taxonomy');
+            foreach ($ancestors as $parent_id) {
+                $parent_capacity = self::get_capacity('category', $parent_id);
+                if ($parent_capacity !== 0 && $capacity > $parent_capacity) {
+                    wp_die(sprintf(
+                        __('Category capacity (%d) cannot exceed parent category capacity (%d).', WPM_TEXT_DOMAIN),
+                        $capacity,
+                        $parent_capacity
+                    ));
+                }
+            }
+        }
+
         self::update_capacity_record('category', $term_id, $capacity);
     }
 
@@ -95,76 +103,99 @@ class CapacityManager {
             $entity_id
         ));
 
-        if ($existing) {
-            $wpdb->update(
-                "{$wpdb->prefix}wpm_production_capacity",
-                [
-                    'max_capacity' => $capacity,
-                    'updated_at'   => current_time('mysql')
-                ],
-                [
-                    'entity_type' => $entity_type,
-                    'entity_id'   => $entity_id
-                ],
-                ['%d', '%s'],
-                ['%s', '%d']
-            );
+        if (is_null($capacity)) {
+            if ($existing) {
+                $wpdb->delete(
+                    "{$wpdb->prefix}wpm_production_capacity",
+                    ['entity_type' => $entity_type, 'entity_id' => $entity_id],
+                    ['%s', '%d']
+                );
+            }
         } else {
-            $wpdb->insert(
-                "{$wpdb->prefix}wpm_production_capacity",
-                [
-                    'entity_type' => $entity_type,
-                    'entity_id'   => $entity_id,
-                    'max_capacity' => $capacity,
-                    'created_at'  => current_time('mysql'),
-                    'updated_at'  => current_time('mysql')
-                ],
-                ['%s', '%d', '%d', '%s', '%s']
-            );
+            if ($existing) {
+                $wpdb->update(
+                    "{$wpdb->prefix}wpm_production_capacity",
+                    [
+                        'max_capacity' => $capacity,
+                        'updated_at'   => current_time('mysql')
+                    ],
+                    [
+                        'entity_type' => $entity_type,
+                        'entity_id'   => $entity_id
+                    ],
+                    ['%d', '%s'],
+                    ['%s', '%d']
+                );
+            } else {
+                $wpdb->insert(
+                    "{$wpdb->prefix}wpm_production_capacity",
+                    [
+                        'entity_type' => $entity_type,
+                        'entity_id' => $entity_id,
+                        'max_capacity' => $capacity,
+                        'created_at'  => current_time('mysql'),
+                        'updated_at'  => current_time('mysql')
+                    ],
+                    ['%s', '%d', '%d', '%s', '%s']
+                );
+            }
         }
 
         // Clear cache
         \WPM\Utils\Cache::clear("capacity_{$entity_type}_{$entity_id}");
     }
 
-    public static function get_capacity($entity_type, $entity_id) {
-        $cache_key = "capacity_{$entity_type}_{$entity_id}";
+    public static function get_capacity($entity_type, $entity_id, $product_id = null) {
+        // Use product_id in cache key to ensure unique cache for each product context
+        $cache_key = "capacity_{$entity_type}_{$entity_id}" . ($product_id ? "_{$product_id}" : "");
         $capacity = \WPM\Utils\Cache::get($cache_key);
 
         if ($capacity === false) {
             global $wpdb;
-            $capacity = $wpdb->get_var($wpdb->prepare(
-                "SELECT max_capacity FROM {$wpdb->prefix}wpm_production_capacity WHERE entity_type = %s AND entity_id = %d",
-                $entity_type,
-                $entity_id
-            ));
-            \WPM\Utils\Cache::set($cache_key, $capacity ?: 0);
+
+			$capacity = $wpdb->get_var($wpdb->prepare(
+				"SELECT max_capacity FROM {$wpdb->prefix}wpm_production_capacity WHERE entity_type = %s AND entity_id = %d",
+				$entity_type,
+				$entity_id
+			));
+			$capacity = $capacity !== null ? absint($capacity) : null;
+
+            // If capacity is not set, check higher levels
+            if ($capacity === null && $entity_type === 'variation' && $product_id) {
+                $capacity = self::get_capacity('product', $product_id, $product_id);
+            }
+
+            if ($capacity === null && ($entity_type === 'product' || $entity_type === 'variation') && $product_id) {
+                $categories = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']);
+                if (!empty($categories)) {
+                    $all_categories = [];
+                    foreach ($categories as $cat_id) {
+						$all_categories[] = $cat_id;
+                        $ancestors = get_ancestors($cat_id, 'product_cat', 'taxonomy');
+                        $all_categories = array_merge($all_categories, $ancestors);
+                    }
+                    $all_categories = array_unique($all_categories);
+
+                    $capacities = [];
+                    foreach ($all_categories as $cat_id) {
+                        $cat_capacity = self::get_capacity('category', $cat_id);
+                        if ($cat_capacity !== null && $cat_capacity !== 0) {
+                            $capacities[] = $cat_capacity;
+                        }
+                    }
+                    $capacity = !empty($capacities) ? min($capacities) : null;
+                }
+            }
+
+            if ($capacity === null) {
+                $capacity = absint(get_option('wpm_default_capacity', 0));
+            }
+
+            // Cache the final result
+            \WPM\Utils\Cache::set($cache_key, $capacity);
         }
 
-        return absint($capacity);
-    }
-
-    public static function register_capacity() {
-        // Sync existing meta with capacity table
-        global $wpdb;
-
-        // Products
-        $products = $wpdb->get_results("SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = 'wpm_product_capacity'");
-        foreach ($products as $product) {
-            self::update_capacity_record('product', $product->post_id, absint($product->meta_value));
-        }
-
-        // Variations
-        $variations = $wpdb->get_results("SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = 'wpm_variation_capacity'");
-        foreach ($variations as $variation) {
-            self::update_capacity_record('variation', $variation->post_id, absint($variation->meta_value));
-        }
-
-        // Categories
-        $categories = $wpdb->get_results("SELECT term_id, meta_value FROM {$wpdb->termmeta} WHERE meta_key = 'wpm_category_capacity'");
-        foreach ($categories as $category) {
-            self::update_capacity_record('category', $category->term_id, absint($category->meta_value));
-        }
+        return $capacity;
     }
 }
 ?>
