@@ -233,7 +233,7 @@ class StatusManager {
 
         $delivery_date = \WPM\Utils\PersianDate::to_gregorian($delivery_date);
 
-        if (!\WPM\Utils\AssetsManager::is_valid_date($delivery_date)) {
+        if (!\WPM\Utils\PersianDate::is_valid_date($delivery_date)) {
             wp_send_json_error(['message' => __('Invalid date format', WPM_TEXT_DOMAIN)]);
         }
 

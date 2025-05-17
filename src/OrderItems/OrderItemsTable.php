@@ -45,7 +45,6 @@ class OrderItemsTable extends WP_List_Table {
     public function get_bulk_actions() {
         $statuses = get_option('wpm_statuses', []);
         $actions = [
-            'bulk_change_status' => __('Change Status', WPM_TEXT_DOMAIN),
             'bulk_change_delivery_date' => __('Change Delivery Date', WPM_TEXT_DOMAIN)
         ];
         foreach ($statuses as $status) {
@@ -247,7 +246,7 @@ class OrderItemsTable extends WP_List_Table {
             }
         } elseif ($action === 'bulk_change_delivery_date') {
             $delivery_date = isset($_REQUEST['bulk_delivery_date']) ? \WPM\Utils\PersianDate::to_gregorian(sanitize_text_field($_REQUEST['bulk_delivery_date'])) : '';
-            if ($delivery_date && \WPM\Utils\AssetsManager::is_valid_date($delivery_date)) {
+            if ($delivery_date && \WPM\Utils\PersianDate::is_valid_date($delivery_date)) {
                 foreach ($order_item_ids as $item_id) {
                     $wpdb->update(
                         "{$wpdb->prefix}wpm_order_items_status",

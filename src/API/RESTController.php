@@ -18,7 +18,7 @@ class RESTController extends WP_REST_Controller {
             'args' => [
                 'date' => [
                     'validate_callback' => function($param) {
-                        return \WPM\Utils\AssetsManager::is_valid_date($param);
+                        return \WPM\Utils\PersianDate::is_valid_date($param);
                     }
                 ],
                 'entity_type' => [
@@ -44,12 +44,12 @@ class RESTController extends WP_REST_Controller {
                 ],
                 'date_from' => [
                     'validate_callback' => function($param) {
-                        return \WPM\Utils\AssetsManager::is_valid_date($param);
+                        return \WPM\Utils\PersianDate::is_valid_date($param);
                     }
                 ],
                 'date_to' => [
                     'validate_callback' => function($param) {
-                        return \WPM\Utils\AssetsManager::is_valid_date($param);
+                        return \WPM\Utils\PersianDate::is_valid_date($param);
                     }
                 ],
                 'persian_date' => [
@@ -70,12 +70,12 @@ class RESTController extends WP_REST_Controller {
                 ],
                 'date_from' => [
                     'validate_callback' => function($param) {
-                        return \WPM\Utils\AssetsManager::is_valid_date($param);
+                        return \WPM\Utils\PersianDate::is_valid_date($param);
                     }
                 ],
                 'date_to' => [
                     'validate_callback' => function($param) {
-                        return \WPM\Utils\AssetsManager::is_valid_date($param);
+                        return \WPM\Utils\PersianDate::is_valid_date($param);
                     }
                 ],
                 'persian_date' => [

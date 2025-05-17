@@ -18,7 +18,9 @@ class PersianDate {
             return '';
         }
         try {
-            return Jalalian::fromFormat('Y/m/d', $persian_date)->toDateTime()->format($format);
+            list($year, $month, $day) = explode('/', $persian_date);
+            $jDate = new Jalalian($year, $month, $day);
+            return $jDate->toCarbon()->format($format);
         } catch (\Exception $e) {
             return '';
         }
@@ -42,6 +44,13 @@ class PersianDate {
         // Check days in month (simplified for Persian calendar)
         $days_in_month = $month <= 6 ? 31 : ($month <= 11 ? 30 : 29);
         return $day <= $days_in_month;
+    }
+
+    public static function is_valid_date($date) {
+        if (empty($date)) {
+            return true; // Allow empty date
+        }
+        return preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) && strtotime($date) !== false;
     }
 
     public static function now($format = 'Y/m/d') {

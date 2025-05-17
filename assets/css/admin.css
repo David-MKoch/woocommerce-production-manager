@@ -1,10 +1,4 @@
-.wpm-holidays-list tbody tr {
-    cursor: move;
-}
-.wpm-holidays-list tbody tr.ui-sortable-helper {
-    opacity: 0.8;
-    background: #f9f9f9;
-}
+
 .wpm-holiday-date input,
 .wpm-holiday-description input {
     width: 100%;
