@@ -24,7 +24,7 @@ class CapacityCounter {
                 $entity_id,
                 $date
             ));
-            \WPM\Utils\Cache::set($cache_key, $count ?: 0);
+            \WPM\Utils\Cache::set($cache_key, $count ?: 0, 300);
         }
 
         return absint($count);

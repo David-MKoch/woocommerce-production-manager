@@ -35,7 +35,7 @@ class DeliveryCalculator {
                 $is_holiday = in_array($day_of_week, $weekly_holidays);
             }
 
-            \WPM\Utils\Cache::set($cache_key, $is_holiday ? 1 : 0);
+            \WPM\Utils\Cache::set($cache_key, $is_holiday ? 1 : 0, 48 * HOUR_IN_SECONDS);
         }
 
         return $is_holiday ? true : false;
@@ -48,38 +48,28 @@ class DeliveryCalculator {
         $business_days = \WPM\Utils\Cache::get($cache_key);
 
         if ($business_days === false) {
-            $weekly_holidays = Calendar::get_weekly_holidays();
-            $weekly_holidays_sql = [];
-            foreach ($weekly_holidays as $day) {
-                $weekly_holidays_sql[] = "DAYNAME(d.date) != '$day'";
-            }
-            $weekly_holidays_condition = !empty($weekly_holidays_sql) ? 'AND (' . implode(' AND ', $weekly_holidays_sql) . ')' : '';
-
             $max_date = (new \DateTime($start_date))->modify("+$max_days days")->format('Y-m-d');
-
-            $query = $wpdb->prepare(
-                "SELECT DATE_FORMAT(date, '%Y-%m-%d') AS date
-                FROM (
-                    SELECT ADDDATE(%s, t4*10000 + t3*1000 + t2*100 + t1*10 + t0) AS date
-                    FROM
-                        (SELECT 0 AS t0 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t0,
-                        (SELECT 0 AS t1 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t1,
-                        (SELECT 0 AS t2 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t2,
-                        (SELECT 0 AS t3 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t3,
-                        (SELECT 0 AS t4 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t4
-                    ) dates d
-                LEFT JOIN {$wpdb->prefix}wpm_holidays h ON d.date = h.date
-                WHERE d.date BETWEEN %s AND %s
-                AND h.id IS NULL
-                $weekly_holidays_condition
-                ORDER BY d.date ASC",
-                $start_date,
+            $holidays = $wpdb->get_col($wpdb->prepare(
+                "SELECT date FROM {$wpdb->prefix}wpm_holidays WHERE date BETWEEN %s AND %s",
                 $start_date,
                 $max_date
-            );
+            ));
 
-            $business_days = array_column($wpdb->get_results($query, ARRAY_A), 'date');
-            \WPM\Utils\Cache::set($cache_key, $business_days, 24 * HOUR_IN_SECONDS);
+            $weekly_holidays = Calendar::get_weekly_holidays();
+            $business_days = [];
+            $current_date = new \DateTime($start_date);
+
+            while ($current_date->format('Y-m-d') <= $max_date) {
+                $date_str = $current_date->format('Y-m-d');
+                $day_of_week = strtolower($current_date->format('l'));
+
+                if (!in_array($date_str, $holidays) && !in_array($day_of_week, $weekly_holidays)) {
+                    $business_days[] = $date_str;
+                }
+                $current_date->modify('+1 day');
+            }
+
+            \WPM\Utils\Cache::set($cache_key, $business_days, 48 * HOUR_IN_SECONDS);
         }
 
         return $business_days;
@@ -137,7 +127,7 @@ class DeliveryCalculator {
             ";
 
             $capacities = $wpdb->get_results($query);
-            \WPM\Utils\Cache::set($cache_key, $capacities, 24 * HOUR_IN_SECONDS);
+            \WPM\Utils\Cache::set($cache_key, $capacities, 48 * HOUR_IN_SECONDS);
         }
 
         return $capacities;
@@ -154,24 +144,69 @@ class DeliveryCalculator {
             $business_days_sql = "'" . implode("','", array_map('esc_sql', $business_days)) . "'";
 
             $query = $wpdb->prepare(
-                "SELECT cc.date, 
-					   COALESCE(tt.taxonomy, cc.entity_type) AS entity_type, 
-					   COALESCE(tt.term_id, cc.entity_id) AS entity_id, 
-					   SUM(cc.reserved_count) AS reserved_count
-				FROM {$wpdb->prefix}wc_capacity_count cc
-				LEFT JOIN {$wpdb->prefix}term_relationships tr ON cc.entity_id = tr.object_id
-				LEFT JOIN {$wpdb->prefix}term_taxonomy tt ON tr.term_taxonomy_id = tt.term_id AND tt.taxonomy = 'product_cat'
-				WHERE cc.date >= %s AND cc.date IN ($business_days_sql)
-				AND cc.entity_type IN ('product', 'variation')
-				GROUP BY cc.date, COALESCE(tt.taxonomy, cc.entity_type), COALESCE(tt.term_id, cc.entity_id)",
+                "SELECT cc.date, cc.entity_type, cc.entity_id, SUM(cc.reserved_count) AS reserved_count
+                 FROM {$wpdb->prefix}wpm_capacity_count cc
+                 WHERE cc.date >= %s AND cc.date IN ($business_days_sql)
+                 GROUP BY cc.date, cc.entity_type, cc.entity_id",
                 $min_date
             );
 
             $reserved_counts = $wpdb->get_results($query);
+            $reserved_counts = self::aggregate_category_reservations($reserved_counts, $business_days);
             \WPM\Utils\Cache::set($cache_key, $reserved_counts, 300);
         }
 
         return $reserved_counts;
+    }
+	
+	public static function aggregate_category_reservations($reserved_counts, $business_days) {
+        global $wpdb;
+
+        $product_reservations = [];
+        foreach ($reserved_counts as $res) {
+            if ($res->entity_type === 'product' || $res->entity_type === 'variation') {
+                $product_reservations[$res->date][$res->entity_id] = [
+                    'entity_type' => $res->entity_type,
+                    'reserved_count' => $res->reserved_count
+                ];
+            }
+        }
+
+        $category_reservations = [];
+        foreach ($product_reservations as $date => $products) {
+            foreach ($products as $entity_id => $data) {
+                $product_id = $data['entity_type'] === 'product' ? $entity_id : $wpdb->get_var($wpdb->prepare(
+                    "SELECT meta_value FROM {$wpdb->prefix}woocommerce_order_itemmeta WHERE order_item_id = %d AND meta_key = '_product_id'",
+                    $entity_id
+                ));
+
+                if (!$product_id) {
+                    continue;
+                }
+
+                $categories = self::get_categories($product_id);
+                foreach ($categories as $cat_id) {
+                    if (!isset($category_reservations[$date]['category'][$cat_id])) {
+                        $category_reservations[$date]['category'][$cat_id] = 0;
+                    }
+                    $category_reservations[$date]['category'][$cat_id] += $data['reserved_count'];
+                }
+            }
+        }
+
+        $result = $reserved_counts;
+        foreach ($category_reservations as $date => $cats) {
+            foreach ($cats['category'] as $cat_id => $reserved_count) {
+                $result[] = (object) [
+                    'date' => $date,
+                    'entity_type' => 'category',
+                    'entity_id' => $cat_id,
+                    'reserved_count' => $reserved_count
+                ];
+            }
+        }
+
+        return $result;
     }
 
     public static function get_categories($product_id){
@@ -187,7 +222,7 @@ class DeliveryCalculator {
                 $all_categories = array_merge($all_categories, $ancestors);
             }
             $all_categories = array_unique($all_categories);
-            \WPM\Utils\Cache::set($cache_key, $all_categories, 24 * HOUR_IN_SECONDS);
+            \WPM\Utils\Cache::set($cache_key, $all_categories, 48 * HOUR_IN_SECONDS);
         }
         return $all_categories;
     }
@@ -205,7 +240,7 @@ class DeliveryCalculator {
         $entity_type = $variation_id ? 'variation' : 'product';
         $entity_id = $variation_id ?: $product_id;
 
-        $cutoff_time = get_option('wpm_cutoff_time', '14:00');
+        $cutoff_time = get_option('wpm_daily_cutoff_time', '14:00');
         $current_time = current_time('H:i');
         $today = current_time('Y-m-d');
         $start_date = ($current_time > $cutoff_time) ? date('Y-m-d', strtotime('+1 day')) : $today;
@@ -317,7 +352,7 @@ class DeliveryCalculator {
             wp_send_json_error(['message' => __('Invalid product', WPM_TEXT_DOMAIN)]);
         }
 
-        $delivery_date = self::calculate_delivery_date($product_id, $quantity, $variation_id);
+        $delivery_date = self::calculate_delivery_date($product_id, $variation_id, $quantity);
 
         if ($delivery_date) {
             $jalali_date = Jalalian::fromDateTime($delivery_date)->format('Y/m/d');

@@ -13,7 +13,7 @@ class AdminPage {
 
     public static function add_menu_page() {
         $hook = add_submenu_page(
-            'wpm-settings',
+            'wpm-dashboard',
             __('Order Items Status', WPM_TEXT_DOMAIN),
             __('Order Items Status', WPM_TEXT_DOMAIN),
             'manage_woocommerce',
@@ -43,7 +43,7 @@ class AdminPage {
     }
 
     public static function add_column_settings($settings, $screen) {
-        if ($screen->id !== 'wpm-settings_page_wpm-order-items') {
+        if ($screen->id !== 'wpm-dashboard_page_wpm-order-items') {
             return $settings;
         }
 

@@ -1,0 +1,35 @@
+.wpm-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.wpm-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.wpm-stat-box {
+    flex: 1;
+    min-width: 200px;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    text-align: center;
+}
+.wpm-charts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.wpm-chart-section {
+    flex: 1;
+    min-width: 300px;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 5px;
+}
+.wpm-chart-section canvas {
+    max-height: 300px;
+}

@@ -9,6 +9,7 @@ class Bootstrap {
         add_action('init', [__CLASS__, 'load_textdomain']);
 
         // Initialize modules
+		\WPM\Reports\Dashboard::init();
         \WPM\Settings\Settings::init();
 		\WPM\Settings\SMS::init();
 		\WPM\Settings\StatusManager::init();
@@ -26,6 +27,12 @@ class Bootstrap {
 		\WPM\Reports\Reports::init();
         //\WPM\API\RESTController::init();
         \WPM\API\Webhook::init();
+		
+		// Schedule cron job for cleanup
+        if (!wp_next_scheduled('wpm_cleanup_old_logs')) {
+            wp_schedule_event(time(), 'daily', 'wpm_cleanup_old_logs');
+        }
+        add_action('wpm_cleanup_old_logs', [__CLASS__, 'cleanup_old_logs']);
     }
 
     public static function load_textdomain() {
@@ -90,6 +97,18 @@ class Bootstrap {
                 note TEXT,
                 PRIMARY KEY (id),
                 INDEX item_idx (order_item_id, changed_at)
+            ) $charset_collate;",
+			
+			"CREATE TABLE {$wpdb->prefix}wpm_sms_logs (
+                id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                order_item_id BIGINT UNSIGNED NOT NULL,
+                phone VARCHAR(20) NOT NULL,
+                message TEXT NOT NULL,
+                status ENUM('success', 'failed') NOT NULL,
+                response TEXT,
+                sent_at DATETIME NOT NULL,
+                PRIMARY KEY (id),
+                INDEX sms_idx (order_item_id, sent_at)
             ) $charset_collate;"
         ];
 
@@ -116,6 +135,21 @@ class Bootstrap {
         \WPM\Utils\Cache::clear();
         // Flush rewrite rules
         flush_rewrite_rules();
+		// Clear scheduled cron
+        wp_clear_scheduled_hook('wpm_cleanup_old_logs');
+    }
+
+    public static function cleanup_old_logs() {
+        global $wpdb;
+        $six_months_ago = date('Y-m-d H:i:s', strtotime('-6 months'));
+        $wpdb->query($wpdb->prepare(
+            "DELETE FROM {$wpdb->prefix}wpm_sms_logs WHERE sent_at < %s",
+            $six_months_ago
+        ));
+        /*$wpdb->query($wpdb->prepare(
+            "DELETE FROM {$wpdb->prefix}wpm_status_logs WHERE changed_at < %s",
+            $six_months_ago
+        ));*/
     }
 }
 ?>

@@ -587,4 +587,31 @@ jQuery(document).ready(function($) {
             }
         });
     });
+	
+	$('.wpm-clear-cache').on('click', function() {
+        var $button = $(this);
+        $button.prop('disabled', true).text(wpmAdmin.i18n.loading);
+
+        $.ajax({
+            url: wpmAdmin.ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'wpm_clear_cache',
+                nonce: wpmAdmin.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(wpmAdmin.i18n.cacheCleared);
+                } else {
+                    alert(wpmAdmin.i18n.error);
+                }
+            },
+            error: function() {
+                alert(wpmAdmin.i18n.error);
+            },
+            complete: function() {
+                $button.prop('disabled', false).text(wpmAdmin.i18n.cacheCleared);
+            }
+        });
+    });
 });

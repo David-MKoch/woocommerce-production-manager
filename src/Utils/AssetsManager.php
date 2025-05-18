@@ -45,7 +45,10 @@ class AssetsManager {
                 'holidaysReordered' => __('Holidays reordered', WPM_TEXT_DOMAIN),
                 'exporting' => __('Exporting...', WPM_TEXT_DOMAIN),
                 'exportOrderItems' => __('Export Order Items', WPM_TEXT_DOMAIN),
-                'exportLogs' => __('Export Logs', WPM_TEXT_DOMAIN)
+                'exportLogs' => __('Export Logs', WPM_TEXT_DOMAIN),
+                'cacheCleared' => __('Cache cleared successfully.', WPM_TEXT_DOMAIN),
+                'loading' => __('Loading...', WPM_TEXT_DOMAIN),
+                'capacityReset' => __('Production capacity reset successfully.', WPM_TEXT_DOMAIN),
             ]
         ]);
     }

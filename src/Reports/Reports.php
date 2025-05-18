@@ -14,7 +14,7 @@ class Reports {
 
     public static function add_menu_page() {
         $hook = add_submenu_page(
-            'wpm-settings',
+            'wpm-dashboard',
             __('Production Reports', WPM_TEXT_DOMAIN),
             __('Production Reports', WPM_TEXT_DOMAIN),
             'manage_woocommerce',

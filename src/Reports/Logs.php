@@ -14,7 +14,7 @@ class Logs {
 
     public static function add_menu_page() {
         $hook = add_submenu_page(
-            'wpm-settings',
+            'wpm-dashboard',
             __('Status Logs', WPM_TEXT_DOMAIN),
             __('Status Logs', WPM_TEXT_DOMAIN),
             'manage_woocommerce',
