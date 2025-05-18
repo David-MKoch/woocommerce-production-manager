@@ -166,16 +166,8 @@ class CapacityManager {
             }
 
             if ($capacity === null && ($entity_type === 'product' || $entity_type === 'variation') && $product_id) {
-                $categories = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']);
-                if (!empty($categories)) {
-                    $all_categories = [];
-                    foreach ($categories as $cat_id) {
-						$all_categories[] = $cat_id;
-                        $ancestors = get_ancestors($cat_id, 'product_cat', 'taxonomy');
-                        $all_categories = array_merge($all_categories, $ancestors);
-                    }
-                    $all_categories = array_unique($all_categories);
-
+                $all_categories = \WPM\Delivery\DeliveryCalculator::get_categories($product_id);
+                if (!empty($all_categories)) {
                     $capacities = [];
                     foreach ($all_categories as $cat_id) {
                         $cat_capacity = self::get_capacity('category', $cat_id);

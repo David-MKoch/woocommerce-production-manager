@@ -19,7 +19,7 @@ class CapacityCounter {
 
         if ($count === false) {
             $count = $wpdb->get_var($wpdb->prepare(
-                "SELECT reserved_count FROM {$wpdb->prefix}wpm_capacity_count WHERE entity_type = %s AND entity_id = %d AND date = %s",
+                "SELECT SUM(reserved_count) FROM {$wpdb->prefix}wpm_capacity_count WHERE entity_type = %s AND entity_id = %d AND date = %s",
                 $entity_type,
                 $entity_id,
                 $date
@@ -65,6 +65,7 @@ class CapacityCounter {
         // Clear cache
         \WPM\Utils\Cache::clear("capacity_count_{$entity_type}_{$entity_id}_" . $date);
         \WPM\Utils\Cache::clear("capacity_data_"); // Clear cached capacity data
+		\WPM\Utils\Cache::clear("reserved_counts_");
     }
 
     public static function handle_order_status_change($order_id, $old_status, $new_status, $order) {
