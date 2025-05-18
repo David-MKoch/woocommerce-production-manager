@@ -11,6 +11,7 @@ class Settings {
     public static function init() {
         add_action('admin_menu', [__CLASS__, 'add_menu_page']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_scripts']);
+		add_action('wp_ajax_wpm_reset_production_capacity', [__CLASS__, 'reset_production_capacity']);
     }
 
     public static function add_menu_page() {
@@ -35,6 +36,7 @@ class Settings {
             'holidays' => __('Holidays', WPM_TEXT_DOMAIN),
             'statuses' => __('Order Statuses', WPM_TEXT_DOMAIN),
             'sms' => __('SMS', WPM_TEXT_DOMAIN),
+			'advanced' => __('Advanced', WPM_TEXT_DOMAIN),
         ];
         $current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'general';
 
@@ -63,6 +65,9 @@ class Settings {
                     break;
                 case 'statuses':
                     StatusManager::render_statuses_tab();
+                    break;
+				case 'advanced':
+                    self::render_advanced_tab();
                     break;
             }
             ?>
@@ -110,6 +115,40 @@ class Settings {
         </form>
         <?php
     }
+	
+	public static function render_advanced_tab() {
+        $wc_statuses = wc_get_order_statuses();
+        $selected_statuses = get_option('wpm_open_order_statuses', array_keys($wc_statuses));
+        ?>
+        <form method="post" id="wpm-settings-form">
+            <div class="wpm-tab-content">
+                <h2><?php esc_html_e('Advanced Settings', WPM_TEXT_DOMAIN); ?></h2>
+                <table class="form-table">
+                    <tr>
+                        <th><?php esc_html_e('Open Order Statuses', WPM_TEXT_DOMAIN); ?></th>
+                        <td>
+                            <?php foreach ($wc_statuses as $status_key => $status_label) : ?>
+                                <label>
+                                    <input type="checkbox" name="wpm_open_order_statuses[]" value="<?php echo esc_attr($status_key); ?>" <?php checked(in_array($status_key, $selected_statuses)); ?>>
+                                    <?php echo esc_html($status_label); ?>
+                                </label><br>
+                            <?php endforeach; ?>
+                            <p><?php esc_html_e('Select WooCommerce order statuses to consider as open for production capacity reset.', WPM_TEXT_DOMAIN); ?></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><?php esc_html_e('Reset Production Capacity', WPM_TEXT_DOMAIN); ?></th>
+                        <td>
+                            <button type="button" class="button wpm-reset-capacity"><?php esc_html_e('Reset Capacity', WPM_TEXT_DOMAIN); ?></button>
+                            <p><?php esc_html_e('Recalculate delivery dates for open orders and reserve capacity based on order date and production time.', WPM_TEXT_DOMAIN); ?></p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <?php submit_button(); ?>
+        </form>
+        <?php
+    }
 
     public static function save_settings($data) {
         $current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'general';
@@ -132,7 +171,11 @@ class Settings {
                 update_option('wpm_delay_sms_template', sanitize_textarea_field($data['wpm_delay_sms_template'] ?? __('Dear {customer_name}, your order #{order_id} is delayed. New delivery date: {delivery_date}.', WPM_TEXT_DOMAIN)));
                 update_option('wpm_sms_template', sanitize_textarea_field($data['wpm_sms_template'] ?? __('Order #{order_id} status changed to {status}.', WPM_TEXT_DOMAIN)));
                 break;
-            case 'statuses':
+            case 'advanced':
+                $wc_statuses = array_keys(wc_get_order_statuses());
+                $open_statuses = isset($data['wpm_open_order_statuses']) ? array_map('sanitize_text_field', $data['wpm_open_order_statuses']) : [];
+                $open_statuses = array_intersect($open_statuses, $wc_statuses); // Ensure only valid statuses are saved
+                update_option('wpm_open_order_statuses', $open_statuses);
                 break;
         }
     }
@@ -150,6 +193,92 @@ class Settings {
         }
         $valid_statuses = array_keys(wc_get_order_statuses());
         return array_intersect($value, $valid_statuses);
+    }
+	
+	public static function reset_production_capacity() {
+        check_ajax_referer('wpm_Admin', 'nonce');
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error(['message' => __('Unauthorized', WPM_TEXT_DOMAIN)]);
+        }
+
+        global $wpdb;
+
+        $open_statuses = get_option('wpm_open_order_statuses', array_keys(wc_get_order_statuses()));
+        if (empty($open_statuses)) {
+            wp_send_json_error(['message' => __('No open order statuses selected.', WPM_TEXT_DOMAIN)]);
+        }
+
+        // Convert statuses to format for SQL (e.g., 'wc-pending', 'wc-processing')
+        $open_statuses = array_map(function($status) {
+            return 'wc-' . ltrim($status, 'wc-');
+        }, $open_statuses);
+        $status_placeholders = implode(',', array_fill(0, count($open_statuses), '%s'));
+
+        $items = $wpdb->get_results($wpdb->prepare("
+            SELECT s.order_id, s.order_item_id, s.delivery_date, o.date_created_gmt as order_date, oim.meta_value as product_id
+            FROM {$wpdb->prefix}wc_orders o
+            JOIN {$wpdb->prefix}woocommerce_order_items oi ON o.id = oi.order_id
+            JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim ON oi.order_item_id = oim.order_item_id AND oim.meta_key = '_product_id'
+            LEFT JOIN {$wpdb->prefix}wpm_order_items_status s ON s.order_item_id = oi.order_item_id
+            WHERE o.status IN ($status_placeholders)
+        ", $open_statuses));
+
+        if (!$items) {
+            wp_send_json_success(['message' => __('No open orders to reset.', WPM_TEXT_DOMAIN)]);
+        }
+
+        // Clear existing reservations
+        $wpdb->query("TRUNCATE TABLE {$wpdb->prefix}wpm_capacity_count");
+        $default_delivery_days = get_option('wpm_default_delivery_days', 3);
+        foreach ($items as $item) {
+            $production_time = get_post_meta($item->product_id, '_wpm_production_time', true) ?: $default_delivery_days;
+            $product_id = $item->product_id;
+            $variation_id = $item->variation_id;
+            $quantity = $item->quantity;
+            $new_delivery_date = \WPM\Delivery\DeliveryCalculator::calculate_delivery_date($product_id, $variation_id, $quantity);
+
+            // Update or insert delivery date
+            $existing = $wpdb->get_var($wpdb->prepare(
+                "SELECT id FROM {$wpdb->prefix}wpm_order_items_status WHERE order_item_id = %d",
+                $item->order_item_id
+            ));
+
+            if ($existing) {
+                $wpdb->update(
+                    "{$wpdb->prefix}wpm_order_items_status",
+                    [
+                        'delivery_date' => $new_delivery_date,
+                        'updated_by' => get_current_user_id(),
+                        'updated_at' => current_time('mysql')
+                    ],
+                    ['order_item_id' => $item->order_item_id],
+                    ['%s', '%d', '%s'],
+                    ['%d']
+                );
+            } else {
+                $wpdb->insert(
+                    "{$wpdb->prefix}wpm_order_items_status",
+                    [
+                        'order_id' => $item->order_id,
+                        'order_item_id' => $item->order_item_id,
+                        'status' => get_option('wpm_statuses', [['name' => __('Received', WPM_TEXT_DOMAIN), 'color' => '#0073aa']])[0]['name'],
+                        'delivery_date' => $new_delivery_date,
+                        'updated_by' => get_current_user_id(),
+                        'updated_at' => current_time('mysql')
+                    ],
+                    ['%d', '%d', '%s', '%s', '%d', '%s']
+                );
+            }
+
+            // Reserve capacity
+            //\WPM\Capacity\CapacityCounter::reserve_capacity($item->product_id, $new_delivery_date);
+
+            // Trigger delay SMS if enabled
+            //do_action('wpm_order_item_delivery_date_changed', $item->order_item_id, $new_delivery_date);
+        }
+
+        wp_send_json_success(['message' => __('Production capacity reset successfully.', WPM_TEXT_DOMAIN)]);
     }
 }
 ?>

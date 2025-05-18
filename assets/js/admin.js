@@ -555,4 +555,36 @@ jQuery(document).ready(function($) {
         }
         return "#" + ((1 << 24) + (parseInt(rgbMatch[1]) << 16) + (parseInt(rgbMatch[2]) << 8) + parseInt(rgbMatch[3])).toString(16).slice(1).toUpperCase();
     }
+	
+	// Handle reset production capacity
+    $('.wpm-reset-capacity').on('click', function() {
+        if (!confirm(wpmAdmin.i18n.confirmResetCapacity)) {
+            return;
+        }
+
+        var $button = $(this);
+        showLoading($button);
+
+        $.ajax({
+            url: wpmAdmin.ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'wpm_reset_production_capacity',
+                nonce: wpmAdmin.nonce
+            },
+            success: function(response) {
+                hideLoading($button);
+                if (response.success) {
+                    alert(response.data.message);
+                    location.reload();
+                } else {
+                    alert(response.data.message);
+                }
+            },
+            error: function() {
+                hideLoading($button);
+                alert(wpmAdmin.i18n.error);
+            }
+        });
+    });
 });

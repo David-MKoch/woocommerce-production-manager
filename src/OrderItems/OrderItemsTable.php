@@ -47,8 +47,8 @@ class OrderItemsTable extends WP_List_Table {
         $actions = [
             'bulk_change_delivery_date' => __('Change Delivery Date', WPM_TEXT_DOMAIN)
         ];
-        foreach ($statuses as $status) {
-            $actions['bulk_set_status_' . sanitize_key($status['name'])] = sprintf(__('Set Status to %s', WPM_TEXT_DOMAIN), $status['name']);
+        foreach ($statuses as $index => $status) {
+            $actions['bulk_set_status_' . $index] = sprintf(__('Set Status to %s', WPM_TEXT_DOMAIN), $status['name']);
         }
         return $actions;
     }
@@ -229,20 +229,22 @@ class OrderItemsTable extends WP_List_Table {
         }
 
         if (strpos($action, 'bulk_set_status_') === 0) {
-            $status = str_replace('bulk_set_status_', '', $action);
-            $status = str_replace('_', ' ', $status);
-            foreach ($order_item_ids as $item_id) {
-                $wpdb->update(
-                    "{$wpdb->prefix}wpm_order_items_status",
-                    [
-                        'status' => $status,
-                        'updated_by' => get_current_user_id(),
-                        'updated_at' => current_time('mysql')
-                    ],
-                    ['order_item_id' => $item_id],
-                    ['%s', '%d', '%s'],
-                    ['%d']
-                );
+            $statuses = get_option('wpm_statuses', []);
+            $status_index = str_replace('bulk_set_status_', '', $action);
+            if(isset($statuses[$status_index])){
+                foreach ($order_item_ids as $item_id) {
+                    $wpdb->update(
+                        "{$wpdb->prefix}wpm_order_items_status",
+                        [
+                            'status' => $statuses[$status_index],
+                            'updated_by' => get_current_user_id(),
+                            'updated_at' => current_time('mysql')
+                        ],
+                        ['order_item_id' => $item_id],
+                        ['%s', '%d', '%s'],
+                        ['%d']
+                    );
+                }
             }
         } elseif ($action === 'bulk_change_delivery_date') {
             $delivery_date = isset($_REQUEST['bulk_delivery_date']) ? \WPM\Utils\PersianDate::to_gregorian(sanitize_text_field($_REQUEST['bulk_delivery_date'])) : '';
