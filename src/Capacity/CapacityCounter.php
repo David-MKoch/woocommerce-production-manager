@@ -33,17 +33,21 @@ class CapacityCounter {
     public static function update_capacity_count($entity_type, $entity_id, $date, $quantity) {
         global $wpdb;
 
+		if (!in_array($entity_type, ['product', 'variation']) || !is_numeric($entity_id) || !is_numeric($quantity) || !$date) {
+            error_log("Invalid input for update_capacity_count: entity_type=$entity_type, entity_id=$entity_id, quantity=$quantity, date=$date");
+            return false;
+        }
+
+        $table = "{$wpdb->prefix}wpm_capacity_count";
         $existing = $wpdb->get_row($wpdb->prepare(
-            "SELECT id, reserved_count FROM {$wpdb->prefix}wpm_capacity_count WHERE entity_type = %s AND entity_id = %d AND date = %s",
-            $entity_type,
-            $entity_id,
-            $date
+            "SELECT id, reserved_count FROM $table WHERE date = %s AND entity_type = %s AND entity_id = %d",
+            $date, $entity_type, $entity_id
         ));
 
         if ($existing) {
             $new_count = max(0, $existing->reserved_count + $quantity);
             $wpdb->update(
-                "{$wpdb->prefix}wpm_capacity_count",
+                $table,
                 ['reserved_count' => $new_count],
                 ['id' => $existing->id],
                 ['%d'],
@@ -51,7 +55,7 @@ class CapacityCounter {
             );
         } else {
             $wpdb->insert(
-                "{$wpdb->prefix}wpm_capacity_count",
+                $table,
                 [
                     'date' => $date,
                     'entity_type' => $entity_type,

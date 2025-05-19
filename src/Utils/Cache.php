@@ -19,6 +19,7 @@ class Cache {
         } else {
             global $wpdb;
             $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wpm_cache_%'");
+            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wpm_cache_%'");
         }
     }
 }

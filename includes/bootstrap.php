@@ -73,7 +73,7 @@ class Bootstrap {
             "CREATE TABLE {$wpdb->prefix}wpm_capacity_count (
                 id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
                 date DATE NOT NULL,
-                entity_type ENUM('category', 'product', 'variation') NOT NULL,
+                entity_type ENUM('product', 'variation') NOT NULL,
                 entity_id BIGINT UNSIGNED NOT NULL,
                 reserved_count INT NOT NULL,
                 PRIMARY KEY (id),

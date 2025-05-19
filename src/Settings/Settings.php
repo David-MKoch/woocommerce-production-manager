@@ -28,7 +28,7 @@ class Settings {
     }
 
     public static function enqueue_scripts($hook) {
-        \WPM\Utils\AssetsManager::enqueue_admin_assets($hook, 'wpm-dashboard_page_wpm-settings');
+        \WPM\Utils\AssetsManager::enqueue_admin_assets($hook, 'production-manager_page_wpm-settings');
     }
 
     public static function render_page() {
@@ -225,14 +225,13 @@ class Settings {
         $status_placeholders = implode(',', array_fill(0, count($open_statuses), '%s'));
 
         $items = $wpdb->get_results($wpdb->prepare("
-            SELECT s.order_id, s.order_item_id, s.delivery_date, o.date_created_gmt as order_date, 
+            SELECT o.id as order_id, oi.order_item_id, o.date_created_gmt as order_date,
                    oim.meta_value as product_id, oim2.meta_value as variation_id, oim3.meta_value as quantity
             FROM {$wpdb->prefix}wc_orders o
             JOIN {$wpdb->prefix}woocommerce_order_items oi ON o.id = oi.order_id
             JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim ON oi.order_item_id = oim.order_item_id AND oim.meta_key = '_product_id'
             LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim2 ON oi.order_item_id = oim2.order_item_id AND oim2.meta_key = '_variation_id'
             LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim3 ON oi.order_item_id = oim3.order_item_id AND oim3.meta_key = '_qty'
-            LEFT JOIN {$wpdb->prefix}wpm_order_items_status s ON s.order_item_id = oi.order_item_id
             WHERE o.status IN ($status_placeholders)
         ", $open_statuses));
 
@@ -240,71 +239,46 @@ class Settings {
             wp_send_json_success(['message' => __('No open orders to reset.', WPM_TEXT_DOMAIN)]);
         }
 
+        // Clear existing capacity reservations
         $wpdb->query("TRUNCATE TABLE {$wpdb->prefix}wpm_capacity_count");
         \WPM\Utils\Cache::clear();
 
-        $default_status = get_option('wpm_statuses', [['name' => __('Received', WPM_TEXT_DOMAIN), 'color' => '#0073aa']])[0]['name'];
-        $user_id = get_current_user_id();
-
+        // Prepare bulk input for delivery date calculation
+        $bulk_items = [];
         foreach ($items as $item) {
             $product_id = absint($item->product_id);
             $variation_id = absint($item->variation_id) ?: 0;
             $quantity = absint($item->quantity) ?: 1;
+            $order_date = date('Y-m-d', strtotime($item->order_date));
 
-            if (!$product_id) {
-                continue;
+            if ($product_id) {
+                $bulk_items[] = [
+                    'order_item_id' => $item->order_item_id,
+                    'product_id' => $product_id,
+                    'variation_id' => $variation_id,
+                    'quantity' => $quantity,
+                    'order_date' => $order_date
+                ];
             }
-
-            $new_delivery_date = \WPM\Delivery\DeliveryCalculator::calculate_delivery_date($product_id, $variation_id, $quantity);
-
-            if (!$new_delivery_date) {
-                continue;
-            }
-
-            $existing = $wpdb->get_row($wpdb->prepare(
-                "SELECT id, delivery_date FROM {$wpdb->prefix}wpm_order_items_status WHERE order_item_id = %d",
-                $item->order_item_id
-            ));
-
-            if ($existing) {
-                $wpdb->update(
-                    "{$wpdb->prefix}wpm_order_items_status",
-                    [
-                        'delivery_date' => $new_delivery_date,
-                        'updated_by' => $user_id,
-                        'updated_at' => current_time('mysql')
-                    ],
-                    ['order_item_id' => $item->order_item_id],
-                    ['%s', '%d', '%s'],
-                    ['%d']
-                );
-
-                if ($existing->delivery_date !== $new_delivery_date) {
-                    do_action('wpm_order_item_delivery_date_changed', $item->order_item_id, $new_delivery_date);
-                }
-            } else {
-                $wpdb->insert(
-                    "{$wpdb->prefix}wpm_order_items_status",
-                    [
-                        'order_id' => $item->order_id,
-                        'order_item_id' => $item->order_item_id,
-                        'status' => $default_status,
-                        'delivery_date' => $new_delivery_date,
-                        'updated_by' => $user_id,
-                        'updated_at' => current_time('mysql')
-                    ],
-                    ['%d', '%d', '%s', '%s', '%d', '%s']
-                );
-            }
-
-            $entity_type = $variation_id ? 'variation' : 'product';
-            $entity_id = $variation_id ?: $product_id;
-            CapacityCounter::update_capacity_count($entity_type, $entity_id, $new_delivery_date, $quantity);
-
-            // Trigger delay SMS if enabled
-            //do_action('wpm_order_item_delivery_date_changed', $item->order_item_id, $new_delivery_date);
         }
 
+        // Calculate delivery dates in bulk
+        $delivery_dates = \WPM\Delivery\DeliveryCalculator::calculate_delivery_dates_bulk($bulk_items);
+
+        // Reserve capacity for each item
+        foreach ($delivery_dates as $item) {
+            if (!isset($item['delivery_date']) || !$item['delivery_date']) {
+                continue;
+            }
+
+            $entity_type = $item['variation_id'] ? 'variation' : 'product';
+            $entity_id = $item['variation_id'] ?: $item['product_id'];
+            CapacityCounter::update_capacity_count($entity_type, $entity_id, $item['delivery_date'], $item['quantity']);
+			
+			// Trigger delay SMS if enabled
+            //do_action('wpm_order_item_delivery_date_changed', $item->order_item_id, $new_delivery_date);
+        }
+        
         wp_send_json_success(['message' => __('Production capacity reset successfully.', WPM_TEXT_DOMAIN)]);
     }
 	
