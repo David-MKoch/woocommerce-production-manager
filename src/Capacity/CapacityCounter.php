@@ -19,7 +19,7 @@ class CapacityCounter {
 
         if ($count === false) {
             $count = $wpdb->get_var($wpdb->prepare(
-                "SELECT SUM(reserved_count) FROM {$wpdb->prefix}wpm_capacity_count WHERE entity_type = %s AND entity_id = %d AND date = %s",
+                "SELECT reserved_count FROM {$wpdb->prefix}wpm_capacity_count WHERE entity_type = %s AND entity_id = %d AND date = %s",
                 $entity_type,
                 $entity_id,
                 $date
