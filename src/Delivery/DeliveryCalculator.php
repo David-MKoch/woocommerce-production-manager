@@ -159,13 +159,13 @@ class DeliveryCalculator {
         if (empty($product_ids)) {
             return [];
         }
-		
-		$cache_key = 'delivery_days_' . md5(implode(',', $product_ids));
-		$results = \WPM\Utils\Cache::get($cache_key);
+        
+        $cache_key = 'delivery_days_' . md5(implode(',', $product_ids));
+        $results = \WPM\Utils\Cache::get($cache_key);
 
-		if ($results !== false) {
-			return $results;
-		}
+        if ($results !== false) {
+            return $results;
+        }
 
         $ids_placeholders = implode(',', array_fill(0, count($product_ids), '%d'));
         $product_meta_raw = $wpdb->get_results(
@@ -221,8 +221,8 @@ class DeliveryCalculator {
 
             $results[$product_id] = $max_delivery_days > 0 ? $max_delivery_days : $default_days;
         }
-		
-		\WPM\Utils\Cache::set($cache_key, $results, self::CACHE_SHORT_TTL);
+        
+        \WPM\Utils\Cache::set($cache_key, $results, self::CACHE_SHORT_TTL);
 
         return $results;
     }
@@ -388,7 +388,9 @@ class DeliveryCalculator {
         $start_date = self::get_adjusted_start_date($order_date);
         $min_date = self::add_business_days($start_date, $production_days);
 
+        $remaining_quantity = $quantity; // تعداد آیتم‌های باقی‌مانده برای تخصیص
         $available_date = null;
+
         foreach ($data['business_days'] as $date) {
             if ($date < $min_date) {
                 continue;
@@ -399,47 +401,90 @@ class DeliveryCalculator {
             $product_reserved = $data['reserved_count_map'][$date][$entity_type][$entity_id] ?? 0;
 
             if ($product_max_capacity !== null && $product_max_capacity !== 0) {
-                if (($product_reserved + $quantity) <= $product_max_capacity) {
-                    $available_date = $date;
-                    break;
-                }
-                continue;
-            }
+                // ظرفیت محصول وجود دارد، فقط آن را بررسی می‌کنیم
+                $product_remaining_capacity = $product_max_capacity - $product_reserved;
 
-            // بررسی ظرفیت دسته‌بندی‌ها
-            $min_cat_capacity = null;
-            $cat_reserved = 0;
-
-            foreach ($categories as $cat_id) {
-                $current_cat_id = $cat_id;
-                $cat_max_capacity = null;
-
-                while ($current_cat_id !== null && $cat_max_capacity === null) {
-					if (isset($data['max_capacity_map']['category'][$current_cat_id]['max_capacity'])) {
-                        $cat_max_capacity = $data['max_capacity_map']['category'][$current_cat_id]['max_capacity'];
-                    } else {
-                        $current_cat_id = $data['max_capacity_map']['category'][$current_cat_id]['parent_id'] ?? null;
-                    }
-                }
-
-                if ($cat_max_capacity === null || $cat_max_capacity === 0) {
+                if ($product_remaining_capacity <= 0) {
+                    // هیچ ظرفیتی برای محصول در این روز وجود ندارد
                     continue;
                 }
 
-                $current_reserved = $data['reserved_count_map'][$date]['category'][$cat_id] ?? 0;
-                $cat_reserved = max($cat_reserved, $current_reserved);
-                $min_cat_capacity = $min_cat_capacity === null ? $cat_max_capacity : min($min_cat_capacity, $cat_max_capacity);
-            }
+                // تخصیص آیتم‌ها بر اساس ظرفیت محصول
+                $allocatable_quantity = min($remaining_quantity, $product_remaining_capacity);
+                if ($allocatable_quantity > 0) {
+                    // به‌روزرسانی رزروهای محصول در حافظه
+                    $data['reserved_count_map'][$date][$entity_type][$entity_id] = ($data['reserved_count_map'][$date][$entity_type][$entity_id] ?? 0) + $allocatable_quantity;
 
-            $effective_capacity = $min_cat_capacity ?? $data['default_capacity'];
+                    $remaining_quantity -= $allocatable_quantity;
+                    $available_date = $date;
 
-            if ($effective_capacity === 0 || ($cat_reserved + $quantity) <= $effective_capacity) {
-                $available_date = $date;
-                break;
+                    if ($remaining_quantity <= 0) {
+                        // تمام آیتم‌ها تخصیص داده شدند
+                        break;
+                    }
+                }
+            } else {
+                // ظرفیت محصول وجود ندارد، بررسی ظرفیت دسته‌بندی‌ها
+                $min_cat_capacity = null;
+                $cat_reserved = 0;
+
+                foreach ($categories as $cat_id) {
+                    $current_cat_id = $cat_id;
+                    $cat_max_capacity = null;
+
+                    while ($current_cat_id !== null && $cat_max_capacity === null) {
+                        if (isset($data['max_capacity_map']['category'][$current_cat_id]['max_capacity'])) {
+                            $cat_max_capacity = $data['max_capacity_map']['category'][$current_cat_id]['max_capacity'];
+                        } else {
+                            $current_cat_id = $data['max_capacity_map']['category'][$current_cat_id]['parent_id'] ?? null;
+                        }
+                    }
+
+                    if ($cat_max_capacity === null || $cat_max_capacity === 0) {
+                        continue;
+                    }
+
+                    $current_reserved = $data['reserved_count_map'][$date]['category'][$cat_id] ?? 0;
+                    $cat_reserved = max($cat_reserved, $current_reserved);
+                    $min_cat_capacity = $min_cat_capacity === null ? $cat_max_capacity : min($min_cat_capacity, $cat_max_capacity);
+                }
+
+                $effective_capacity = $min_cat_capacity ?? $data['default_capacity'];
+                $category_remaining_capacity = ($effective_capacity !== 0) ? ($effective_capacity - $cat_reserved) : PHP_INT_MAX;
+
+                if ($category_remaining_capacity <= 0) {
+                    // هیچ ظرفیتی برای دسته‌بندی در این روز وجود ندارد
+                    continue;
+                }
+
+                // تخصیص آیتم‌ها بر اساس ظرفیت دسته‌بندی
+                $allocatable_quantity = min($remaining_quantity, $category_remaining_capacity);
+                if ($allocatable_quantity > 0) {
+                    // به‌روزرسانی رزروهای دسته‌بندی در حافظه
+                    foreach ($categories as $cat_id) {
+                        $data['reserved_count_map'][$date]['category'][$cat_id] = ($data['reserved_count_map'][$date]['category'][$cat_id] ?? 0) + $allocatable_quantity;
+                    }
+                    // به‌روزرسانی رزروهای محصول در حافظه
+                    $data['reserved_count_map'][$date][$entity_type][$entity_id] = ($data['reserved_count_map'][$date][$entity_type][$entity_id] ?? 0) + $allocatable_quantity;
+
+                    $remaining_quantity -= $allocatable_quantity;
+                    $available_date = $date;
+
+                    if ($remaining_quantity <= 0) {
+                        // تمام آیتم‌ها تخصیص داده شدند
+                        break;
+                    }
+                }
             }
         }
 
-        return $available_date ?: end($data['business_days']);
+        if ($remaining_quantity > 0) {
+            // اگر همچنان آیتم‌هایی باقی مانده‌اند، به آخرین روز کاری تخصیص می‌دهیم
+            $available_date = end($data['business_days']);
+            error_log("Insufficient capacity for product_id=$product_id, variation_id=$variation_id, remaining_quantity=$remaining_quantity, assigned to last business day: $available_date");
+        }
+
+        return $available_date;
     }
 
     /**
@@ -451,13 +496,13 @@ class DeliveryCalculator {
         $production_days = self::get_delivery_days_for_products([$product_id])[$product_id];
 
         return self::calculate_single_delivery_date(
-			$product_id, 
-			$variation_id, 
-			$quantity, 
-			$order_date, 
-			$data, 
-			$production_days
-		);
+            $product_id,
+            $variation_id,
+            $quantity,
+            $order_date,
+            $data,
+            $production_days
+        );
     }
 
     /**
@@ -479,6 +524,8 @@ class DeliveryCalculator {
 
         $results = [];
         foreach ($items as $item) {
+            $entity_type = $item['variation_id'] ? 'variation' : 'product';
+            $entity_id = $item['variation_id'] ?: $item['product_id'];
             $delivery_date = self::calculate_single_delivery_date(
                 $item['product_id'],
                 $item['variation_id'],
@@ -496,6 +543,9 @@ class DeliveryCalculator {
                     'quantity' => $item['quantity'],
                     'delivery_date' => $delivery_date
                 ];
+
+                \WPM\Capacity\CapacityCounter::update_capacity_count($entity_type, $entity_id, $delivery_date, $item['quantity']);
+                $data['reserved_count_map'][$delivery_date][$entity_type][$entity_id] = ($data['reserved_count_map'][$delivery_date][$entity_type][$entity_id] ?? 0) + $item['quantity'];
             }
         }
 
