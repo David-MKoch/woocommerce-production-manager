@@ -265,13 +265,6 @@ class DeliveryCalculator {
     public static function get_reserved_counts($min_date, $business_days) {
         global $wpdb;
 
-        $cache_key = 'reserved_counts_' . md5($min_date);
-        $reserved_count_map = \WPM\Utils\Cache::get($cache_key);
-
-        if ($reserved_count_map !== false) {
-            return $reserved_count_map;
-        }
-
         $business_days_sql = "'" . implode("','", array_map('esc_sql', $business_days)) . "'";
 
         // کوئری اصلی برای گرفتن رزروها
@@ -337,7 +330,6 @@ class DeliveryCalculator {
             }
         }
 
-        \WPM\Utils\Cache::set($cache_key, $reserved_count_map, self::CACHE_SHORT_TTL);
         return $reserved_count_map;
     }
 
@@ -365,12 +357,12 @@ class DeliveryCalculator {
         $reserved_count_map = self::get_reserved_counts($min_date, $business_days);
         $default_capacity = absint(get_option('wpm_default_capacity', 0));
 
-        return [
-            'business_days' => $business_days,
-            'max_capacity_map' => $max_capacity_map,
-            'reserved_count_map' => $reserved_count_map,
-            'default_capacity' => $default_capacity
-        ];
+        return new CalculationData(
+			$business_days, 
+			$max_capacity_map, 
+			$reserved_count_map, 
+			$default_capacity
+		);
     }
 
     /**
@@ -389,16 +381,17 @@ class DeliveryCalculator {
         $min_date = self::add_business_days($start_date, $production_days);
 
         $remaining_quantity = $quantity; // تعداد آیتم‌های باقی‌مانده برای تخصیص
+		$allocations = []; // لیست تخصیص‌ها: [['date' => $date, 'quantity' => $qty], ...]
         $available_date = null;
 
-        foreach ($data['business_days'] as $date) {
+        foreach ($data->business_days as $date) {
             if ($date < $min_date) {
                 continue;
             }
 
             // بررسی ظرفیت محصول
-            $product_max_capacity = $data['max_capacity_map'][$entity_type][$entity_id]['max_capacity'] ?? null;
-            $product_reserved = $data['reserved_count_map'][$date][$entity_type][$entity_id] ?? 0;
+            $product_max_capacity = $data->max_capacity_map[$entity_type][$entity_id]['max_capacity'] ?? null;
+            $product_reserved = $data->reserved_count_map[$date][$entity_type][$entity_id] ?? 0;
 
             if ($product_max_capacity !== null && $product_max_capacity !== 0) {
                 // ظرفیت محصول وجود دارد، فقط آن را بررسی می‌کنیم
@@ -413,7 +406,12 @@ class DeliveryCalculator {
                 $allocatable_quantity = min($remaining_quantity, $product_remaining_capacity);
                 if ($allocatable_quantity > 0) {
                     // به‌روزرسانی رزروهای محصول در حافظه
-                    $data['reserved_count_map'][$date][$entity_type][$entity_id] = ($data['reserved_count_map'][$date][$entity_type][$entity_id] ?? 0) + $allocatable_quantity;
+                    $data->reserved_count_map[$date][$entity_type][$entity_id] = ($data->reserved_count_map[$date][$entity_type][$entity_id] ?? 0) + $allocatable_quantity;
+					
+					$allocations[] = [
+                        'date' => $date,
+                        'quantity' => $allocatable_quantity
+                    ];
 
                     $remaining_quantity -= $allocatable_quantity;
                     $available_date = $date;
@@ -433,10 +431,10 @@ class DeliveryCalculator {
                     $cat_max_capacity = null;
 
                     while ($current_cat_id !== null && $cat_max_capacity === null) {
-                        if (isset($data['max_capacity_map']['category'][$current_cat_id]['max_capacity'])) {
-                            $cat_max_capacity = $data['max_capacity_map']['category'][$current_cat_id]['max_capacity'];
+                        if (isset($data->max_capacity_map['category'][$current_cat_id]['max_capacity'])) {
+                            $cat_max_capacity = $data->max_capacity_map['category'][$current_cat_id]['max_capacity'];
                         } else {
-                            $current_cat_id = $data['max_capacity_map']['category'][$current_cat_id]['parent_id'] ?? null;
+                            $current_cat_id = $data->max_capacity_map['category'][$current_cat_id]['parent_id'] ?? null;
                         }
                     }
 
@@ -444,12 +442,12 @@ class DeliveryCalculator {
                         continue;
                     }
 
-                    $current_reserved = $data['reserved_count_map'][$date]['category'][$cat_id] ?? 0;
+                    $current_reserved = $data->reserved_count_map[$date]['category'][$cat_id] ?? 0;
                     $cat_reserved = max($cat_reserved, $current_reserved);
                     $min_cat_capacity = $min_cat_capacity === null ? $cat_max_capacity : min($min_cat_capacity, $cat_max_capacity);
                 }
 
-                $effective_capacity = $min_cat_capacity ?? $data['default_capacity'];
+                $effective_capacity = $min_cat_capacity ?? $data->default_capacity;
                 $category_remaining_capacity = ($effective_capacity !== 0) ? ($effective_capacity - $cat_reserved) : PHP_INT_MAX;
 
                 if ($category_remaining_capacity <= 0) {
@@ -460,12 +458,17 @@ class DeliveryCalculator {
                 // تخصیص آیتم‌ها بر اساس ظرفیت دسته‌بندی
                 $allocatable_quantity = min($remaining_quantity, $category_remaining_capacity);
                 if ($allocatable_quantity > 0) {
-                    // به‌روزرسانی رزروهای دسته‌بندی در حافظه
+                    // به‌روزرسانی رزروهای دسته‌بندی و محصول در حافظه
                     foreach ($categories as $cat_id) {
-                        $data['reserved_count_map'][$date]['category'][$cat_id] = ($data['reserved_count_map'][$date]['category'][$cat_id] ?? 0) + $allocatable_quantity;
+                        $data->reserved_count_map[$date]['category'][$cat_id] = ($data->reserved_count_map[$date]['category'][$cat_id] ?? 0) + $allocatable_quantity;
                     }
                     // به‌روزرسانی رزروهای محصول در حافظه
-                    $data['reserved_count_map'][$date][$entity_type][$entity_id] = ($data['reserved_count_map'][$date][$entity_type][$entity_id] ?? 0) + $allocatable_quantity;
+                    $data->reserved_count_map[$date][$entity_type][$entity_id] = ($data->reserved_count_map[$date][$entity_type][$entity_id] ?? 0) + $allocatable_quantity;
+					
+					$allocations[] = [
+                        'date' => $date,
+                        'quantity' => $allocatable_quantity
+                    ];
 
                     $remaining_quantity -= $allocatable_quantity;
                     $available_date = $date;
@@ -480,11 +483,24 @@ class DeliveryCalculator {
 
         if ($remaining_quantity > 0) {
             // اگر همچنان آیتم‌هایی باقی مانده‌اند، به آخرین روز کاری تخصیص می‌دهیم
-            $available_date = end($data['business_days']);
+            $available_date = end($data->business_days);
+			$allocations[] = [
+                'date' => $available_date,
+                'quantity' => $remaining_quantity
+            ];
+			
+			$data->reserved_count_map[$available_date][$entity_type][$entity_id] = ($data->reserved_count_map[$available_date][$entity_type][$entity_id] ?? 0) + $remaining_quantity;
+			foreach ($categories as $cat_id) {
+				$data->reserved_count_map[$available_date]['category'][$cat_id] = ($data->reserved_count_map[$available_date]['category'][$cat_id] ?? 0) + $remaining_quantity;
+			}
+			
             error_log("Insufficient capacity for product_id=$product_id, variation_id=$variation_id, remaining_quantity=$remaining_quantity, assigned to last business day: $available_date");
         }
 
-        return $available_date;
+        return [
+            'delivery_date' => $available_date,
+            'allocations' => $allocations
+        ];
     }
 
     /**
@@ -526,7 +542,7 @@ class DeliveryCalculator {
         foreach ($items as $item) {
             $entity_type = $item['variation_id'] ? 'variation' : 'product';
             $entity_id = $item['variation_id'] ?: $item['product_id'];
-            $delivery_date = self::calculate_single_delivery_date(
+            $result = self::calculate_single_delivery_date(
                 $item['product_id'],
                 $item['variation_id'],
                 $item['quantity'],
@@ -535,17 +551,25 @@ class DeliveryCalculator {
                 $delivery_days_cache[$item['product_id']]
             );
 
-            if ($delivery_date) {
+            if ($result && $result['delivery_date']) {
                 $results[] = [
                     'order_item_id' => $item['order_item_id'],
                     'product_id' => $item['product_id'],
                     'variation_id' => $item['variation_id'],
                     'quantity' => $item['quantity'],
-                    'delivery_date' => $delivery_date
+                    'delivery_date' => $result['delivery_date'],
+                    'allocations' => $result['allocations']
                 ];
 
-                \WPM\Capacity\CapacityCounter::update_capacity_count($entity_type, $entity_id, $delivery_date, $item['quantity']);
-                $data['reserved_count_map'][$delivery_date][$entity_type][$entity_id] = ($data['reserved_count_map'][$delivery_date][$entity_type][$entity_id] ?? 0) + $item['quantity'];
+                // ثبت رزروها برای تمام تخصیص‌ها
+                foreach ($result['allocations'] as $allocation) {
+                    \WPM\Capacity\CapacityCounter::update_capacity_count(
+                        $entity_type,
+                        $entity_id,
+                        $allocation['date'],
+                        $allocation['quantity']
+                    );
+                }
             }
         }
 
@@ -566,10 +590,10 @@ class DeliveryCalculator {
             wp_send_json_error(['message' => __('Invalid product', WPM_TEXT_DOMAIN)]);
         }
 
-        $delivery_date = self::calculate_delivery_date($product_id, $variation_id, $quantity);
+        $result = self::calculate_delivery_date($product_id, $variation_id, $quantity);
 
-        if ($delivery_date) {
-            $jalali_date = Jalalian::fromDateTime($delivery_date)->format('Y/m/d');
+        if ($result && $result['delivery_date']) {
+            $jalali_date = Jalalian::fromDateTime($result['delivery_date'])->format('Y/m/d');
             wp_send_json_success(['delivery_date' => $jalali_date]);
         }
 

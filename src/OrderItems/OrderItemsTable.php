@@ -17,12 +17,13 @@ class OrderItemsTable extends WP_List_Table {
     public function get_columns() {
         $columns = [
             'cb' => '<input type="checkbox" />',
-            'image' => __('Image', WPM_TEXT_DOMAIN),
             'order_customer' => __('Order / Customer', WPM_TEXT_DOMAIN),
             'order_status' => __('Order Status', WPM_TEXT_DOMAIN),
+            'order_date' => __('Order Date', WPM_TEXT_DOMAIN),
+            'image' => __('Image', WPM_TEXT_DOMAIN),
             'item_id' => __('Item ID', WPM_TEXT_DOMAIN),
             'item_name' => __('Item Name', WPM_TEXT_DOMAIN),
-            'order_date' => __('Order Date', WPM_TEXT_DOMAIN),
+            'item_quantity' => __('Item Quantity', WPM_TEXT_DOMAIN),
             'status' => __('Status', WPM_TEXT_DOMAIN),
             'delivery_date' => __('Delivery Date', WPM_TEXT_DOMAIN)
         ];
@@ -67,6 +68,8 @@ class OrderItemsTable extends WP_List_Table {
                 return sprintf('<mark class="order-status status-%s"><span>%s</span></mark>', esc_attr($item->order_status), esc_html($status_label));
             case 'item_id':
                 return esc_attr($item->order_item_id);
+            case 'item_quantity':
+                return esc_attr($item->order_item_quantity);
             case 'item_name':
                 $product_edit_url = admin_url('post.php?post=' . $item->product_id . '&action=edit');
                 $product_view_url = get_permalink($item->product_id);
@@ -179,11 +182,12 @@ class OrderItemsTable extends WP_List_Table {
         }
 
         $query = $wpdb->prepare("
-            SELECT s.*, o.date_created_gmt as order_date, oi.order_item_name, oim.meta_value as product_id,
+            SELECT s.*, o.date_created_gmt as order_date, oi.order_item_name, oim.meta_value as product_id, oim2.meta_value as order_item_quantity,
                    u.display_name as customer_name, oi.order_item_id, o.id as order_id, o.status as order_status
             FROM {$wpdb->prefix}wc_orders o
             INNER JOIN {$wpdb->prefix}woocommerce_order_items oi ON o.id = oi.order_id
             INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim ON oi.order_item_id = oim.order_item_id AND oim.meta_key = '_product_id'
+            INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim2 ON oi.order_item_id = oim2.order_item_id AND oim2.meta_key = '_qty'
             LEFT JOIN {$wpdb->prefix}users u ON o.customer_id = u.ID
             LEFT JOIN {$wpdb->prefix}wpm_order_items_status s ON s.order_item_id = oi.order_item_id
             $where_sql
