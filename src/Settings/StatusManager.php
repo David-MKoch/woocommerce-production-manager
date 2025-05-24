@@ -212,7 +212,7 @@ class StatusManager {
         wp_send_json_success(['message' => __('Delivery date updated', WPM_TEXT_DOMAIN)]);
     }
 
-    private static function replace_order_items_status($order_id, $order_item_id , $status = null, $delivery_date = null){
+    public static function replace_order_items_status($order_id, $order_item_id , $status = null, $delivery_date = null){
         global $wpdb;
 
         $table = $wpdb->prefix. 'wpm_order_items_status';

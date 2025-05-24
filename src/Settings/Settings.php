@@ -267,7 +267,7 @@ class Settings {
         $results = \WPM\Delivery\DeliveryCalculator::calculate_delivery_dates_bulk($bulk_items);
 
         foreach ($results as $item_data) {
-            \WPM\Settings::replace_order_items_status($item_data['order_id'], $item_data['order_item_id'] , null, $item_data['delivery_date']);
+            \WPM\Settings\StatusManager::replace_order_items_status($item_data['order_id'], $item_data['order_item_id'] , null, $item_data['delivery_date']);
 			
 			// Trigger delay SMS if enabled
             //do_action('wpm_order_item_delivery_date_changed', $item_data['order_item_id'], $item_data['delivery_date']);
