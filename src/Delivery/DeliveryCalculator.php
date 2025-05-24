@@ -552,6 +552,7 @@ class DeliveryCalculator {
 
             if ($result && $result['delivery_date']) {
                 $results[] = [
+                    'order_id' => $item['order_id'],
                     'order_item_id' => $item['order_item_id'],
                     'product_id' => $item['product_id'],
                     'variation_id' => $item['variation_id'],

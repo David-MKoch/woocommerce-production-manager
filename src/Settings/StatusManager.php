@@ -177,38 +177,7 @@ class StatusManager {
         global $wpdb;
         $user_id = get_current_user_id();
 
-        $updated = $wpdb->update(
-            "{$wpdb->prefix}wpm_order_items_status",
-            [
-                'status' => $status,
-                'updated_by' => $user_id,
-                'updated_at' => current_time('mysql')
-            ],
-            ['order_item_id' => $order_item_id],
-            ['%s', '%d', '%s'],
-            ['%d']
-        );
-
-        if ($updated === false) {
-            wp_send_json_error(['message' => __('Failed to update status', WPM_TEXT_DOMAIN)]);
-        }
-
-        if ($updated === 0) {
-            $inserted = $wpdb->insert(
-                "{$wpdb->prefix}wpm_order_items_status",
-                [
-                    'order_item_id' => $order_item_id,
-                    'order_id' => $order_id,
-                    'status' => $status,
-                    'updated_by' => $user_id,
-                    'updated_at' => current_time('mysql')
-                ],
-                ['%d', '%d', '%s', '%d', '%s']
-            );
-            if (!$inserted) {
-                wp_send_json_error(['message' => __('Failed to insert status', WPM_TEXT_DOMAIN)]);
-            }
-        }
+        self::replace_order_items_status($order_id, $order_item_id , $status);
 
         self::log_status_change($order_item_id, $status, $user_id, __('changed from admin panel', WPM_TEXT_DOMAIN));
         do_action('wpm_order_item_status_changed', $order_item_id, $status);
@@ -237,41 +206,87 @@ class StatusManager {
             wp_send_json_error(['message' => __('Invalid date format', WPM_TEXT_DOMAIN)]);
         }
 
-        $updated = $wpdb->update(
-            "{$wpdb->prefix}wpm_order_items_status",
-            [
-                'delivery_date' => $delivery_date,
-                'updated_by' => get_current_user_id(),
-                'updated_at' => current_time('mysql')
-            ],
-            ['order_item_id' => $order_item_id],
-            ['%s', '%d', '%s'],
-            ['%d']
-        );
-
-        if ($updated === false) {
-            wp_send_json_error(['message' => __('Failed to update delivery date', WPM_TEXT_DOMAIN)]);
-        }
-
-        if ($updated === 0) {
-            $inserted = $wpdb->insert(
-                "{$wpdb->prefix}wpm_order_items_status",
-                [
-                    'order_item_id' => $order_item_id,
-                    'order_id' => $order_id,
-                    'delivery_date' => $delivery_date,
-                    'updated_by' => get_current_user_id(),
-                    'updated_at' => current_time('mysql')
-                ],
-                ['%d', '%d', '%s', '%d', '%s']
-            );
-            if (!$inserted) {
-                wp_send_json_error(['message' => __('Failed to insert delivery date', WPM_TEXT_DOMAIN)]);
-            }
-        }
+        self::replace_order_items_status($order_id, $order_item_id , null, $delivery_date);
 
         do_action('wpm_order_item_delivery_date_changed', $order_item_id, $delivery_date);
         wp_send_json_success(['message' => __('Delivery date updated', WPM_TEXT_DOMAIN)]);
+    }
+
+    private static function replace_order_items_status($order_id, $order_item_id , $status = null, $delivery_date = null){
+        global $wpdb;
+
+        $table = $wpdb->prefix. 'wpm_order_items_status';
+
+        $user_id = get_current_user_id();
+
+        if($status){
+            $updated = $wpdb->update(
+                $table,
+                [
+                    'status' => $status,
+                    'updated_by' => $user_id,
+                    'updated_at' => current_time('mysql')
+                ],
+                ['order_item_id' => $order_item_id],
+                ['%s', '%d', '%s'],
+                ['%d']
+            );
+
+            if ($updated === false) {
+                wp_send_json_error(['message' => __('Failed to update status', WPM_TEXT_DOMAIN)]);
+            }
+
+            if ($updated === 0) {
+                $inserted = $wpdb->insert(
+                    $table,
+                    [
+                        'order_item_id' => $order_item_id,
+                        'order_id' => $order_id,
+                        'status' => $status,
+                        'updated_by' => $user_id,
+                        'updated_at' => current_time('mysql')
+                    ],
+                    ['%d', '%d', '%s', '%d', '%s']
+                );
+                if (!$inserted) {
+                    wp_send_json_error(['message' => __('Failed to insert status', WPM_TEXT_DOMAIN)]);
+                }
+            }
+        }
+        if($delivery_date){
+            $updated = $wpdb->update(
+                $table,
+                [
+                    'delivery_date' => $delivery_date,
+                    'updated_by' => $user_id,
+                    'updated_at' => current_time('mysql')
+                ],
+                ['order_item_id' => $order_item_id],
+                ['%s', '%d', '%s'],
+                ['%d']
+            );
+
+            if ($updated === false) {
+                wp_send_json_error(['message' => __('Failed to update delivery date', WPM_TEXT_DOMAIN)]);
+            }
+
+            if ($updated === 0) {
+                $inserted = $wpdb->insert(
+                    $table,
+                    [
+                        'order_item_id' => $order_item_id,
+                        'order_id' => $order_id,
+                        'delivery_date' => $delivery_date,
+                        'updated_by' => $user_id,
+                        'updated_at' => current_time('mysql')
+                    ],
+                    ['%d', '%d', '%s', '%d', '%s']
+                );
+                if (!$inserted) {
+                    wp_send_json_error(['message' => __('Failed to insert delivery date', WPM_TEXT_DOMAIN)]);
+                }
+            }
+        }
     }
 
     public static function log_status_change($order_item_id, $status, $user_id, $note = '') {

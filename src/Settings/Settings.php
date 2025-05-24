@@ -253,6 +253,7 @@ class Settings {
 
             if ($product_id) {
                 $bulk_items[] = [
+                    'order_id' => $item->order_id,
                     'order_item_id' => $item->order_item_id,
                     'product_id' => $product_id,
                     'variation_id' => $variation_id,
@@ -263,20 +264,13 @@ class Settings {
         }
 
         // Calculate delivery dates in bulk
-        $delivery_dates = \WPM\Delivery\DeliveryCalculator::calculate_delivery_dates_bulk($bulk_items);
+        $results = \WPM\Delivery\DeliveryCalculator::calculate_delivery_dates_bulk($bulk_items);
 
-        // Reserve capacity for each item
-        foreach ($delivery_dates as $item) {
-            if (!isset($item['delivery_date']) || !$item['delivery_date']) {
-                continue;
-            }
-
-            $entity_type = $item['variation_id'] ? 'variation' : 'product';
-            $entity_id = $item['variation_id'] ?: $item['product_id'];
-            CapacityCounter::update_capacity_count($entity_type, $entity_id, $item['delivery_date'], $item['quantity']);
+        foreach ($results as $item_data) {
+            \WPM\Settings::replace_order_items_status($item_data['order_id'], $item_data['order_item_id'] , null, $item_data['delivery_date']);
 			
 			// Trigger delay SMS if enabled
-            //do_action('wpm_order_item_delivery_date_changed', $item->order_item_id, $new_delivery_date);
+            //do_action('wpm_order_item_delivery_date_changed', $item_data['order_item_id'], $item_data['delivery_date']);
         }
         
         wp_send_json_success(['message' => __('Production capacity reset successfully.', WPM_TEXT_DOMAIN)]);
