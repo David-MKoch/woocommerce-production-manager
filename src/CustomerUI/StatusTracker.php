@@ -1,7 +1,7 @@
 <?php
 namespace WPM\CustomerUI;
 
-use Morilog\Jalali\Jalalian;
+use WPM\Utils\PersianDate;
 
 defined('ABSPATH') || exit;
 
@@ -85,9 +85,9 @@ class StatusTracker {
                         <tr>
                             <td><?php echo esc_html($item->order_id); ?></td>
                             <td><?php echo esc_html($item->order_item_name); ?></td>
-                            <td><?php echo esc_html(Jalalian::fromDateTime($item->order_date)->format('Y/m/d')); ?></td>
+                            <td><?php echo esc_html(PersianDate::to_persian($item->order_date)); ?></td>
                             <td><?php echo esc_html($item->status); ?></td>
-                            <td><?php echo esc_html(Jalalian::fromDateTime($item->delivery_date)->format('Y/m/d')); ?></td>
+                            <td><?php echo esc_html(PersianDate::to_persian($item->delivery_date)); ?></td>
                             <td>
                                 <div class="wpm-progress-bar">
                                     <div class="wpm-progress" style="width: <?php echo esc_attr(self::get_progress_percentage($item->status)); ?>%;"></div>
@@ -104,7 +104,7 @@ class StatusTracker {
                                         $item->order_item_id
                                     ));
                                     foreach ($logs as $log) {
-                                        $date = Jalalian::fromDateTime($log->changed_at)->format('Y/m/d H:i');
+                                        $date = PersianDate::to_persian($log->changed_at, 'Y/m/d H:i');
                                         $note = $log->note ? esc_html($log->note) : esc_html($log->status);
                                         echo '<li>' . sprintf(esc_html__('%s: %s', WPM_TEXT_DOMAIN), esc_html($date), $note) . '</li>';
                                     }

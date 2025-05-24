@@ -4,7 +4,6 @@ namespace WPM\Delivery;
 use WPM\Capacity\CapacityCounter;
 use WPM\Settings\Calendar;
 use WPM\Utils\PersianDate;
-use Morilog\Jalali\Jalalian;
 
 defined('ABSPATH') || exit;
 
@@ -135,17 +134,17 @@ class DeliveryCalculator {
      * گرفتن دسته‌بندی‌های محصول با والدین
      */
     public static function get_product_categories_with_ancestors($product_id) {
-        $cache_key = 'product_full_categories_' . $product_id;
-        $result = \WPM\Utils\Cache::get($cache_key);
+        //$cache_key = 'product_full_categories_' . $product_id;
+        //$result = \WPM\Utils\Cache::get($cache_key);
 
-        if ($result === false) {
+        //if ($result === false) {
             $categories = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']);
             $hierarchy = self::get_all_category_hierarchy();
             $all_categories = array_merge($categories, ...array_map(fn($cat_id) => $hierarchy[$cat_id] ?? [], $categories));
             $result = array_unique($all_categories);
 
-            \WPM\Utils\Cache::set($cache_key, $result, self::CACHE_LONG_TTL);
-        }
+            //\WPM\Utils\Cache::set($cache_key, $result, self::CACHE_LONG_TTL);
+        //}
 
         return $result;
     }
@@ -593,7 +592,7 @@ class DeliveryCalculator {
         $result = self::calculate_delivery_date($product_id, $variation_id, $quantity);
 
         if ($result && $result['delivery_date']) {
-            $jalali_date = Jalalian::fromDateTime($result['delivery_date'])->format('Y/m/d');
+            $jalali_date = PersianDate::to_persian($result['delivery_date']);
             wp_send_json_success(['delivery_date' => $jalali_date]);
         }
 

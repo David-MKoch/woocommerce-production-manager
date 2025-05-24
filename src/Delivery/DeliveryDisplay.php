@@ -1,7 +1,7 @@
 <?php
 namespace WPM\Delivery;
 
-use Morilog\Jalali\Jalalian;
+use WPM\Utils\PersianDate;
 
 defined('ABSPATH') || exit;
 
@@ -41,7 +41,7 @@ class DeliveryDisplay {
 
     public static function display_cart_delivery_date($item_name, $cart_item, $cart_item_key) {
         if (isset($cart_item['wpm_delivery_date'])) {
-            $jalali_date = Jalalian::fromDateTime($cart_item['wpm_delivery_date'])->format('Y/m/d');
+            $jalali_date = PersianDate::to_persian($cart_item['wpm_delivery_date']);
             $item_name .= '<p class="wpm-cart-delivery-date">' . esc_html__('Estimated Delivery:', WPM_TEXT_DOMAIN) . ' ' . esc_html($jalali_date) . '</p>';
         }
         return $item_name;
