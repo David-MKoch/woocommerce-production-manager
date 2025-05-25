@@ -4,6 +4,7 @@ namespace WPM\Reports;
 use WPM\Reports\DashboardPage;
 use WPM\Reports\OrderItemsPage;
 use WPM\Reports\ReportsPage;
+use WPM\Settings\StatusManager;
 
 defined('ABSPATH') || exit;
 
@@ -22,8 +23,8 @@ class AdminPage {
         add_action('wp_ajax_wpm_export_reserved_products_excel', [ReportsPage::class, 'export_reserved_products_excel']);
         add_action('wp_ajax_wpm_export_status_logs_csv', [ReportsPage::class, 'export_status_logs_csv']);
         add_action('wp_ajax_wpm_export_status_logs_excel', [ReportsPage::class, 'export_status_logs_excel']);
-        add_action('wp_ajax_wpm_update_order_item_status', [\WPM\Settings\StatusManager::class, 'update_order_item_status']);
-        add_action('wp_ajax_wpm_update_order_item_delivery_date', [\WPM\Settings\StatusManager::class, 'update_order_item_delivery_date']);
+        add_action('wp_ajax_wpm_update_order_item_status', [StatusManager::class, 'update_order_item_status']);
+        add_action('wp_ajax_wpm_update_order_item_delivery_date', [StatusManager::class, 'update_order_item_delivery_date']);
         add_filter('set-screen-option', [__CLASS__, 'set_screen_option'], 10, 3);
     }
 
@@ -49,8 +50,8 @@ class AdminPage {
 
         $reports_hook = add_submenu_page(
             'wpm-dashboard',
-            __('Category Reservations', WPM_TEXT_DOMAIN),
-            __('Category Reservations', WPM_TEXT_DOMAIN),
+            __('Reports', WPM_TEXT_DOMAIN),
+            __('Reports', WPM_TEXT_DOMAIN),
             'manage_woocommerce',
             'wpm-reports',
             [ReportsPage::class, 'render_page']
@@ -76,11 +77,10 @@ class AdminPage {
                 'default' => 20,
                 'option' => 'wpm_order_items_per_page'
             ]);
-
             self::$table = new \WPM\Reports\OrderItemsTable();
 
         } elseif ($screen->id === 'production-manager_page_wpm-reports') {
-            $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'category';
+            $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'status_logs';
             if (isset($_GET['section']) && $_GET['section'] === 'reserved-products') {
                 add_screen_option('per_page', [
                     'label' => __('Products per page', WPM_TEXT_DOMAIN),
@@ -110,58 +110,6 @@ class AdminPage {
 
         //add_filter('screen_settings', [__CLASS__, 'add_column_settings'], 10, 2);
     }
-
-    /*public static function add_column_settings($settings, $screen) {
-        $hidden = [];
-        $columns = [];
-
-        if ($screen->id === 'production-manager_page_wpm-order-items') {
-            $hidden = get_user_meta(get_current_user_id(), 'managewoocommerce_page_wpm-order-items_columnshidden', true) ?: [];
-            //$table = new \WPM\Reports\OrderItemsTable();
-            $columns = self::$table->get_columns();
-        } elseif ($screen->id === 'production-manager_page_wpm-reports') {
-            $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'category';
-            if ($tab === 'category') {
-                $hidden = get_user_meta(get_current_user_id(), 'managewoocommerce_page_wpm-reports_columnshidden', true) ?: [];
-                //$table = new \WPM\Reports\CategoryOrdersTable();
-                $columns = self::$table->get_columns();
-            } elseif ($tab === 'status_logs') {
-                $hidden = get_user_meta(get_current_user_id(), 'managewoocommerce_page_wpm-status-logs_columnshidden', true) ?: [];
-                //$table = new \WPM\Reports\StatusLogsTable();
-                $columns = self::$table->get_columns();
-            } elseif (isset($_GET['section']) && $_GET['section'] === 'reserved-products') {
-                $hidden = get_user_meta(get_current_user_id(), 'managewoocommerce_page_wpm-reserved-products_columnshidden', true) ?: [];
-                //$table = new \WPM\Reports\ReservedProductsTable();
-                $columns = self::$table->get_columns();
-            }
-        }
-
-        if (empty($columns)) {
-            return $settings;
-        }
-
-        ob_start();
-        ?>
-        <fieldset class="metabox-prefs">
-            <legend><?php esc_html_e('Columns', WPM_TEXT_DOMAIN); ?></legend>
-            <?php
-            foreach ($columns as $column_key => $column_name) {
-                if ($column_key === 'cb') {
-                    continue;
-                }
-                $checked = !in_array($column_key, $hidden) ? 'checked="checked"' : '';
-                ?>
-                <label>
-                    <input class="hide-column-tog" type="checkbox" name="wpm_columns[<?php echo esc_attr($column_key); ?>]" value="1" <?php echo $checked; ?>>
-                    <?php echo esc_html($column_name); ?>
-                </label>
-                <?php
-            }
-            ?>
-        </fieldset>
-        <?php
-        return $settings . ob_get_clean();
-    }*/
 
     public static function set_screen_option($status, $option, $value) {
         if (in_array($option, [

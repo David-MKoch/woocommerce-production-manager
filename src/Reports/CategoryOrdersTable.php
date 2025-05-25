@@ -41,7 +41,7 @@ class CategoryOrdersTable extends WP_List_Table {
         switch ($column_name) {
             case 'category_name':
                 if ($item->term_id == 0) {
-                    return esc_html__('Other Products', WPM_TEXT_DOMAIN);
+                    return esc_html__('Total Reservations', WPM_TEXT_DOMAIN);
                 }
                 $term = get_term($item->term_id, 'product_cat');
                 if (is_wp_error($term) || !$term) {
@@ -86,7 +86,7 @@ class CategoryOrdersTable extends WP_List_Table {
 
     public function column_cb($item) {
         return sprintf(
-            '<input type="checkbox" name="category_ids[]" value="%s" />',
+            '<input type="checkbox" name="category_ids[]" value="%d" />',
             $item->term_id
         );
     }
@@ -116,6 +116,22 @@ class CategoryOrdersTable extends WP_List_Table {
         }
     }
 
+    private function get_child_term_ids($term_id) {
+        $term_ids = [$term_id];
+        $children = get_terms([
+            'taxonomy' => 'product_cat',
+            'parent' => $term_id,
+            'hide_empty' => false,
+            'fields' => 'ids'
+        ]);
+        if (!is_wp_error($children)) {
+            foreach ($children as $child_id) {
+                $term_ids = array_merge($term_ids, $this->get_child_term_ids($child_id));
+            }
+        }
+        return array_unique($term_ids);
+    }
+
     public function prepare_items() {
         global $wpdb;
 
@@ -134,16 +150,18 @@ class CategoryOrdersTable extends WP_List_Table {
             $where[] = 'cc.date <= %s';
             $params[] = \WPM\Utils\PersianDate::to_gregorian(sanitize_text_field($_GET['date_to']));
         }
+
+        $category_filter = '';
         if (isset($_GET['category_id']) && absint($_GET['category_id']) > 0) {
-            $where[] = 'pc.entity_id = %d';
-            $params[] = absint($_GET['category_id']);
+            $category_ids = $this->get_child_term_ids(absint($_GET['category_id']));
+            $placeholders = implode(',', array_fill(0, count($category_ids), '%d'));
+            $category_filter = "AND tt.term_id IN ($placeholders)";
+            $params = array_merge($params, $category_ids);
         }
 
-        // Prepare WHERE clause
-        $where_sql = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
-        $union_params = array_merge($params, $params, [$per_page, $offset]); // Duplicate params for UNION
+        $where_clause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+        $union_params = array_merge($params, $params, [$per_page, $offset]);
 
-        // Main query with UNION
         $query = $wpdb->prepare("
             SELECT pc.entity_id as term_id, t.name as category_name, pc.max_capacity, cc.date as reservation_date, SUM(cc.reserved_count) as reserved_count
             FROM {$wpdb->prefix}wpm_production_capacity pc
@@ -152,18 +170,16 @@ class CategoryOrdersTable extends WP_List_Table {
             JOIN {$wpdb->prefix}term_relationships tr ON tt.term_taxonomy_id = tr.term_taxonomy_id
             JOIN {$wpdb->prefix}posts p ON tr.object_id = p.ID AND p.post_type IN ('product', 'product_variation')
             JOIN {$wpdb->prefix}wpm_capacity_count cc ON p.ID = cc.entity_id AND cc.entity_type IN ('product', 'variation')
-            $where_sql
+            $where_clause
+            $category_filter
             AND pc.entity_type = 'category'
             GROUP BY pc.entity_id, cc.date
             UNION
-            SELECT 0 as term_id, 'Other Products' as category_name, NULL as max_capacity, cc.date as reservation_date, SUM(cc.reserved_count) as reserved_count
+            SELECT 0 as term_id, 'Total Reservations' as category_name, NULL as max_capacity, cc.date as reservation_date, SUM(cc.reserved_count) as reserved_count
             FROM {$wpdb->prefix}wpm_capacity_count cc
             JOIN {$wpdb->prefix}posts p ON cc.entity_id = p.ID AND p.post_type IN ('product', 'product_variation')
-            LEFT JOIN {$wpdb->prefix}term_relationships tr ON p.ID = tr.object_id
-            LEFT JOIN {$wpdb->prefix}term_taxonomy tt ON tr.term_taxonomy_id = tt.term_taxonomy_id AND tt.taxonomy = 'product_cat'
-            LEFT JOIN {$wpdb->prefix}wpm_production_capacity pc ON tt.term_id = pc.entity_id AND pc.entity_type = 'category'
-            $where_sql
-            AND pc.entity_id IS NULL
+            $where_clause
+            AND cc.entity_type IN ('product', 'variation')
             GROUP BY cc.date
             ORDER BY reservation_date DESC
             LIMIT %d OFFSET %d
@@ -171,32 +187,31 @@ class CategoryOrdersTable extends WP_List_Table {
 
         $this->items = $wpdb->get_results($query);
 
-        // Total items query
         $total_items_query = $wpdb->prepare("
             SELECT COUNT(*) FROM (
                 SELECT pc.entity_id, cc.date
                 FROM {$wpdb->prefix}wpm_production_capacity pc
-                JOIN {$wpdb->prefix}term_taxonomy tt ON pc.entity_id = tt.term_id AND tt.taxonomy = 'product_cat'
+                JOIN {$wpdb->prefix}terms t ON pc.entity_id = t.term_id
+                JOIN {$wpdb->prefix}term_taxonomy tt ON t.term_id = tt.term_id AND tt.taxonomy = 'product_cat'
                 JOIN {$wpdb->prefix}term_relationships tr ON tt.term_taxonomy_id = tr.term_taxonomy_id
                 JOIN {$wpdb->prefix}posts p ON tr.object_id = p.ID AND p.post_type IN ('product', 'product_variation')
                 JOIN {$wpdb->prefix}wpm_capacity_count cc ON p.ID = cc.entity_id AND cc.entity_type IN ('product', 'variation')
-                $where_sql
+                $where_clause
+                $category_filter
                 AND pc.entity_type = 'category'
                 GROUP BY pc.entity_id, cc.date
                 UNION
                 SELECT 0 as term_id, cc.date
                 FROM {$wpdb->prefix}wpm_capacity_count cc
                 JOIN {$wpdb->prefix}posts p ON cc.entity_id = p.ID AND p.post_type IN ('product', 'product_variation')
-                LEFT JOIN {$wpdb->prefix}term_relationships tr ON p.ID = tr.object_id
-                LEFT JOIN {$wpdb->prefix}term_taxonomy tt ON tr.term_taxonomy_id = tt.term_taxonomy_id AND tt.taxonomy = 'product_cat'
-                LEFT JOIN {$wpdb->prefix}wpm_production_capacity pc ON tt.term_id = pc.entity_id AND pc.entity_type = 'category'
-                $where_sql
-                AND pc.entity_id IS NULL
+                $where_clause
+                AND cc.entity_type IN ('product', 'variation')
                 GROUP BY cc.date
             ) as combined
         ", $params);
 
         $total_items = $wpdb->get_var($total_items_query);
+        $total_items = absint($total_items ?: 0);
 
         $this->set_pagination_args([
             'total_items' => $total_items,
