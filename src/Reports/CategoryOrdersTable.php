@@ -20,7 +20,7 @@ class CategoryOrdersTable extends WP_List_Table {
             'category_name' => __('Category', WPM_TEXT_DOMAIN),
             'max_capacity' => __('Production Capacity', WPM_TEXT_DOMAIN),
             'reserved_count' => __('Reserved Count', WPM_TEXT_DOMAIN),
-			'capacity_usage' => __('Capacity Usage', WPM_TEXT_DOMAIN),
+            'capacity_usage' => __('Capacity Usage', WPM_TEXT_DOMAIN),
             'reservation_date' => __('Reservation Date', WPM_TEXT_DOMAIN)
         ];
     }
@@ -44,7 +44,13 @@ class CategoryOrdersTable extends WP_List_Table {
                     return esc_html__('Other Products', WPM_TEXT_DOMAIN);
                 }
                 $term = get_term($item->term_id, 'product_cat');
+                if (is_wp_error($term) || !$term) {
+                    return esc_html($item->category_name);
+                }
                 $category_url = get_term_link($item->term_id, 'product_cat');
+                if (is_wp_error($category_url)) {
+                    return esc_html($item->category_name);
+                }
                 $edit_url = admin_url('term.php?taxonomy=product_cat&tag_ID=' . $item->term_id);
                 $category_name = sprintf('<a href="%s">%s</a>', esc_url($category_url), esc_html($item->category_name));
                 $actions = [
@@ -55,14 +61,19 @@ class CategoryOrdersTable extends WP_List_Table {
                 return $item->term_id == 0 ? esc_html__('-', WPM_TEXT_DOMAIN) : esc_html($item->max_capacity ?: __('No Limit', WPM_TEXT_DOMAIN));
             case 'reserved_count':
                 return esc_html($item->reserved_count);
-			case 'capacity_usage':
+            case 'capacity_usage':
                 if ($item->max_capacity) {
                     $percentage = round(($item->reserved_count / $item->max_capacity) * 100, 2);
                     return '<div class="wpm-capacity-bar"><div class="wpm-capacity-progress" style="width:' . esc_attr($percentage) . '%;"></div></div> ' . esc_html($percentage . '%');
                 }
                 return '-';
             case 'reservation_date':
-                $report_url = admin_url('admin.php?page=wpm-reserved-products&date=' . urlencode($item->reservation_date));
+                $report_url = add_query_arg([
+                    'page' => 'wpm-reports',
+                    'section' => 'reserved-products',
+                    'date' => urlencode($item->reservation_date),
+                    'category_id' => absint($item->term_id)
+                ], admin_url('admin.php'));
                 return sprintf(
                     '<a href="%s">%s</a>',
                     esc_url($report_url),
@@ -80,7 +91,7 @@ class CategoryOrdersTable extends WP_List_Table {
         );
     }
 
-	public function extra_tablenav($which) {
+    public function extra_tablenav($which) {
         if ($which === 'top') {
             $selected_category = isset($_GET['category_id']) ? absint($_GET['category_id']) : 0;
             ?>
@@ -104,7 +115,7 @@ class CategoryOrdersTable extends WP_List_Table {
             <?php
         }
     }
-	
+
     public function prepare_items() {
         global $wpdb;
 
@@ -123,7 +134,7 @@ class CategoryOrdersTable extends WP_List_Table {
             $where[] = 'cc.date <= %s';
             $params[] = \WPM\Utils\PersianDate::to_gregorian(sanitize_text_field($_GET['date_to']));
         }
-		if (isset($_GET['category_id']) && absint($_GET['category_id']) > 0) {
+        if (isset($_GET['category_id']) && absint($_GET['category_id']) > 0) {
             $where[] = 'pc.entity_id = %d';
             $params[] = absint($_GET['category_id']);
         }

@@ -7,8 +7,11 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 defined('ABSPATH') || exit;
 
 class OrderItemsPage {
-    public static function render() {
-        $table = new OrderItemsTable();
+    public static function render_page() {
+        $table = \WPM\Reports\AdminPage::$table;
+        if (!$table) {
+            $table = new OrderItemsTable(); // fallback if not set
+        }
         $table->prepare_items();
         $statuses = \WPM\Settings\StatusManager::get_statuses();
         ?>
@@ -22,7 +25,7 @@ class OrderItemsPage {
                     <select name="status">
                         <option value=""><?php esc_html_e('All Statuses', WPM_TEXT_DOMAIN); ?></option>
                         <?php foreach ($statuses as $status) : ?>
-                            <option value="<?php echo esc_attr($status['name']); ?>" <?php selected($_GET['status'] ?? '', $status['name']); ?>><?php echo esc_html($status['name']); ?></option>
+                            <option value="<?php echo esc_attr($status); ?>" <?php selected($_GET['status'] ?? '', $status); ?>><?php echo esc_html($status); ?></option>
                         <?php endforeach; ?>
                     </select>
                     <input type="text" name="date_from" class="persian-datepicker" placeholder="<?php esc_attr_e('From Date', WPM_TEXT_DOMAIN); ?>" value="<?php echo esc_attr($_GET['date_from'] ?? ''); ?>">

@@ -28,7 +28,7 @@ class Settings {
     }
 
     public static function enqueue_scripts($hook) {
-        \WPM\Utils\AssetsManager::enqueue_admin_assets($hook, 'production-manager_page_wpm-settings');
+        \WPM\Utils\AssetsManager::enqueue_admin_assets($hook);
     }
 
     public static function render_page() {

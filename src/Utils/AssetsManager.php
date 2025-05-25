@@ -4,9 +4,15 @@ namespace WPM\Utils;
 defined('ABSPATH') || exit;
 
 class AssetsManager {
-    public static function enqueue_admin_assets($hook, $page_identifier) {
+    public static function enqueue_admin_assets($hook) {
         // Check if the current page matches the identifier
-        if ($hook !== $page_identifier) {
+        if (!in_array($hook, [
+            'toplevel_page_wpm-dashboard',
+            'production-manager_page_wpm-order-items',
+            'production-manager_page_wpm-reports',
+            'production-manager_page_wpm-reserved-products',
+            'production-manager_page_wpm-settings'
+        ])) {
             return;
         }
 

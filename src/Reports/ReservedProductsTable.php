@@ -63,6 +63,22 @@ class ReservedProductsTable extends WP_List_Table {
             $item->entity_id
         );
     }
+	
+	private function get_child_term_ids($term_id) {
+        $term_ids = [$term_id];
+        $children = get_terms([
+            'taxonomy' => 'product_cat',
+            'parent' => $term_id,
+            'hide_empty' => false,
+            'fields' => 'ids'
+        ]);
+        if (!is_wp_error($children)) {
+            foreach ($children as $child_id) {
+                $term_ids = array_merge($term_ids, $this->get_child_term_ids($child_id));
+            }
+        }
+        return array_unique($term_ids);
+    }
 
     public function prepare_items() {
         global $wpdb;
@@ -77,17 +93,32 @@ class ReservedProductsTable extends WP_List_Table {
         $reservation_date = isset($_GET['date']) ? sanitize_text_field($_GET['date']) : '';
         if ($reservation_date) {
             $where[] = 'cc.date = %s';
-            $params[] = \WPM\Utils\PersianDate::to_gregorian($reservation_date);
+            $params[] = $reservation_date;
         } else {
             wp_die(__('Invalid reservation date.', WPM_TEXT_DOMAIN));
         }
+		if (isset($_GET['s']) && !empty($_GET['s'])) {
+            $search_query = '%' . $wpdb->esc_like(sanitize_text_field($_GET['s'])) . '%';
+            $where[] = '(p.post_title LIKE %s OR cc.entity_id = %s)';
+            $params[] = $search_query;
+            $params[] = absint($_GET['s']);
+        }
+        if (isset($_GET['category_id']) && absint($_GET['category_id']) > 0) {
+            $category_ids = $this->get_child_term_ids(absint($_GET['category_id']));
+            $placeholders = implode(',', array_fill(0, count($category_ids), '%d'));
+            $where[] = "tr.term_id IN ($placeholders)";
+            $params = array_merge($params, $category_ids);
+        }
 
         $where_sql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+		$join_category = isset($_GET['category_id']) && absint($_GET['category_id']) > 0 ?
+            "JOIN {$wpdb->prefix}term_relationships tr ON p.ID = tr.object_id" : '';
 
         $query = $wpdb->prepare("
             SELECT cc.entity_id, p.post_title as product_name, cc.reserved_count, cc.date as reservation_date
             FROM {$wpdb->prefix}wpm_capacity_count cc
             JOIN {$wpdb->prefix}posts p ON cc.entity_id = p.ID
+			$join_category
             $where_sql
             AND cc.entity_type IN ('product', 'variation')
             ORDER BY cc.reserved_count DESC
@@ -96,13 +127,17 @@ class ReservedProductsTable extends WP_List_Table {
 
         $this->items = $wpdb->get_results($query);
 
-        $total_items = $wpdb->get_var($wpdb->prepare("
+        $total_items_query = $wpdb->prepare("
             SELECT COUNT(DISTINCT cc.entity_id)
             FROM {$wpdb->prefix}wpm_capacity_count cc
             JOIN {$wpdb->prefix}posts p ON cc.entity_id = p.ID
+            $join_category
             $where_sql
             AND cc.entity_type IN ('product', 'variation')
-        ", $params));
+        ", $params);
+
+        $total_items = $wpdb->get_var($total_items_query);
+        $total_items = absint($total_items ?: 0); // Ensure total_items is an integer
 
         $this->set_pagination_args([
             'total_items' => $total_items,

@@ -3,7 +3,7 @@ namespace WPM\Reports;
 
 defined('ABSPATH') || exit;
 
-class Dashboard {
+class DashboardPage {
 
     public static function render_page() {
         global $wpdb;
