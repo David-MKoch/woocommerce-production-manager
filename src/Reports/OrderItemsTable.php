@@ -1,5 +1,5 @@
 <?php
-namespace WPM\OrderItems;
+namespace WPM\Reports;
 
 use WP_List_Table;
 
@@ -122,7 +122,8 @@ class OrderItemsTable extends WP_List_Table {
     public function prepare_items() {
         global $wpdb;
 
-        $per_page = get_user_option('wpm_order_items_per_page') ?: 20;
+        // استفاده از screen option برای تعداد آیتم‌ها در هر صفحه
+		$per_page = $this->get_items_per_page('wpm_order_items_per_page', 20);
         $current_page = $this->get_pagenum();
         $offset = ($current_page - 1) * $per_page;
 
@@ -249,6 +250,7 @@ class OrderItemsTable extends WP_List_Table {
                         ['%d']
                     );
                 }
+				add_settings_error('wpm_order_items', 'bulk_action', __('Statuses updated.', WPM_TEXT_DOMAIN), 'updated');
             }
         } elseif ($action === 'bulk_change_delivery_date') {
             $delivery_date = isset($_REQUEST['bulk_delivery_date']) ? \WPM\Utils\PersianDate::to_gregorian(sanitize_text_field($_REQUEST['bulk_delivery_date'])) : '';
@@ -266,6 +268,7 @@ class OrderItemsTable extends WP_List_Table {
                         ['%d']
                     );
                 }
+				add_settings_error('wpm_order_items', 'bulk_action', __('Delivery dates updated.', WPM_TEXT_DOMAIN), 'updated');
             }
         }
 

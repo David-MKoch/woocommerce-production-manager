@@ -120,7 +120,7 @@ class StatusTracker {
     }
 
     public static function get_progress_percentage($status) {
-        $statuses = \WPM\OrderItems\StatusManager::get_statuses();
+        $statuses = \WPM\Settings\StatusManager::get_statuses();
         $index = array_search($status, $statuses);
         if ($index === false) {
             return 0;

@@ -4,41 +4,6 @@ namespace WPM\Reports;
 defined('ABSPATH') || exit;
 
 class Dashboard {
-    public static function init() {
-        add_action('admin_menu', [__CLASS__, 'add_menu_page']);
-        add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_scripts']);
-        add_action('wp_ajax_wpm_get_dashboard_data', [__CLASS__, 'get_dashboard_data']);
-    }
-
-    public static function add_menu_page() {
-        add_menu_page(
-            __('Production Dashboard', WPM_TEXT_DOMAIN),
-            __('Production Manager', WPM_TEXT_DOMAIN),
-            'manage_woocommerce',
-            'wpm-dashboard',
-            [__CLASS__, 'render_page'],
-            'dashicons-products',
-            56
-        );
-    }
-
-    public static function enqueue_scripts($hook) {
-        if ($hook !== 'toplevel_page_wpm-dashboard') {
-            return;
-        }
-        wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '4.4.0', true);
-        wp_enqueue_script('wpm-dashboard-js', WPM_PLUGIN_URL . 'assets/js/dashboard.js', ['chart-js', 'jquery'], '1.0.0', true);
-        wp_enqueue_style('wpm-dashboard-css', WPM_PLUGIN_URL . 'assets/css/dashboard.css', [], '1.0.0');
-        wp_localize_script('wpm-dashboard-js', 'wpmDashboard', [
-            'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wpm_dashboard'),
-            'i18n' => [
-                'capacityUsed' => __('Capacity Used', WPM_TEXT_DOMAIN),
-                'delayedOrders' => __('Delayed Orders', WPM_TEXT_DOMAIN),
-                'smsSent' => __('SMS Sent', WPM_TEXT_DOMAIN)
-            ]
-        ]);
-    }
 
     public static function render_page() {
         global $wpdb;

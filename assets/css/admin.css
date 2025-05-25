@@ -1,26 +1,79 @@
+.wpm-loading {
+    position: relative;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.wpm-loading:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #0073aa;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+}
+
+.wpm-status-display, .wpm-delivery-date-display {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.wpm-status-select, .wpm-delivery-date-input {
+    min-width: 100px;
+}
+
+.wpm-item-image {
+    cursor: pointer;
+}
 
 .wpm-holiday-date input,
 .wpm-holiday-description input {
     width: 100%;
 }
+
 .wpm-image-preview {
     position: absolute;
     z-index: 1000;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     display: none;
 }
+
 .wpm-image-preview img {
     max-width: 200px;
     height: auto;
-    border: 1px solid #ccc;
-    background: #fff;
-    padding: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
-.wpm-status-display {
-    padding: 5px;
-    border-radius: 3px;
-    cursor: pointer;
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
 }
+
+.wpm-capacity-bar {
+    width: 100px;
+    height: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.wpm-capacity-progress {
+    height: 100%;
+    background: #0073aa;
+    transition: width 0.3s ease;
+}
+
+
 .wpm-statuses-wrapper {
     margin-top: 10px;
 }
@@ -39,20 +92,7 @@
     opacity: 0.8;
     background: #f9f9f9;
 }
-.wpm-loading {
-    position: relative;
-}
-.wpm-loading::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.7) url('images/spinner.gif') no-repeat center;
-    z-index: 1000;
-    pointer-events: none;
-}
+
 .persian-datepicker {
     direction: rtl;
     font-family: 'Vazir', sans-serif;
@@ -69,9 +109,7 @@
 .wpm-filters select, .wpm-filters input {
     max-width: 200px;
 }
-.wpm-status-select, .wpm-delivery-date-input {
-    width: 100%;
-}
+
 .wpm-table-settings-form {
     margin-top: 20px;
 }

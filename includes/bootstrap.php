@@ -9,22 +9,19 @@ class Bootstrap {
         add_action('init', [__CLASS__, 'load_textdomain']);
 
         // Initialize modules
-		\WPM\Reports\Dashboard::init();
-        \WPM\Settings\Settings::init();
-		\WPM\Settings\SMS::init();
-		\WPM\Settings\StatusManager::init();
-		\WPM\Settings\Calendar::init();
+        \WPM\Reports\AdminPage::init();
+        \WPM\CustomerUI\StatusTracker::init();
 		
         \WPM\Capacity\CapacityManager::init();
         \WPM\Capacity\CapacityCounter::init();
         \WPM\Delivery\DeliveryCalculator::init();
         \WPM\Delivery\DeliveryDisplay::init();
-        
-        \WPM\OrderItems\AdminPage::init();
-        \WPM\CustomerUI\StatusTracker::init();
-        
-        \WPM\Reports\Logs::init();
-		\WPM\Reports\Reports::init();
+
+        \WPM\Settings\Settings::init();
+        \WPM\Settings\Calendar::init();
+		\WPM\Settings\StatusManager::init();
+        \WPM\Settings\SMS::init();
+
         //\WPM\API\RESTController::init();
         \WPM\API\Webhook::init();
 		

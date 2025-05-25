@@ -383,35 +383,39 @@ jQuery(document).ready(function($) {
 
         input.persianDatepicker({
             format: 'YYYY/MM/DD',
-            autoClose: true
-        }).focus().on('change', function() {
-            var newDate = $(this).val();
+            autoClose: true,
+			onSelect: function() {
+                var newDate = input.val();
+                if (!newDate) return; // جلوگیری از ارسال مقدار خالی
 
-            showLoading(input);
-            $.ajax({
-                url: wpmAdmin.ajaxUrl,
-                type: 'POST',
-                data: {
-                    action: 'wpm_update_order_item_delivery_date',
-                    nonce: wpmAdmin.nonce,
-                    order_id: orderId,
-                    order_item_id: itemId,
-                    delivery_date: newDate
-                },
-                success: function(response) {
-                    hideLoading(input);
-                    if (response.success) {
-                        input.replaceWith(`<span class="wpm-delivery-date-display" data-item-id="${itemId}" data-order-id="${orderId}">${newDate}</span>`);
-                    } else {
-                        alert(response.data.message);
+                showLoading(input);
+                $.ajax({
+                    url: wpmAdmin.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'wpm_update_order_item_delivery_date',
+                        nonce: wpmAdmin.nonce,
+                        order_id: orderId,
+                        order_item_id: itemId,
+                        delivery_date: newDate
+                    },
+                    success: function(response) {
+                        hideLoading(input);
+                        if (response.success) {
+                            input.replaceWith(`<span class="wpm-delivery-date-display" data-item-id="${itemId}" data-order-id="${orderId}">${newDate}</span>`);
+                        } else {
+                            alert(response.data.message);
+                            input.replaceWith(`<span class="wpm-delivery-date-display" data-item-id="${itemId}" data-order-id="${orderId}">${currentDate}</span>`);
+                        }
+                    },
+                    error: function() {
+                        hideLoading(input);
+                        alert(wpmAdmin.i18n.error);
+                        input.replaceWith(`<span class="wpm-delivery-date-display" data-item-id="${itemId}" data-order-id="${orderId}">${currentDate}</span>`);
                     }
-                },
-                error: function() {
-                    hideLoading(input);
-                    alert(wpmAdmin.i18n.error);
-                }
-            });
-        });
+                });
+            }
+        }).focus();
     });
 
     // Image Hover Preview
@@ -484,8 +488,8 @@ jQuery(document).ready(function($) {
         });
     });
 
-    // Handle export order items
-    $('.wpm-export-order-items').on('click', function() {
+    // Handle export order items (CSV)
+    $('.wpm-export-order-items-csv').on('click', function() {
         var $button = $(this);
         $button.text(wpmAdmin.i18n.exporting);
 
@@ -493,7 +497,7 @@ jQuery(document).ready(function($) {
             url: wpmAdmin.ajaxUrl,
             type: 'POST',
             data: {
-                action: 'wpm_export_order_items',
+                action: 'wpm_export_order_items_csv',
                 nonce: wpmAdmin.nonce
             },
             success: function(response) {
@@ -502,46 +506,192 @@ jQuery(document).ready(function($) {
                 } else {
                     alert(wpmAdmin.i18n.error);
                 }
-                $button.text(wpmAdmin.i18n.exportOrderItems);
+                $button.text(wpmAdmin.i18n.exportCsv);
             },
             error: function() {
                 alert(wpmAdmin.i18n.error);
-                $button.text(wpmAdmin.i18n.exportOrderItems);
+                $button.text(wpmAdmin.i18n.exportCsv);
             }
         });
     });
 
-    // Handle export logs
-    $('.wpm-export-logs').on('click', function() {
+    // Handle export order items (Excel)
+    $('.wpm-export-order-items-excel').on('click', function() {
         var $button = $(this);
         $button.text(wpmAdmin.i18n.exporting);
 
-        var params = {
-            action: 'wpm_export_logs',
-            nonce: wpmAdmin.nonce,
-            order_item_id: $('input[name="order_item_id"]').val(),
-            changed_by: $('input[name="changed_by"]').val(),
-            date_from: $('input[name="date_from"]').val(),
-            date_to: $('input[name="date_to"]').val()
-        };
+        var form = $('<form>', {
+            action: wpmAdmin.ajaxUrl,
+            method: 'POST',
+            css: { display: 'none' }
+        }).append(
+            $('<input>', { type: 'hidden', name: 'action', value: 'wpm_export_order_items_excel' }),
+            $('<input>', { type: 'hidden', name: 'nonce', value: wpmAdmin.nonce })
+        );
+
+        $('body').append(form);
+        form.submit();
+        form.remove();
+        $button.text(wpmAdmin.i18n.exportExcel);
+    });
+
+    // Handle export category orders (CSV)
+    $('.wpm-export-category-orders-csv').on('click', function() {
+        var $button = $(this);
+        $button.text(wpmAdmin.i18n.exporting);
 
         $.ajax({
             url: wpmAdmin.ajaxUrl,
             type: 'POST',
-            data: params,
+            data: {
+                action: 'wpm_export_category_orders_csv',
+                nonce: wpmAdmin.nonce,
+                date_from: $('input[name="date_from"]').val(),
+                date_to: $('input[name="date_to"]').val()
+            },
             success: function(response) {
                 if (response.success) {
                     window.location.href = response.data.url;
                 } else {
                     alert(wpmAdmin.i18n.error);
                 }
-                $button.text(wpmAdmin.i18n.exportLogs);
+                $button.text(wpmAdmin.i18n.exportCsv);
             },
             error: function() {
                 alert(wpmAdmin.i18n.error);
-                $button.text(wpmAdmin.i18n.exportLogs);
+                $button.text(wpmAdmin.i18n.exportCsv);
             }
         });
+    });
+
+    // Handle export category orders (Excel)
+    $('.wpm-export-category-orders-excel').on('click', function() {
+        var $button = $(this);
+        $button.text(wpmAdmin.i18n.exporting);
+
+        var form = $('<form>', {
+            action: wpmAdmin.ajaxUrl,
+            method: 'POST',
+            css: { display: 'none' }
+        }).append(
+            $('<input>', { type: 'hidden', name: 'action', value: 'wpm_export_category_orders_excel' }),
+            $('<input>', { type: 'hidden', name: 'nonce', value: wpmAdmin.nonce }),
+            $('<input>', { type: 'hidden', name: 'date_from', value: $('input[name="date_from"]').val() }),
+            $('<input>', { type: 'hidden', name: 'date_to', value: $('input[name="date_to"]').val() })
+        );
+
+        $('body').append(form);
+        form.submit();
+        form.remove();
+        $button.text(wpmAdmin.i18n.exportExcel);
+    });
+
+    // Handle export reserved products (CSV)
+    $('.wpm-export-reserved-products-csv').on('click', function() {
+        var $button = $(this);
+        $button.text(wpmAdmin.i18n.exporting);
+
+        $.ajax({
+            url: wpmAdmin.ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'wpm_export_reserved_products_csv',
+                nonce: wpmAdmin.nonce,
+                date: $('input[name="date"]').val(),
+                s: $('input[name="s"]').val(),
+                category_id: $('select[name="category_id"]').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    window.location.href = response.data.url;
+                } else {
+                    alert(wpmAdmin.i18n.error);
+                }
+                $button.text(wpmAdmin.i18n.exportCsv);
+            },
+            error: function() {
+                alert(wpmAdmin.i18n.error);
+                $button.text(wpmAdmin.i18n.exportCsv);
+            }
+        });
+    });
+
+    // Handle export reserved products (Excel)
+    $('.wpm-export-reserved-products-excel').on('click', function() {
+        var $button = $(this);
+        $button.text(wpmAdmin.i18n.exporting);
+
+        var form = $('<form>', {
+            action: wpmAdmin.ajaxUrl,
+            method: 'POST',
+            css: { display: 'none' }
+        }).append(
+            $('<input>', { type: 'hidden', name: 'action', value: 'wpm_export_reserved_products_excel' }),
+            $('<input>', { type: 'hidden', name: 'nonce', value: wpmAdmin.nonce }),
+            $('<input>', { type: 'hidden', name: 'date', value: $('input[name="date"]').val() }),
+            $('<input>', { type: 'hidden', name: 's', value: $('input[name="s"]').val() }),
+            $('<input>', { type: 'hidden', name: 'category_id', value: $('select[name="category_id"]').val() })
+        );
+
+        $('body').append(form);
+        form.submit();
+        form.remove();
+        $button.text(wpmAdmin.i18n.exportExcel);
+    });
+
+    // Handle export status logs (CSV)
+    $('.wpm-export-status-logs-csv').on('click', function() {
+        var $button = $(this);
+        $button.text(wpmAdmin.i18n.exporting);
+
+        $.ajax({
+            url: wpmAdmin.ajaxUrl,
+            type: 'POST',
+            data: {
+                action: 'wpm_export_status_logs_csv',
+                nonce: wpmAdmin.nonce,
+                order_item_id: $('input[name="order_item_id"]').val(),
+                changed_by: $('input[name="changed_by"]').val(),
+                date_from: $('input[name="date_from"]').val(),
+                date_to: $('input[name="date_to"]').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    window.location.href = response.data.url;
+                } else {
+                    alert(wpmAdmin.i18n.error);
+                }
+                $button.text(wpmAdmin.i18n.exportCsv);
+            },
+            error: function() {
+                alert(wpmAdmin.i18n.error);
+                $button.text(wpmAdmin.i18n.exportCsv);
+            }
+        });
+    });
+
+    // Handle export status logs (Excel)
+    $('.wpm-export-status-logs-excel').on('click', function() {
+        var $button = $(this);
+        $button.text(wpmAdmin.i18n.exporting);
+
+        var form = $('<form>', {
+            action: wpmAdmin.ajaxUrl,
+            method: 'POST',
+            css: { display: 'none' }
+        }).append(
+            $('<input>', { type: 'hidden', name: 'action', value: 'wpm_export_status_logs_excel' }),
+            $('<input>', { type: 'hidden', name: 'nonce', value: wpmAdmin.nonce }),
+            $('<input>', { type: 'hidden', name: 'order_item_id', value: $('input[name="order_item_id"]').val() }),
+            $('<input>', { type: 'hidden', name: 'changed_by', value: $('input[name="changed_by"]').val() }),
+            $('<input>', { type: 'hidden', name: 'date_from', value: $('input[name="date_from"]').val() }),
+            $('<input>', { type: 'hidden', name: 'date_to', value: $('input[name="date_to"]').val() })
+        );
+
+        $('body').append(form);
+        form.submit();
+        form.remove();
+        $button.text(wpmAdmin.i18n.exportExcel);
     });
 
     // Convert RGB to Hex for color picker
