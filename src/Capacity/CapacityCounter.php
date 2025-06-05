@@ -68,8 +68,6 @@ class CapacityCounter {
 
         // Clear cache
         \WPM\Utils\Cache::clear("capacity_count_{$entity_type}_{$entity_id}_" . $date);
-        \WPM\Utils\Cache::clear("capacity_data_"); // Clear cached capacity data
-		\WPM\Utils\Cache::clear("reserved_counts_");
     }
 
     public static function handle_order_status_change($order_id, $old_status, $new_status, $order) {
@@ -119,7 +117,7 @@ class CapacityCounter {
             if ($delivery_date) {
                 $entity_type = $variation_id ? 'variation' : 'product';
                 $entity_id = $variation_id ?: $product_id;
-                self::update_capacity_count($entity_type, $entity_id, $delivery_date, $quantity);
+                self::update_capacity_count($entity_type, $entity_id, $delivery_date['delivery_date'], $quantity);
 
                 // Store delivery date
                 $default_status = get_option('wpm_statuses', [['name' => __('Received', WPM_TEXT_DOMAIN), 'color' => '#0073aa']])[0]['name'];
@@ -130,7 +128,7 @@ class CapacityCounter {
                         'order_id' => $order_id,
                         'order_item_id' => $item_id,
                         'status' => $default_status,
-                        'delivery_date' => $delivery_date,
+                        'delivery_date' => $delivery_date['delivery_date'],
                         'updated_by' => $user_id,
                         'updated_at' => current_time('mysql')
                     ],

@@ -176,6 +176,15 @@ class DeliveryCalculator {
             ),
             OBJECT_K
         );
+        $max_product_meta_raw = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT post_id, meta_value FROM $wpdb->postmeta 
+                 WHERE meta_key = 'wpm_max_delivery_days' 
+                 AND post_id IN ($ids_placeholders)",
+                $product_ids
+            ),
+            OBJECT_K
+        );
 
         $product_categories_map = [];
         $all_category_ids = [];
@@ -200,25 +209,67 @@ class DeliveryCalculator {
                 ),
                 OBJECT_K
             );
+            $max_category_meta = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT term_id, meta_value FROM $wpdb->termmeta 
+                     WHERE meta_key = 'wpm_max_delivery_days' 
+                     AND term_id IN ($cat_placeholders)",
+                    $all_category_ids
+                ),
+                OBJECT_K
+            );
         }
 
         $results = [];
         $default_days = absint(get_option('wpm_default_delivery_days', 3));
+        $default_max_days = absint(get_option('wpm_default_max_delivery_days', 3));
 
         foreach ($product_ids as $product_id) {
-            if (isset($product_meta_raw[$product_id]) && $product_meta_raw[$product_id]->meta_value !== '') {
-                $results[$product_id] = absint($product_meta_raw[$product_id]->meta_value);
+            if (
+                isset($product_meta_raw[$product_id], $max_product_meta_raw[$product_id]) &&
+                $product_meta_raw[$product_id]->meta_value !== '' &&
+                $max_product_meta_raw[$product_id]->meta_value !== ''
+            ) {
+                $results[$product_id] = [
+                    'min' => absint($product_meta_raw[$product_id]->meta_value),
+                    'max' => absint($max_product_meta_raw[$product_id]->meta_value)
+                ];
                 continue;
             }
 
-            $max_delivery_days = 0;
+            $max_min_delivery_days = 0;
+            $max_min_category_id = 0;
             foreach ($product_categories_map[$product_id] as $category_id) {
-                if (isset($category_meta[$category_id])) {
-                    $max_delivery_days = max($max_delivery_days, absint($category_meta[$category_id]->meta_value));
+                if (
+                    isset($category_meta[$category_id]) &&
+                    $category_meta[$category_id]->meta_value !== ''
+                ) {
+                    $min_days = absint($category_meta[$category_id]->meta_value);
+                    if ($min_days > $max_min_delivery_days) {
+                        $max_min_delivery_days = $min_days;
+                        $max_min_category_id = $category_id;
+                    }
                 }
             }
 
-            $results[$product_id] = $max_delivery_days > 0 ? $max_delivery_days : $default_days;
+            if ($max_min_delivery_days > 0) {
+                $max_days = $default_max_days;
+                if (
+                    isset($max_category_meta[$max_min_category_id]) &&
+                    $max_category_meta[$max_min_category_id]->meta_value !== ''
+                ) {
+                    $max_days = absint($max_category_meta[$max_min_category_id]->meta_value);
+                }
+                $results[$product_id] = [
+                    'min' => $max_min_delivery_days,
+                    'max' => $max_days
+                ];
+            } else {
+                $results[$product_id] = [
+                    'min' => $default_days,
+                    'max' => $default_max_days
+                ];
+            }
         }
         
         \WPM\Utils\Cache::set($cache_key, $results, self::CACHE_SHORT_TTL);
@@ -354,7 +405,7 @@ class DeliveryCalculator {
         $business_days = self::get_business_days($min_date, $max_days);
         $max_capacity_map = self::get_all_max_capacities();
         $reserved_count_map = self::get_reserved_counts($min_date, $business_days);
-        $default_capacity = absint(get_option('wpm_default_capacity', 0));
+        $default_capacity = absint(get_option('wpm_default_capacity', 1));
 
         return new CalculationData(
 			$business_days, 
@@ -377,7 +428,7 @@ class DeliveryCalculator {
         $entity_id = $variation_id ?: $product_id;
         $categories = self::get_product_categories_with_ancestors($product_id);
         $start_date = self::get_adjusted_start_date($order_date);
-        $min_date = self::add_business_days($start_date, $production_days);
+        $min_date = self::add_business_days($start_date, $production_days['min']);
 
         $remaining_quantity = $quantity; // تعداد آیتم‌های باقی‌مانده برای تخصیص
 		$allocations = []; // لیست تخصیص‌ها: [['date' => $date, 'quantity' => $qty], ...]
@@ -496,8 +547,16 @@ class DeliveryCalculator {
             error_log("Insufficient capacity for product_id=$product_id, variation_id=$variation_id, remaining_quantity=$remaining_quantity, assigned to last business day: $available_date");
         }
 
+        $max_available_date = null;
+        if ($available_date) {
+            $index = array_search($available_date, $data->business_days, true);
+            $max_offset = max(0, $production_days['max'] - $production_days['min']);
+            $max_available_date = $data->business_days[$index + $max_offset] ?? end($data->business_days);
+        }
+
         return [
             'delivery_date' => $available_date,
+            'max_delivery_date' => $max_available_date,
             'allocations' => $allocations
         ];
     }
@@ -558,6 +617,7 @@ class DeliveryCalculator {
                     'variation_id' => $item['variation_id'],
                     'quantity' => $item['quantity'],
                     'delivery_date' => $result['delivery_date'],
+                    'max_delivery_date' => $result['max_delivery_date'],
                     'allocations' => $result['allocations']
                 ];
 

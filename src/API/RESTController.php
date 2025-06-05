@@ -96,7 +96,7 @@ class RESTController extends WP_REST_Controller {
 
         // Rate limiting (max 100 requests per hour per IP)
         $ip = $_SERVER['REMOTE_ADDR'];
-        $cache_key = 'wpm_api_rate_' . md5($ip);
+        $cache_key = 'api_rate_' . md5($ip);
         $requests = \WPM\Utils\Cache::get($cache_key, 0);
         if ($requests >= 100) {
             return new \WP_Error('rate_limit_exceeded', __('Rate limit exceeded', WPM_TEXT_DOMAIN), ['status' => 429]);

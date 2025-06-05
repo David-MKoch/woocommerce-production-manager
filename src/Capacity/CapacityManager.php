@@ -180,7 +180,7 @@ class CapacityManager {
             }
 
             if ($capacity === null) {
-                $capacity = absint(get_option('wpm_default_capacity', 0));
+                $capacity = absint(get_option('wpm_default_capacity', 1));
             }
 
             // Cache the final result

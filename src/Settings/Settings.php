@@ -85,10 +85,24 @@ class Settings {
                 <h2><?php esc_html_e('General Settings', WPM_TEXT_DOMAIN); ?></h2>
                 <table class="form-table">
                     <tr>
+                        <th><label for="wpm_default_capacity"><?php esc_html_e('Default Daily Production Capacity', WPM_TEXT_DOMAIN); ?></label></th>
+                        <td>
+                            <input type="number" name="wpm_default_capacity" id="wpm_default_capacity" value="<?php echo esc_attr(get_option('wpm_default_capacity', 1)); ?>" min="1">
+                            <p><?php esc_html_e('Default maximum number of products that can be produced daily.', WPM_TEXT_DOMAIN); ?></p>
+                        </td>
+                    </tr>
+                    <tr>
                         <th><label for="wpm_default_delivery_days"><?php esc_html_e('Default Delivery Days', WPM_TEXT_DOMAIN); ?></label></th>
                         <td>
                             <input type="number" name="wpm_default_delivery_days" id="wpm_default_delivery_days" value="<?php echo esc_attr(get_option('wpm_default_delivery_days', 3)); ?>" min="1">
                             <p><?php esc_html_e('Number of days to add to order date for default delivery.', WPM_TEXT_DOMAIN); ?></p>
+                        </td>
+                    </tr>
+					<tr>
+                        <th><label for="wpm_default_max_delivery_days"><?php esc_html_e('Default Max Delivery Days', WPM_TEXT_DOMAIN); ?></label></th>
+                        <td>
+                            <input type="number" name="wpm_default_max_delivery_days" id="wpm_default_max_delivery_days" value="<?php echo esc_attr(get_option('wpm_default_max_delivery_days', 3)); ?>" min="1">
+                            <p><?php esc_html_e('Max Number of days to add to order date for default delivery.', WPM_TEXT_DOMAIN); ?></p>
                         </td>
                     </tr>
                     <tr>
@@ -162,7 +176,9 @@ class Settings {
         $current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'general';
         switch($current_tab){
             case 'general':
+                update_option('wpm_default_capacity', absint($data['wpm_default_capacity'] ?? 1));
                 update_option('wpm_default_delivery_days', absint($data['wpm_default_delivery_days'] ?? 3));
+				update_option('wpm_default_max_delivery_days', absint($data['wpm_default_max_delivery_days'] ?? 3));
                 update_option('wpm_daily_cutoff_time', self::sanitize_time($data['wpm_daily_cutoff_time'] ?? '14:00'));
                 $allowed_statuses = isset($data['wpm_allowed_order_statuses']) ? array_map('sanitize_text_field', $data['wpm_allowed_order_statuses']) : [];
                 update_option('wpm_allowed_order_statuses', self::sanitize_order_statuses($allowed_statuses));
