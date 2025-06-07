@@ -17,7 +17,7 @@ class AssetsManager {
         }
 
         if ($hook === 'toplevel_page_wpm-dashboard') {
-            wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', [], '4.4.0', true);
+            wp_enqueue_script('chart-js', WPM_PLUGIN_URL . 'assets/js/chart.js', [], '4.4.0', true);
 
             wp_enqueue_script('wpm-dashboard-js', WPM_PLUGIN_URL . 'assets/js/dashboard.js', ['chart-js', 'jquery'], '1.0.0', true);
             wp_enqueue_style('wpm-dashboard-css', WPM_PLUGIN_URL . 'assets/css/dashboard.css', [], '1.0.0');

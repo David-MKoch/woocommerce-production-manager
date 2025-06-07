@@ -188,13 +188,20 @@ class Settings {
                 update_option('wpm_weekly_holidays', Calendar::sanitize_weekly_holidays($weekly_holidays));
                 break;
             case 'sms':
-                update_option('wpm_enable_sms_customers', isset($data['wpm_enable_sms_customers']) ? 1 : 0);
                 update_option('wpm_enable_sms_manager', isset($data['wpm_enable_sms_manager']) ? 1 : 0);
+                update_option('wpm_enable_sms_customers', isset($data['wpm_enable_sms_customers']) ? 1 : 0);
+                update_option('wpm_sms_use_pattern', isset($data['wpm_sms_use_pattern']) ? 1 : 0);
                 update_option('wpm_admin_phone_number', sanitize_text_field($data['wpm_admin_phone_number'] ?? ''));
-                update_option('wpm_sms_api_key', sanitize_text_field($data['wpm_sms_api_key'] ?? ''));
-                update_option('wpm_sms_sender', sanitize_text_field($data['wpm_sms_sender'] ?? ''));
-                update_option('wpm_delay_sms_template', sanitize_textarea_field($data['wpm_delay_sms_template'] ?? __('Dear {customer_name}, your order #{order_id} is delayed. New delivery date: {delivery_date}.', WPM_TEXT_DOMAIN)));
+                update_option('wpm_sms_username', sanitize_text_field($data['wpm_sms_username'] ?? ''));
+                update_option('wpm_sms_password', sanitize_text_field($data['wpm_sms_password'] ?? ''));
+                update_option('wpm_sms_sender_number', sanitize_text_field($data['wpm_sms_sender_number'] ?? ''));
+                update_option('wpm_enable_status_sms', isset($data['wpm_enable_status_sms']) ? 1 : 0);
+                update_option('wpm_sms_status_pattern_id', sanitize_text_field($data['wpm_sms_status_pattern_id'] ?? ''));
                 update_option('wpm_sms_template', sanitize_textarea_field($data['wpm_sms_template'] ?? __('Order #{order_id} status changed to {status}.', WPM_TEXT_DOMAIN)));
+                update_option('wpm_enable_delay_sms', isset($data['wpm_enable_delay_sms']) ? 1 : 0);
+                update_option('wpm_sms_delay_pattern_id', sanitize_text_field($data['wpm_sms_delay_pattern_id'] ?? ''));
+                update_option('wpm_delay_sms_template', sanitize_textarea_field($data['wpm_delay_sms_template'] ?? __('Dear {customer_name}, your order #{order_id} is delayed. New delivery date: {delivery_date}.', WPM_TEXT_DOMAIN)));
+                
                 break;
             case 'advanced':
                 $wc_statuses = array_keys(wc_get_order_statuses());
