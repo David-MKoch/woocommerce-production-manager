@@ -11,11 +11,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-06-07 10:44+0000\n"
+"POT-Creation-Date: 2025-06-07 13:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: Loco https://localise.biz/\n"
 "X-Domain: woocommerce-production-manager\n"
-"\n"
 "Language: \n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;"
 
@@ -91,6 +90,16 @@ msgstr ""
 msgid ""
 "Available placeholders: {customer_name}, {order_id}, {status}, {item_name}. "
 "For pattern, use pattern variables."
+msgstr ""
+
+#: src/Delivery/DeliveryDisplay.php:58 src/Delivery/DeliveryDisplay.php:171
+#, php-format
+msgid "between %s and %s"
+msgstr ""
+
+#: src/Delivery/DeliveryDisplay.php:37
+#, php-format
+msgid "between %s and %s business days"
 msgstr ""
 
 #: src/Reports/OrderItemsTable.php:283
@@ -351,11 +360,11 @@ msgstr ""
 msgid "Error occurred"
 msgstr ""
 
-#: src/Delivery/DeliveryDisplay.php:37
+#: src/Delivery/DeliveryDisplay.php:44
 msgid "Estimated Delivery (select variation):"
 msgstr ""
 
-#: src/Delivery/DeliveryDisplay.php:35
+#: src/Delivery/DeliveryDisplay.php:42
 msgid "Estimated Delivery:"
 msgstr ""
 
@@ -510,7 +519,7 @@ msgstr ""
 msgid "Invalid input data"
 msgstr ""
 
-#: src/Delivery/DeliveryCalculator.php:650
+#: src/Delivery/DeliveryDisplay.php:161
 msgid "Invalid product"
 msgstr ""
 
@@ -543,11 +552,11 @@ msgstr ""
 msgid "Item Quantity"
 msgstr ""
 
-#: src/Reports/AdminPage.php:76
+#: src/Reports/AdminPage.php:71
 msgid "Items per page"
 msgstr ""
 
-#: src/CustomerUI/StatusTracker.php:168 src/Delivery/DeliveryDisplay.php:65
+#: src/CustomerUI/StatusTracker.php:168 src/Delivery/DeliveryDisplay.php:72
 #: src/Utils/AssetsManager.php:71
 msgid "Loading..."
 msgstr ""
@@ -556,7 +565,7 @@ msgstr ""
 msgid "Logs per page"
 msgstr ""
 
-#: src/Delivery/DeliveryDisplay.php:99 src/Delivery/DeliveryDisplay.php:118
+#: src/Delivery/DeliveryDisplay.php:106 src/Delivery/DeliveryDisplay.php:125
 msgid "Max Delivery Days"
 msgstr ""
 
@@ -564,17 +573,17 @@ msgstr ""
 msgid "Max Number of days to add to order date for default delivery."
 msgstr ""
 
-#: src/Delivery/DeliveryDisplay.php:83
+#: src/Delivery/DeliveryDisplay.php:90
 msgid "Max Production Days"
 msgstr ""
 
-#: src/Delivery/DeliveryDisplay.php:85
+#: src/Delivery/DeliveryDisplay.php:92
 msgid ""
 "Maximum days required to produce this product. Overrides category and "
 "default settings."
 msgstr ""
 
-#: src/Delivery/DeliveryDisplay.php:101 src/Delivery/DeliveryDisplay.php:121
+#: src/Delivery/DeliveryDisplay.php:108 src/Delivery/DeliveryDisplay.php:128
 msgid "Maximum delivery days for products in this category."
 msgstr ""
 
@@ -596,11 +605,11 @@ msgid ""
 "inherit from product."
 msgstr ""
 
-#: src/Delivery/DeliveryDisplay.php:114
+#: src/Delivery/DeliveryDisplay.php:121
 msgid "Minimum  days required to produce products in this category."
 msgstr ""
 
-#: src/Delivery/DeliveryDisplay.php:96
+#: src/Delivery/DeliveryDisplay.php:103
 msgid "Minimum days required to produce products in this category."
 msgstr ""
 
@@ -617,7 +626,7 @@ msgstr ""
 msgid "neodesign"
 msgstr ""
 
-#: src/Delivery/DeliveryCalculator.php:660
+#: src/Delivery/DeliveryDisplay.php:175
 msgid "No available delivery date"
 msgstr ""
 
@@ -651,7 +660,7 @@ msgstr ""
 msgid "Note"
 msgstr ""
 
-#: src/Delivery/DeliveryDisplay.php:77
+#: src/Delivery/DeliveryDisplay.php:84
 msgid ""
 "Number of days required to produce this product. Overrides category and "
 "default settings."
@@ -741,12 +750,16 @@ msgstr ""
 msgid "Production capacity reset successfully."
 msgstr ""
 
+#: src/Delivery/DeliveryDisplay.php:57
+msgid "Production completion time"
+msgstr ""
+
 #: src/Reports/DashboardPage.php:27
 msgid "Production Dashboard"
 msgstr ""
 
-#: src/Delivery/DeliveryDisplay.php:75 src/Delivery/DeliveryDisplay.php:94
-#: src/Delivery/DeliveryDisplay.php:111
+#: src/Delivery/DeliveryDisplay.php:82 src/Delivery/DeliveryDisplay.php:101
+#: src/Delivery/DeliveryDisplay.php:118
 msgid "Production Days"
 msgstr ""
 
@@ -758,7 +771,7 @@ msgstr ""
 msgid "Production Manager Settings"
 msgstr ""
 
-#: src/Reports/AdminPage.php:86
+#: src/Reports/AdminPage.php:87
 msgid "Products per page"
 msgstr ""
 
@@ -988,7 +1001,7 @@ msgstr ""
 msgid "Tuesday"
 msgstr ""
 
-#: src/CustomerUI/StatusTracker.php:169 src/Delivery/DeliveryDisplay.php:66
+#: src/CustomerUI/StatusTracker.php:169 src/Delivery/DeliveryDisplay.php:73
 msgid "Unable to calculate delivery date."
 msgstr ""
 
