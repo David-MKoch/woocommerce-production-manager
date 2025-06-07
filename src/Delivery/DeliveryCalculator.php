@@ -560,6 +560,10 @@ class DeliveryCalculator {
      * محاسبه تاریخ تحویل برای یک محصول
      */
     public static function calculate_delivery_date($product_id, $variation_id, $quantity, $order_date = null) {
+        if (!\WPM\Utils\Helpers::is_backorder_product($product_id, $variation_id)) {
+            return null;
+        }
+
         $min_date = $order_date ?: current_time('Y-m-d');
         $data = self::load_calculation_data($min_date);
         $production_days = self::get_delivery_days_for_products([$product_id])[$product_id];

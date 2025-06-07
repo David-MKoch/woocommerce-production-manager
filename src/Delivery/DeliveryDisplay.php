@@ -31,6 +31,11 @@ class DeliveryDisplay {
         global $product;
         $product_id = $product->get_id();
         $is_variable = $product->is_type('variable');
+
+        if (!$product->is_on_backorder()) {
+            return;
+        }
+
         $delivery_days = DeliveryCalculator::get_delivery_days_for_products([$product_id]);
         $min_delivery_days = $delivery_days[$product_id]['min'];
         $max_delivery_days = $delivery_days[$product_id]['max'];
@@ -50,13 +55,15 @@ class DeliveryDisplay {
     public static function display_cart_delivery_date($item_data, $cart_item) {
         if (isset($cart_item['product_id'], $cart_item['variation_id'], $cart_item['quantity'])) {
             $delivery_result = DeliveryCalculator::calculate_delivery_date($cart_item['product_id'], $cart_item['variation_id'], $cart_item['quantity']);
-            $min_delivery_date = PersianDate::to_persian($delivery_result['delivery_date'], 'j F');
-            $max_delivery_date = PersianDate::to_persian($delivery_result['max_delivery_date'], 'j F');
+            if($delivery_result && $delivery_result['delivery_date']){
+                $min_delivery_date = PersianDate::to_persian($delivery_result['delivery_date'], 'j F');
+                $max_delivery_date = PersianDate::to_persian($delivery_result['max_delivery_date'], 'j F');
 
-            $item_data[] = array(
-                'key' => __('Production completion time', 'woocommerce-production-manager'), 
-                'value' => sprintf(__('between %s and %s', 'woocommerce-production-manager'), $min_delivery_date, $max_delivery_date)
-            );
+                $item_data[] = array(
+                    'key' => __('Production completion time', 'woocommerce-production-manager'), 
+                    'value' => sprintf(__('between %s and %s', 'woocommerce-production-manager'), $min_delivery_date, $max_delivery_date)
+                );
+            }
         }
         return $item_data;
     }

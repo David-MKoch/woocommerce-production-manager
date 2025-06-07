@@ -256,10 +256,22 @@ class Settings {
             LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim2 ON oi.order_item_id = oim2.order_item_id AND oim2.meta_key = '_variation_id'
             LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim3 ON oi.order_item_id = oim3.order_item_id AND oim3.meta_key = '_qty'
             WHERE o.status IN ($status_placeholders)
+			AND EXISTS (
+				SELECT 1 FROM {$wpdb->postmeta} pm 
+				WHERE (pm.post_id = oim.meta_value OR (oim2.meta_value > 0 AND pm.post_id = oim2.meta_value))
+				AND pm.meta_key = '_backorders' 
+				AND pm.meta_value IN ('yes', 'notify')
+				AND EXISTS (
+					SELECT 1 FROM {$wpdb->postmeta} pm2 
+					WHERE pm2.post_id = pm.post_id 
+					AND pm2.meta_key = '_stock' 
+					AND pm2.meta_value <= 0
+				)
+			)
         ", $open_statuses));
 
         if (!$items) {
-            wp_send_json_success(['message' => __('No open orders to reset.', 'woocommerce-production-manager')]);
+            wp_send_json_success(['message' => __('No open backorder items to reset.', 'woocommerce-production-manager')]);
         }
 
         // Clear existing capacity reservations
