@@ -4,19 +4,19 @@ namespace WPM\Utils;
 defined('ABSPATH') || exit;
 
 class AssetsManager {
-    public static function enqueue_admin_assets($hook) {
+    public static function enqueue_admin_assets($page) {
         // Check if the current page matches the identifier
-        if (!in_array($hook, [
-            'toplevel_page_wpm-dashboard',
-            'production-manager_page_wpm-order-items',
-            'production-manager_page_wpm-reports',
-            'production-manager_page_wpm-reserved-products',
-            'production-manager_page_wpm-settings'
+        if (!in_array($page, [
+            'wpm-dashboard',
+            'wpm-order-items',
+            'wpm-reports',
+            'wpm-reserved-products',
+            'wpm-settings'
         ])) {
             return;
         }
 
-        if ($hook === 'toplevel_page_wpm-dashboard') {
+        if ($page === 'wpm-dashboard') {
             wp_enqueue_script('chart-js', WPM_PLUGIN_URL . 'assets/js/chart.js', [], '4.4.0', true);
 
             wp_enqueue_script('wpm-dashboard-js', WPM_PLUGIN_URL . 'assets/js/dashboard.js', ['chart-js', 'jquery'], '1.0.0', true);

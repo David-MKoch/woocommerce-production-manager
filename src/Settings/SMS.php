@@ -375,7 +375,7 @@ class SMS {
             FROM {$wpdb->prefix}wpm_order_items_status s
             JOIN {$wpdb->prefix}wc_orders o ON s.order_id = o.id
             JOIN {$wpdb->prefix}woocommerce_order_items oi ON oi.order_item_id = s.order_item_id
-            LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta om ON s.order_item_id = om.order_item_id AND om.meta_key = 'wpm_delay_sms_sent'
+            LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta om ON s.order_item_id = om.order_item_id AND om.meta_key = '_wpm_delay_sms_sent'
             WHERE s.delivery_date < CURRENT_DATE
             AND o.status IN ($status_placeholders) AND o.status != 'wc-completed'
             AND (om.meta_value IS NULL OR om.meta_value != '1')
@@ -431,7 +431,7 @@ class SMS {
 
             if ($sent) {
                 // Store meta in woocommerce_order_itemmeta to prevent duplicate SMS
-                wc_update_order_item_meta($item->order_item_id, 'wpm_delay_sms_sent', '1');
+                wc_update_order_item_meta($item->order_item_id, '_wpm_delay_sms_sent', '1');
             }
         }
     }

@@ -13,11 +13,6 @@ class DeliveryCalculator {
     const CACHE_SHORT_TTL = 300;
     const DEFAULT_MAX_DAYS = 90;
 
-    public static function init() {
-        add_action('wp_ajax_wpm_get_delivery_date', [__CLASS__, 'ajax_get_delivery_date']);
-        add_action('wp_ajax_nopriv_wpm_get_delivery_date', [__CLASS__, 'ajax_get_delivery_date']);
-    }
-
     /**
      * بررسی تعطیلی یک تاریخ
      */
@@ -634,30 +629,6 @@ class DeliveryCalculator {
         }
 
         return $results;
-    }
-
-    /**
-     * هندلر AJAX برای گرفتن تاریخ تحویل
-     */
-    public static function ajax_get_delivery_date() {
-        check_ajax_referer('wpm_delivery', 'nonce');
-
-        $product_id = absint($_POST['product_id'] ?? 0);
-        $variation_id = absint($_POST['variation_id'] ?? 0);
-        $quantity = absint($_POST['quantity'] ?? 1);
-
-        if (!$product_id) {
-            wp_send_json_error(['message' => __('Invalid product', 'woocommerce-production-manager')]);
-        }
-
-        $result = self::calculate_delivery_date($product_id, $variation_id, $quantity);
-
-        if ($result && $result['delivery_date']) {
-            $jalali_date = PersianDate::to_persian($result['delivery_date']);
-            wp_send_json_success(['delivery_date' => $jalali_date]);
-        }
-
-        wp_send_json_error(['message' => __('No available delivery date', 'woocommerce-production-manager')]);
     }
 }
 ?>

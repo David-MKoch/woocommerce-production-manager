@@ -14,7 +14,6 @@ class Bootstrap {
 		
         \WPM\Capacity\CapacityManager::init();
         \WPM\Capacity\CapacityCounter::init();
-        \WPM\Delivery\DeliveryCalculator::init();
         \WPM\Delivery\DeliveryDisplay::init();
 
         \WPM\Settings\Settings::init();
@@ -120,9 +119,9 @@ class Bootstrap {
         ]);
 
         // Generate default API key if not exists
-        if (!get_option('wpm_api_key')) {
+        /*if (!get_option('wpm_api_key')) {
             update_option('wpm_api_key', wp_generate_password(32, false));
-        }
+        }*/
 
         // Flush rewrite rules for endpoint
         flush_rewrite_rules();

@@ -135,7 +135,9 @@ class StatusTracker {
             $max_delivery_date = \WPM\Delivery\DeliveryCalculator::add_business_days($result->delivery_date, $max_offset);
         }
 
-        $delivery_date = 'بین '. PersianDate::to_persian($result->delivery_date, 'j F'). ' تا '. PersianDate::to_persian($max_delivery_date, 'j F');
+        $min_delivery_date = PersianDate::to_persian($result->delivery_date, 'j F');
+        $max_delivery_date = PersianDate::to_persian($max_delivery_date, 'j F');
+        $delivery_date = sprintf(__('between %s and %s', 'woocommerce-production-manager'), $min_delivery_date, $max_delivery_date);
 
         ?>
         <div class="wpm-production-status">
@@ -159,9 +161,9 @@ class StatusTracker {
 
     public static function enqueue_scripts() {
         if (is_account_page()) {
-            wp_enqueue_script('wpm-frontend-js', WPM_PLUGIN_URL . 'assets/js/frontend.js', ['jquery'], '1.0.0', true);
+            //wp_enqueue_script('wpm-frontend-js', WPM_PLUGIN_URL . 'assets/js/frontend.js', ['jquery'], '1.0.0', true);
             wp_enqueue_style('wpm-frontend-css', WPM_PLUGIN_URL . 'assets/css/frontend.css', [], '1.0.0');
-            wp_localize_script('wpm-frontend-js', 'wpmFrontend', [
+            /*wp_localize_script('wpm-frontend-js', 'wpmFrontend', [
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce'   => wp_create_nonce('wpm_customer_ui'),
                 'i18n'    => [
@@ -169,7 +171,7 @@ class StatusTracker {
                     'error'   => __('Unable to calculate delivery date.', 'woocommerce-production-manager'),
                     'smsUpdated' => __('SMS notification settings updated', 'woocommerce-production-manager')
                 ]
-            ]);
+            ]);*/
         }
     }
 }

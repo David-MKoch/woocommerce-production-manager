@@ -57,58 +57,55 @@ class AdminPage {
             [ReportsPage::class, 'render_page']
         );
 
-        add_action("load-$dashboard_hook", [__CLASS__, 'add_screen_options']);
-        add_action("load-$order_items_hook", [__CLASS__, 'add_screen_options']);
-        add_action("load-$reports_hook", [__CLASS__, 'add_screen_options']);
+        //add_action("load-$dashboard_hook", [__CLASS__, 'dashboard_screen_options']);
+        add_action("load-$order_items_hook", [__CLASS__, 'order_items_screen_options']);
+        add_action("load-$reports_hook", [__CLASS__, 'reports_screen_options']);
     }
 
-    public static function add_screen_options() {
+    public static function order_items_screen_options() {
         if (!class_exists('WP_List_Table')) {
             require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
         }
 
-        $screen = get_current_screen();
+        add_screen_option('per_page', [
+            'label' => __('Items per page', 'woocommerce-production-manager'),
+            'default' => 20,
+            'option' => 'wpm_order_items_per_page'
+        ]);
+        self::$table = new \WPM\Reports\OrderItemsTable();
+    }
 
-        if ($screen->id === 'toplevel_page_wpm-dashboard') {
-            // No screen options for dashboard yet
-        } elseif ($screen->id === 'production-manager_page_wpm-order-items') {
-            add_screen_option('per_page', [
-                'label' => __('Items per page', 'woocommerce-production-manager'),
-                'default' => 20,
-                'option' => 'wpm_order_items_per_page'
-            ]);
-            self::$table = new \WPM\Reports\OrderItemsTable();
-
-        } elseif ($screen->id === 'production-manager_page_wpm-reports') {
-            $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'status_logs';
-            if (isset($_GET['section']) && $_GET['section'] === 'reserved-products') {
-                add_screen_option('per_page', [
-                    'label' => __('Products per page', 'woocommerce-production-manager'),
-                    'default' => 20,
-                    'option' => 'wpm_reserved_products_per_page'
-                ]);
-                self::$table = new \WPM\Reports\ReservedProductsTable();
-
-            } elseif ($tab === 'category') {
-                add_screen_option('per_page', [
-                    'label' => __('Categories per page', 'woocommerce-production-manager'),
-                    'default' => 20,
-                    'option' => 'wpm_category_orders_per_page'
-                ]);
-                self::$table = new \WPM\Reports\CategoryOrdersTable();
-
-            } elseif ($tab === 'status_logs') {
-                add_screen_option('per_page', [
-                    'label' => __('Logs per page', 'woocommerce-production-manager'),
-                    'default' => 20,
-                    'option' => 'wpm_status_logs_per_page'
-                ]);
-                self::$table = new \WPM\Reports\StatusLogsTable();
-
-            }
+    public static function reports_screen_options() {
+        if (!class_exists('WP_List_Table')) {
+            require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
         }
 
-        //add_filter('screen_settings', [__CLASS__, 'add_column_settings'], 10, 2);
+        $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'status_logs';
+        
+        if (isset($_GET['section']) && $_GET['section'] === 'reserved-products') {
+            add_screen_option('per_page', [
+                'label' => __('Products per page', 'woocommerce-production-manager'),
+                'default' => 20,
+                'option' => 'wpm_reserved_products_per_page'
+            ]);
+            self::$table = new \WPM\Reports\ReservedProductsTable();
+        } elseif ($tab === 'category') {
+            add_screen_option('per_page', [
+                'label' => __('Categories per page', 'woocommerce-production-manager'),
+                'default' => 20,
+                'option' => 'wpm_category_orders_per_page'
+            ]);
+            self::$table = new \WPM\Reports\CategoryOrdersTable();
+
+        } elseif ($tab === 'status_logs') {
+            add_screen_option('per_page', [
+                'label' => __('Logs per page', 'woocommerce-production-manager'),
+                'default' => 20,
+                'option' => 'wpm_status_logs_per_page'
+            ]);
+            self::$table = new \WPM\Reports\StatusLogsTable();
+
+        }
     }
 
     public static function set_screen_option($status, $option, $value) {
@@ -123,7 +120,15 @@ class AdminPage {
         return $status;
     }
 
-    public static function enqueue_scripts($hook) {
-        \WPM\Utils\AssetsManager::enqueue_admin_assets($hook);
+    public static function enqueue_scripts() {
+        if (!isset($_GET['page'])) {
+            return;
+        }
+
+        $page = sanitize_text_field($_GET['page']);
+
+        if (strpos($page, 'wpm-') === 0) {
+            \WPM\Utils\AssetsManager::enqueue_admin_assets($page);
+        }
     }
 }
