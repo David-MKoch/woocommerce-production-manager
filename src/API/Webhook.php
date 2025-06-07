@@ -64,42 +64,42 @@ class Webhook {
     }
 
     public static function add_settings_tab($tabs) {
-        $tabs['webhook'] = __('Webhook & API', WPM_TEXT_DOMAIN);
+        $tabs['webhook'] = __('Webhook & API', 'woocommerce-production-manager');
         return $tabs;
     }
 
     public static function render_settings_tab() {
         ?>
-        <h2><?php esc_html_e('Webhook & API Settings', WPM_TEXT_DOMAIN); ?></h2>
+        <h2><?php esc_html_e('Webhook & API Settings', 'woocommerce-production-manager'); ?></h2>
         <table class="form-table">
             <tr>
-                <th><label for="wpm_api_key"><?php esc_html_e('API Key', WPM_TEXT_DOMAIN); ?></label></th>
+                <th><label for="wpm_api_key"><?php esc_html_e('API Key', 'woocommerce-production-manager'); ?></label></th>
                 <td>
                     <input type="text" name="wpm_api_key" id="wpm_api_key" value="<?php echo esc_attr(get_option('wpm_api_key')); ?>" class="regular-text">
-                    <p><?php esc_html_e('Generate a secure key for API authentication.', WPM_TEXT_DOMAIN); ?></p>
+                    <p><?php esc_html_e('Generate a secure key for API authentication.', 'woocommerce-production-manager'); ?></p>
                 </td>
             </tr>
             <tr>
-                <th><label for="wpm_webhook_url"><?php esc_html_e('Webhook URL', WPM_TEXT_DOMAIN); ?></label></th>
+                <th><label for="wpm_webhook_url"><?php esc_html_e('Webhook URL', 'woocommerce-production-manager'); ?></label></th>
                 <td>
                     <input type="url" name="wpm_webhook_url" id="wpm_webhook_url" value="<?php echo esc_attr(get_option('wpm_webhook_url')); ?>" class="regular-text">
-                    <p><?php esc_html_e('URL to receive webhook notifications for status changes.', WPM_TEXT_DOMAIN); ?></p>
+                    <p><?php esc_html_e('URL to receive webhook notifications for status changes.', 'woocommerce-production-manager'); ?></p>
                 </td>
             </tr>
             <tr>
-                <th><label for="wpm_webhook_enabled"><?php esc_html_e('Enable Webhook', WPM_TEXT_DOMAIN); ?></label></th>
+                <th><label for="wpm_webhook_enabled"><?php esc_html_e('Enable Webhook', 'woocommerce-production-manager'); ?></label></th>
                 <td>
                     <input type="checkbox" name="wpm_webhook_enabled" id="wpm_webhook_enabled" value="yes" <?php checked(get_option('wpm_webhook_enabled'), 'yes'); ?>>
-                    <p><?php esc_html_e('Enable sending webhook notifications.', WPM_TEXT_DOMAIN); ?></p>
+                    <p><?php esc_html_e('Enable sending webhook notifications.', 'woocommerce-production-manager'); ?></p>
                 </td>
             </tr>
         </table>
-        <h3><?php esc_html_e('API Documentation', WPM_TEXT_DOMAIN); ?></h3>
-        <p><?php esc_html_e('Use the following endpoints with the API key in the X-API-Key header:', WPM_TEXT_DOMAIN); ?></p>
+        <h3><?php esc_html_e('API Documentation', 'woocommerce-production-manager'); ?></h3>
+        <p><?php esc_html_e('Use the following endpoints with the API key in the X-API-Key header:', 'woocommerce-production-manager'); ?></p>
         <ul>
-            <li><strong>GET /wp-json/wpm/v1/capacity</strong>: <?php esc_html_e('Get capacity information. Parameters: date, entity_type, entity_id.', WPM_TEXT_DOMAIN); ?></li>
-            <li><strong>GET /wp-json/wpm/v1/order-items</strong>: <?php esc_html_e('Get order items. Parameters: status, category, date_from, date_to, persian_date.', WPM_TEXT_DOMAIN); ?></li>
-            <li><strong>GET /wp-json/wpm/v1/reports/{type}</strong>: <?php esc_html_e('Get reports. Types: category-orders, full-capacity. Parameters: date_from, date_to, persian_date.', WPM_TEXT_DOMAIN); ?></li>
+            <li><strong>GET /wp-json/wpm/v1/capacity</strong>: <?php esc_html_e('Get capacity information. Parameters: date, entity_type, entity_id.', 'woocommerce-production-manager'); ?></li>
+            <li><strong>GET /wp-json/wpm/v1/order-items</strong>: <?php esc_html_e('Get order items. Parameters: status, category, date_from, date_to, persian_date.', 'woocommerce-production-manager'); ?></li>
+            <li><strong>GET /wp-json/wpm/v1/reports/{type}</strong>: <?php esc_html_e('Get reports. Types: category-orders, full-capacity. Parameters: date_from, date_to, persian_date.', 'woocommerce-production-manager'); ?></li>
         </ul>
         <?php
     }

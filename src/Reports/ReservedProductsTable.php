@@ -8,8 +8,8 @@ defined('ABSPATH') || exit;
 class ReservedProductsTable extends WP_List_Table {
     public function __construct() {
         parent::__construct([
-            'singular' => __('Reserved Product', WPM_TEXT_DOMAIN),
-            'plural'   => __('Reserved Products', WPM_TEXT_DOMAIN),
+            'singular' => __('Reserved Product', 'woocommerce-production-manager'),
+            'plural'   => __('Reserved Products', 'woocommerce-production-manager'),
             'ajax'     => false
         ]);
     }
@@ -17,11 +17,11 @@ class ReservedProductsTable extends WP_List_Table {
     public function get_columns() {
         return [
             'cb' => '<input type="checkbox" />',
-            'image' => __('Image', WPM_TEXT_DOMAIN),
-            'product_name' => __('Product Name', WPM_TEXT_DOMAIN),
-            'product_id' => __('Product ID', WPM_TEXT_DOMAIN),
-            'reserved_count' => __('Reserved Count', WPM_TEXT_DOMAIN),
-            'reservation_date' => __('Reservation Date', WPM_TEXT_DOMAIN)
+            'image' => __('Image', 'woocommerce-production-manager'),
+            'product_name' => __('Product Name', 'woocommerce-production-manager'),
+            'product_id' => __('Product ID', 'woocommerce-production-manager'),
+            'reserved_count' => __('Reserved Count', 'woocommerce-production-manager'),
+            'reservation_date' => __('Reservation Date', 'woocommerce-production-manager')
         ];
     }
 
@@ -95,7 +95,7 @@ class ReservedProductsTable extends WP_List_Table {
             $where[] = 'cc.date = %s';
             $params[] = $reservation_date;
         } else {
-            wp_die(__('Invalid reservation date.', WPM_TEXT_DOMAIN));
+            wp_die(__('Invalid reservation date.', 'woocommerce-production-manager'));
         }
 		if (isset($_GET['s']) && !empty($_GET['s'])) {
             $search_query = '%' . $wpdb->esc_like(sanitize_text_field($_GET['s'])) . '%';

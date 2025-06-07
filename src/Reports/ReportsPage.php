@@ -21,7 +21,7 @@ class ReportsPage {
             $table->prepare_items();
             ?>
             <div class="wrap">
-                <h1><?php esc_html_e('Reserved Products', WPM_TEXT_DOMAIN); ?></h1>
+                <h1><?php esc_html_e('Reserved Products', 'woocommerce-production-manager'); ?></h1>
                 <?php if ($table->items) : ?>
                     <form method="get">
                         <input type="hidden" name="page" value="wpm-reports">
@@ -29,17 +29,17 @@ class ReportsPage {
                         <input type="hidden" name="date" value="<?php echo esc_attr(isset($_GET['date']) ? sanitize_text_field($_GET['date']) : ''); ?>">
                         <input type="hidden" name="category_id" value="<?php echo esc_attr(isset($_GET['category_id']) ? absint($_GET['category_id']) : 0); ?>">
                         <div class="wpm-filters">
-                            <?php $table->search_box(__('Search Products', WPM_TEXT_DOMAIN), 'product-search'); ?>
-                            <button type="submit" class="button"><?php esc_html_e('Filter', WPM_TEXT_DOMAIN); ?></button>
-                            <button type="button" class="button wpm-export-reserved-products-csv"><?php esc_html_e('Export to CSV', WPM_TEXT_DOMAIN); ?></button>
-                            <button type="button" class="button wpm-export-reserved-products-excel"><?php esc_html_e('Export to Excel', WPM_TEXT_DOMAIN); ?></button>
+                            <?php $table->search_box(__('Search Products', 'woocommerce-production-manager'), 'product-search'); ?>
+                            <button type="submit" class="button"><?php esc_html_e('Filter', 'woocommerce-production-manager'); ?></button>
+                            <button type="button" class="button wpm-export-reserved-products-csv"><?php esc_html_e('Export to CSV', 'woocommerce-production-manager'); ?></button>
+                            <button type="button" class="button wpm-export-reserved-products-excel"><?php esc_html_e('Export to Excel', 'woocommerce-production-manager'); ?></button>
                         </div>
                     </form>
                     <form method="post">
                         <?php $table->display(); ?>
                     </form>
                 <?php else : ?>
-                    <p><?php esc_html_e('No reserved products found for the specified date or category.', WPM_TEXT_DOMAIN); ?></p>
+                    <p><?php esc_html_e('No reserved products found for the specified date or category.', 'woocommerce-production-manager'); ?></p>
                 <?php endif; ?>
             </div>
             <?php
@@ -47,10 +47,10 @@ class ReportsPage {
             // Render Category Reservations or Status Logs
             ?>
             <div class="wrap">
-                <h1><?php esc_html_e('Reports', WPM_TEXT_DOMAIN); ?></h1>
+                <h1><?php esc_html_e('Reports', 'woocommerce-production-manager'); ?></h1>
                 <h2 class="nav-tab-wrapper">
-					<a href="<?php echo esc_url(add_query_arg('tab', 'status_logs')); ?>" class="nav-tab <?php echo $tab === 'status_logs' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Status Logs', WPM_TEXT_DOMAIN); ?></a>
-                    <a href="<?php echo esc_url(add_query_arg('tab', 'category')); ?>" class="nav-tab <?php echo $tab === 'category' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Category Orders', WPM_TEXT_DOMAIN); ?></a>
+					<a href="<?php echo esc_url(add_query_arg('tab', 'status_logs')); ?>" class="nav-tab <?php echo $tab === 'status_logs' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Status Logs', 'woocommerce-production-manager'); ?></a>
+                    <a href="<?php echo esc_url(add_query_arg('tab', 'category')); ?>" class="nav-tab <?php echo $tab === 'category' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Category Orders', 'woocommerce-production-manager'); ?></a>
                 </h2>
                 <?php if ($tab === 'category') : ?>
                     <?php
@@ -66,18 +66,18 @@ class ReportsPage {
                             <input type="hidden" name="page" value="wpm-reports">
                             <input type="hidden" name="tab" value="category">
                             <div class="wpm-filters">
-                                <input type="text" name="date_from" class="persian-datepicker" placeholder="<?php esc_attr_e('From Date', WPM_TEXT_DOMAIN); ?>" value="<?php echo esc_attr($_GET['date_from'] ?? ''); ?>">
-                                <input type="text" name="date_to" class="persian-datepicker" placeholder="<?php esc_attr_e('To Date', WPM_TEXT_DOMAIN); ?>" value="<?php echo esc_attr($_GET['date_to'] ?? ''); ?>">
-                                <button type="submit" class="button"><?php esc_html_e('Filter', WPM_TEXT_DOMAIN); ?></button>
-                                <button type="button" class="button wpm-export-category-orders-csv"><?php esc_html_e('Export to CSV', WPM_TEXT_DOMAIN); ?></button>
-                                <button type="button" class="button wpm-export-category-orders-excel"><?php esc_html_e('Export to Excel', WPM_TEXT_DOMAIN); ?></button>
+                                <input type="text" name="date_from" class="persian-datepicker" placeholder="<?php esc_attr_e('From Date', 'woocommerce-production-manager'); ?>" value="<?php echo esc_attr($_GET['date_from'] ?? ''); ?>">
+                                <input type="text" name="date_to" class="persian-datepicker" placeholder="<?php esc_attr_e('To Date', 'woocommerce-production-manager'); ?>" value="<?php echo esc_attr($_GET['date_to'] ?? ''); ?>">
+                                <button type="submit" class="button"><?php esc_html_e('Filter', 'woocommerce-production-manager'); ?></button>
+                                <button type="button" class="button wpm-export-category-orders-csv"><?php esc_html_e('Export to CSV', 'woocommerce-production-manager'); ?></button>
+                                <button type="button" class="button wpm-export-category-orders-excel"><?php esc_html_e('Export to Excel', 'woocommerce-production-manager'); ?></button>
                             </div>
                         </form>
                         <form method="post">
                             <?php $table->display(); ?>
                         </form>
                     <?php else : ?>
-                        <p><?php esc_html_e('No category reservations found for the specified filters.', WPM_TEXT_DOMAIN); ?></p>
+                        <p><?php esc_html_e('No category reservations found for the specified filters.', 'woocommerce-production-manager'); ?></p>
                     <?php endif; ?>
                 <?php elseif ($tab === 'status_logs') : ?>
                     <?php
@@ -93,20 +93,20 @@ class ReportsPage {
                             <input type="hidden" name="page" value="wpm-reports">
                             <input type="hidden" name="tab" value="status_logs">
                             <div class="wpm-filters">
-                                <input type="text" name="order_item_id" placeholder="<?php esc_attr_e('Order Item ID', WPM_TEXT_DOMAIN); ?>" value="<?php echo esc_attr($_GET['order_item_id'] ?? ''); ?>">
-                                <input type="text" name="changed_by" placeholder="<?php esc_attr_e('Changed By (User ID)', WPM_TEXT_DOMAIN); ?>" value="<?php echo esc_attr($_GET['changed_by'] ?? ''); ?>">
-                                <input type="text" name="date_from" class="persian-datepicker" placeholder="<?php esc_attr_e('From Date', WPM_TEXT_DOMAIN); ?>" value="<?php echo esc_attr($_GET['date_from'] ?? ''); ?>">
-                                <input type="text" name="date_to" class="persian-datepicker" placeholder="<?php esc_attr_e('To Date', WPM_TEXT_DOMAIN); ?>" value="<?php echo esc_attr($_GET['date_to'] ?? ''); ?>">
-                                <button type="submit" class="button"><?php esc_html_e('Filter', WPM_TEXT_DOMAIN); ?></button>
-                                <button type="button" class="button wpm-export-status-logs-csv"><?php esc_html_e('Export to CSV', WPM_TEXT_DOMAIN); ?></button>
-                                <button type="button" class="button wpm-export-status-logs-excel"><?php esc_html_e('Export to Excel', WPM_TEXT_DOMAIN); ?></button>
+                                <input type="text" name="order_item_id" placeholder="<?php esc_attr_e('Order Item ID', 'woocommerce-production-manager'); ?>" value="<?php echo esc_attr($_GET['order_item_id'] ?? ''); ?>">
+                                <input type="text" name="changed_by" placeholder="<?php esc_attr_e('Changed By (User ID)', 'woocommerce-production-manager'); ?>" value="<?php echo esc_attr($_GET['changed_by'] ?? ''); ?>">
+                                <input type="text" name="date_from" class="persian-datepicker" placeholder="<?php esc_attr_e('From Date', 'woocommerce-production-manager'); ?>" value="<?php echo esc_attr($_GET['date_from'] ?? ''); ?>">
+                                <input type="text" name="date_to" class="persian-datepicker" placeholder="<?php esc_attr_e('To Date', 'woocommerce-production-manager'); ?>" value="<?php echo esc_attr($_GET['date_to'] ?? ''); ?>">
+                                <button type="submit" class="button"><?php esc_html_e('Filter', 'woocommerce-production-manager'); ?></button>
+                                <button type="button" class="button wpm-export-status-logs-csv"><?php esc_html_e('Export to CSV', 'woocommerce-production-manager'); ?></button>
+                                <button type="button" class="button wpm-export-status-logs-excel"><?php esc_html_e('Export to Excel', 'woocommerce-production-manager'); ?></button>
                             </div>
                         </form>
                         <form method="post">
                             <?php $table->display(); ?>
                         </form>
                     <?php else : ?>
-                        <p><?php esc_html_e('No status logs found for the specified filters.', WPM_TEXT_DOMAIN); ?></p>
+                        <p><?php esc_html_e('No status logs found for the specified filters.', 'woocommerce-production-manager'); ?></p>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
@@ -117,7 +117,7 @@ class ReportsPage {
     public static function export_category_orders_csv() {
         check_ajax_referer('wpm_admin', 'nonce');
         if (!current_user_can('manage_woocommerce')) {
-            wp_send_json_error(['message' => __('Unauthorized', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Unauthorized', 'woocommerce-production-manager')]);
         }
 
         global $wpdb;
@@ -174,16 +174,16 @@ class ReportsPage {
 
         $file = fopen($file_path, 'w');
         fputcsv($file, [
-            __('Category', WPM_TEXT_DOMAIN),
-            __('Production Capacity', WPM_TEXT_DOMAIN),
-            __('Reserved Count', WPM_TEXT_DOMAIN),
-            __('Reservation Date', WPM_TEXT_DOMAIN)
+            __('Category', 'woocommerce-production-manager'),
+            __('Production Capacity', 'woocommerce-production-manager'),
+            __('Reserved Count', 'woocommerce-production-manager'),
+            __('Reservation Date', 'woocommerce-production-manager')
         ]);
 
         foreach ($items as $item) {
             fputcsv($file, [
                 $item->category_name,
-                $item->max_capacity ?: __('No Limit', WPM_TEXT_DOMAIN),
+                $item->max_capacity ?: __('No Limit', 'woocommerce-production-manager'),
                 $item->reserved_count,
                 \WPM\Utils\PersianDate::to_persian($item->reservation_date)
             ]);
@@ -196,7 +196,7 @@ class ReportsPage {
     public static function export_category_orders_excel() {
         check_ajax_referer('wpm_admin', 'nonce');
         if (!current_user_can('manage_woocommerce')) {
-            wp_die(__('Unauthorized', WPM_TEXT_DOMAIN));
+            wp_die(__('Unauthorized', 'woocommerce-production-manager'));
         }
 
         global $wpdb;
@@ -251,17 +251,17 @@ class ReportsPage {
         $sheet = $spreadsheet->getActiveSheet();
 
         $headers = [
-            __('Category', WPM_TEXT_DOMAIN),
-            __('Production Capacity', WPM_TEXT_DOMAIN),
-            __('Reserved Count', WPM_TEXT_DOMAIN),
-            __('Reservation Date', WPM_TEXT_DOMAIN)
+            __('Category', 'woocommerce-production-manager'),
+            __('Production Capacity', 'woocommerce-production-manager'),
+            __('Reserved Count', 'woocommerce-production-manager'),
+            __('Reservation Date', 'woocommerce-production-manager')
         ];
         $sheet->fromArray($headers, null, 'A1');
 
         $row = 2;
         foreach ($items as $item) {
             $sheet->setCellValue("A$row", $item->category_name);
-            $sheet->setCellValue("B$row", $item->max_capacity ?: __('No Limit', WPM_TEXT_DOMAIN));
+            $sheet->setCellValue("B$row", $item->max_capacity ?: __('No Limit', 'woocommerce-production-manager'));
             $sheet->setCellValue("C$row", $item->reserved_count);
             $sheet->setCellValue("D$row", \WPM\Utils\PersianDate::to_persian($item->reservation_date));
             $row++;
@@ -285,7 +285,7 @@ class ReportsPage {
 	public static function export_reserved_products_csv() {
         check_ajax_referer('wpm_admin', 'nonce');
         if (!current_user_can('manage_woocommerce')) {
-            wp_send_json_error(['message' => __('Unauthorized', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Unauthorized', 'woocommerce-production-manager')]);
         }
 
         global $wpdb;
@@ -333,10 +333,10 @@ class ReportsPage {
 
         $file = fopen($file_path, 'w');
         fputcsv($file, [
-            __('Product Name', WPM_TEXT_DOMAIN),
-            __('Product ID', WPM_TEXT_DOMAIN),
-            __('Reserved Count', WPM_TEXT_DOMAIN),
-            __('Reservation Date', WPM_TEXT_DOMAIN)
+            __('Product Name', 'woocommerce-production-manager'),
+            __('Product ID', 'woocommerce-production-manager'),
+            __('Reserved Count', 'woocommerce-production-manager'),
+            __('Reservation Date', 'woocommerce-production-manager')
         ]);
 
         foreach ($items as $item) {
@@ -355,7 +355,7 @@ class ReportsPage {
     public static function export_reserved_products_excel() {
         check_ajax_referer('wpm_admin', 'nonce');
         if (!current_user_can('manage_woocommerce')) {
-            wp_die(__('Unauthorized', WPM_TEXT_DOMAIN));
+            wp_die(__('Unauthorized', 'woocommerce-production-manager'));
         }
 
         global $wpdb;
@@ -401,10 +401,10 @@ class ReportsPage {
         $sheet = $spreadsheet->getActiveSheet();
 
         $headers = [
-            __('Product Name', WPM_TEXT_DOMAIN),
-            __('Product ID', WPM_TEXT_DOMAIN),
-            __('Reserved Count', WPM_TEXT_DOMAIN),
-            __('Reservation Date', WPM_TEXT_DOMAIN)
+            __('Product Name', 'woocommerce-production-manager'),
+            __('Product ID', 'woocommerce-production-manager'),
+            __('Reserved Count', 'woocommerce-production-manager'),
+            __('Reservation Date', 'woocommerce-production-manager')
         ];
         $sheet->fromArray($headers, null, 'A1');
 
@@ -435,7 +435,7 @@ class ReportsPage {
     public static function export_status_logs_csv() {
         check_ajax_referer('wpm_admin', 'nonce');
         if (!current_user_can('manage_woocommerce')) {
-            wp_send_json_error(['message' => __('Unauthorized', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Unauthorized', 'woocommerce-production-manager')]);
         }
 
         global $wpdb;
@@ -477,18 +477,18 @@ class ReportsPage {
 
         $file = fopen($file_path, 'w');
         fputcsv($file, [
-            __('Order Item ID', WPM_TEXT_DOMAIN),
-            __('Status', WPM_TEXT_DOMAIN),
-            __('Changed By', WPM_TEXT_DOMAIN),
-            __('Changed At', WPM_TEXT_DOMAIN),
-            __('Note', WPM_TEXT_DOMAIN)
+            __('Order Item ID', 'woocommerce-production-manager'),
+            __('Status', 'woocommerce-production-manager'),
+            __('Changed By', 'woocommerce-production-manager'),
+            __('Changed At', 'woocommerce-production-manager'),
+            __('Note', 'woocommerce-production-manager')
         ]);
 
         foreach ($logs as $log) {
             fputcsv($file, [
                 $log->order_item_id,
                 $log->status,
-                $log->changed_by_name ?: __('Unknown', WPM_TEXT_DOMAIN),
+                $log->changed_by_name ?: __('Unknown', 'woocommerce-production-manager'),
                 \WPM\Utils\PersianDate::to_persian($log->changed_at, 'Y/m/d H:i'),
                 $log->note
             ]);
@@ -501,7 +501,7 @@ class ReportsPage {
     public static function export_status_logs_excel() {
         check_ajax_referer('wpm_admin', 'nonce');
         if (!current_user_can('manage_woocommerce')) {
-            wp_die(__('Unauthorized', WPM_TEXT_DOMAIN));
+            wp_die(__('Unauthorized', 'woocommerce-production-manager'));
         }
 
         global $wpdb;
@@ -541,11 +541,11 @@ class ReportsPage {
         $sheet = $spreadsheet->getActiveSheet();
 
         $headers = [
-            __('Order Item ID', WPM_TEXT_DOMAIN),
-            __('Status', WPM_TEXT_DOMAIN),
-            __('Changed By', WPM_TEXT_DOMAIN),
-            __('Changed At', WPM_TEXT_DOMAIN),
-            __('Note', WPM_TEXT_DOMAIN)
+            __('Order Item ID', 'woocommerce-production-manager'),
+            __('Status', 'woocommerce-production-manager'),
+            __('Changed By', 'woocommerce-production-manager'),
+            __('Changed At', 'woocommerce-production-manager'),
+            __('Note', 'woocommerce-production-manager')
         ];
         $sheet->fromArray($headers, null, 'A1');
 
@@ -553,7 +553,7 @@ class ReportsPage {
         foreach ($logs as $log) {
             $sheet->setCellValue("A$row", $log->order_item_id);
             $sheet->setCellValue("B$row", $log->status);
-            $sheet->setCellValue("C$row", $log->changed_by_name ?: __('Unknown', WPM_TEXT_DOMAIN));
+            $sheet->setCellValue("C$row", $log->changed_by_name ?: __('Unknown', 'woocommerce-production-manager'));
             $sheet->setCellValue("D$row", \WPM\Utils\PersianDate::to_persian($log->changed_at, 'Y/m/d H:i'));
             $sheet->setCellValue("E$row", $log->note);
             $row++;

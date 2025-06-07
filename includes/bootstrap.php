@@ -33,7 +33,8 @@ class Bootstrap {
     }
 
     public static function load_textdomain() {
-        load_plugin_textdomain(WPM_TEXT_DOMAIN, false, dirname(plugin_basename(WPM_PLUGIN_DIR)) . '/languages');
+        $language_path = plugin_basename(dirname(plugin_dir_path(__FILE__))) . '/languages';
+        load_plugin_textdomain('woocommerce-production-manager', false, $language_path);
     }
 
     public static function activate() {
@@ -115,7 +116,7 @@ class Bootstrap {
         // Set default settings
         update_option('wpm_default_delivery_days', 3);
         update_option('wpm_statuses', [
-            ['name' => __('Received', WPM_TEXT_DOMAIN), 'color' => '#0073aa']
+            ['name' => __('Received', 'woocommerce-production-manager'), 'color' => '#0073aa']
         ]);
 
         // Generate default API key if not exists

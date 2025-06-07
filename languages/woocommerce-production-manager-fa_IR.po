@@ -1,213 +1,218 @@
-# Copyright (C) 2024
+# Copyright (C) 2025
 # This file is distributed under the GNU General Public License v3.0.
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Woocommerce Production Manager 1.0.0\n"
+"Project-Id-Version: WooCommerce Production Manager 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woocommerce-"
 "production-manager\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: فارسی\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2025-06-07 10:44+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2025-06-07 10:55+0000\n"
 "X-Generator: Loco https://localise.biz/\n"
 "X-Domain: woocommerce-production-manager\n"
-"\n"
-"Language: \n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;"
+"Language: fa_IR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);"
 
 #: src/Reports/CategoryOrdersTable.php:61
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #. Description of the plugin
 msgid ""
 "A WooCommerce plugin to manage production capacity, delivery dates, and "
 "order item statuses."
 msgstr ""
+"افزونه‌ای برای ووکامرس جهت مدیریت ظرفیت تولید، تاریخ‌های تحویل و وضعیت "
+"آیتم‌های سفارش."
 
 #: src/Settings/Calendar.php:59 src/Settings/StatusManager.php:32
 msgid "Actions"
-msgstr ""
+msgstr "عملیات"
 
 #: src/Settings/Calendar.php:52
 msgid "Add Holiday"
-msgstr ""
+msgstr "افزودن تعطیلی"
 
 #: src/Settings/StatusManager.php:25
 msgid "Add Status"
-msgstr ""
+msgstr "افزودن وضعیت"
 
 #: src/Settings/SMS.php:50
 msgid "Admin Phone Number"
-msgstr ""
+msgstr "شماره تلفن مدیر"
 
 #: src/Settings/Settings.php:40
 msgid "Advanced"
-msgstr ""
+msgstr "پیشرفته"
 
 #: src/Settings/Settings.php:139
 msgid "Advanced Settings"
-msgstr ""
+msgstr "تنظیمات پیشرفته"
 
 #: src/Reports/CategoryOrdersTable.php:100
 msgid "All Categories"
-msgstr ""
+msgstr "همه دسته‌بندی‌ها"
 
 #: src/Reports/OrderItemsPage.php:26
 msgid "All Statuses"
-msgstr ""
+msgstr "همه وضعیت‌ها"
 
 #: src/Settings/Settings.php:116
 msgid "Allowed Order Statuses"
-msgstr ""
+msgstr "وضعیت‌های مجاز سفارش"
 
 #: src/API/Webhook.php:97
 msgid "API Documentation"
-msgstr ""
+msgstr "مستندات API"
 
 #: src/API/Webhook.php:76
 msgid "API Key"
-msgstr ""
+msgstr "کلید API"
 
 #: src/Reports/OrderItemsTable.php:285
 msgid "Apply"
-msgstr ""
+msgstr "اعمال"
 
 #: src/Utils/AssetsManager.php:63
 msgid "Are you sure you want to delete this?"
-msgstr ""
+msgstr "آیا مطمئن هستید که می‌خواهید این مورد را حذف کنید؟"
 
 #: src/Settings/SMS.php:117
 msgid ""
 "Available placeholders: {customer_name}, {order_id}, {delivery_date}, "
 "{item_name}. For pattern, use pattern variables."
 msgstr ""
+"جایگزین‌های موجود: {customer_name}، {order_id}، {delivery_date}، {item_name}."
+" برای الگو، از متغیرهای الگو استفاده کنید."
 
 #: src/Settings/SMS.php:95
 msgid ""
 "Available placeholders: {customer_name}, {order_id}, {status}, {item_name}. "
 "For pattern, use pattern variables."
 msgstr ""
+"جایگزین‌های موجود: {customer_name}، {order_id}، {status}، {item_name}. برای "
+"الگو، از متغیرهای الگو استفاده کنید."
 
 #: src/Reports/OrderItemsTable.php:283
 msgid "Bulk Delivery Date"
-msgstr ""
+msgstr "تاریخ تحویل گروهی"
 
 #: src/Settings/Settings.php:308
 msgid "Cache cleared successfully"
-msgstr ""
+msgstr "کش با موفقیت پاک شد"
 
 #: src/Utils/AssetsManager.php:70
 msgid "Cache cleared successfully."
-msgstr ""
+msgstr "کش با موفقیت پاک شد."
 
 #: src/Settings/Settings.php:162
 msgid "Cache Management"
-msgstr ""
+msgstr "مدیریت کش"
 
 #: src/Reports/CategoryOrdersTable.php:23
 msgid "Capacity Usage"
-msgstr ""
+msgstr "استفاده از ظرفیت"
 
 #: src/Reports/DashboardPage.php:49
 msgid "Capacity Usage (Last 30 Days)"
-msgstr ""
+msgstr "استفاده از ظرفیت (30 روز گذشته)"
 
 #: src/Utils/AssetsManager.php:28
 msgid "Capacity Used"
-msgstr ""
+msgstr "ظرفیت استفاده‌شده"
 
 #: src/Reports/AdminPage.php:94
 msgid "Categories per page"
-msgstr ""
+msgstr "دسته‌بندی‌ها در هر صفحه"
 
 #: src/Reports/CategoryOrdersTable.php:20 src/Reports/ReportsPage.php:177
 #: src/Reports/ReportsPage.php:254
 msgid "Category"
-msgstr ""
+msgstr "دسته‌بندی"
 
 #: src/Capacity/CapacityManager.php:86
 msgid "Category capacity (%d) cannot exceed parent category capacity (%d)."
 msgstr ""
+"ظرفیت دسته‌بندی (%d) نمی‌تواند از ظرفیت دسته‌بندی والد (%d) بیشتر باشد."
 
 #: src/Reports/ReportsPage.php:53
 msgid "Category Orders"
-msgstr ""
+msgstr "سفارش‌های دسته‌بندی"
 
 #: src/Reports/CategoryOrdersTable.php:11
 msgid "Category Reservation"
-msgstr ""
+msgstr "رزرو دسته‌بندی"
 
 #: src/Reports/CategoryOrdersTable.php:12
 msgid "Category Reservations"
-msgstr ""
+msgstr "رزروهای دسته‌بندی"
 
 #: src/Reports/OrderItemsTable.php:49
 msgid "Change Delivery Date"
-msgstr ""
+msgstr "تغییر تاریخ تحویل"
 
 #: src/Reports/StatusLogsTable.php:23 src/Reports/ReportsPage.php:483
 #: src/Reports/ReportsPage.php:547
 msgid "Changed At"
-msgstr ""
+msgstr "تغییر در"
 
 #: src/Reports/StatusLogsTable.php:22 src/Reports/ReportsPage.php:482
 #: src/Reports/ReportsPage.php:546
 msgid "Changed By"
-msgstr ""
+msgstr "تغییر توسط"
 
 #: src/Reports/ReportsPage.php:97
 msgid "Changed By (User ID)"
-msgstr ""
+msgstr "تغییر توسط (شناسه کاربر)"
 
 #: src/Settings/StatusManager.php:182
 msgid "changed from admin panel"
-msgstr ""
+msgstr "تغییر از پنل مدیریت"
 
 #: src/Settings/Settings.php:164
 msgid "Clear Cache"
-msgstr ""
+msgstr "پاک کردن کش"
 
 #: src/Settings/Settings.php:165
 msgid "Clear cached data to refresh calculations and settings."
-msgstr ""
+msgstr "داده‌های کش‌شده را پاک کنید تا محاسبات و تنظیمات تازه‌سازی شوند."
 
 #: src/Settings/StatusManager.php:31
 msgid "Color"
-msgstr ""
+msgstr "رنگ"
 
 #: src/Settings/Calendar.php:48
 msgid "Custom Holidays"
-msgstr ""
+msgstr "تعطیلات سفارشی"
 
 #: src/Reports/OrderItemsPage.php:74 src/Reports/OrderItemsPage.php:122
 msgid "Customer"
-msgstr ""
+msgstr "مشتری"
 
 #: src/Reports/OrderItemsPage.php:24
 msgid "Customer Name"
-msgstr ""
+msgstr "نام مشتری"
 
 #: src/Settings/Settings.php:109
 msgid "Daily Cutoff Time"
-msgstr ""
+msgstr "زمان قطع روزانه"
 
 #: src/Settings/Settings.php:112
 msgid "Daily cutoff time for processing orders."
-msgstr ""
+msgstr "زمان قطع روزانه برای پردازش سفارش‌ها."
 
 #: src/Capacity/CapacityManager.php:24 src/Capacity/CapacityManager.php:35
 #: src/Capacity/CapacityManager.php:46 src/Capacity/CapacityManager.php:57
 msgid "Daily Production Capacity"
-msgstr ""
+msgstr "ظرفیت تولید روزانه"
 
 #: src/Settings/Calendar.php:57
 msgid "Date"
-msgstr ""
+msgstr "تاریخ"
 
 #: src/Settings/Settings.php:203 src/Settings/SMS.php:116
 #: src/Settings/SMS.php:211 src/Settings/SMS.php:352
@@ -215,782 +220,805 @@ msgid ""
 "Dear {customer_name}, your order #{order_id} is delayed. New delivery date: "
 "{delivery_date}."
 msgstr ""
+"مشتری گرامی {customer_name}، سفارش شما #{order_id} با تأخیر مواجه شده است. "
+"تاریخ تحویل جدید: {delivery_date}."
 
 #: src/Settings/Settings.php:88
 msgid "Default Daily Production Capacity"
-msgstr ""
+msgstr "ظرفیت تولید روزانه پیش‌فرض"
 
 #: src/Settings/Settings.php:95
 msgid "Default Delivery Days"
-msgstr ""
+msgstr "روزهای تحویل پیش‌فرض"
 
 #: src/Settings/Settings.php:102
 msgid "Default Max Delivery Days"
-msgstr ""
+msgstr "حداکثر روزهای تحویل پیش‌فرض"
 
 #: src/Settings/Settings.php:91
 msgid "Default maximum number of products that can be produced daily."
-msgstr ""
+msgstr "حداکثر تعداد محصولات پیش‌فرض که می‌توانند روزانه تولید شوند."
 
 #: src/Reports/DashboardPage.php:39 src/Utils/AssetsManager.php:29
 msgid "Delayed Orders"
-msgstr ""
+msgstr "سفارش‌های تأخیری"
 
 #: src/Reports/DashboardPage.php:53
 msgid "Delayed Orders (Last 30 Days)"
-msgstr ""
+msgstr "سفارش‌های تأخیری (30 روز گذشته)"
 
 #: src/Settings/Calendar.php:72 src/Settings/StatusManager.php:45
 #: src/Utils/AssetsManager.php:55
 msgid "Delete"
-msgstr ""
+msgstr "حذف"
 
 #: src/Reports/OrderItemsPage.php:77 src/Reports/OrderItemsPage.php:125
 #: src/Reports/OrderItemsTable.php:28
 msgid "Delivery Date"
-msgstr ""
+msgstr "تاریخ تحویل"
 
 #: src/Settings/StatusManager.php:212 src/Utils/AssetsManager.php:62
 msgid "Delivery date updated"
-msgstr ""
+msgstr "تاریخ تحویل به‌روزرسانی شد"
 
 #: src/CustomerUI/StatusTracker.php:143
 msgid "Delivery Date: "
-msgstr ""
+msgstr "تاریخ تحویل: "
 
 #: src/Reports/OrderItemsTable.php:271
 msgid "Delivery dates updated."
-msgstr ""
+msgstr "تاریخ‌های تحویل به‌روزرسانی شدند."
 
 #: src/Settings/SMS.php:107
 msgid "Delivery Delay Pattern ID"
-msgstr ""
+msgstr "شناسه الگوی پیامک تأخیر تحویل"
 
 #: src/Settings/SMS.php:114
 msgid "Delivery Delay SMS Template"
-msgstr ""
+msgstr "قالب پیامک تأخیر تحویل"
 
 #: src/Settings/Calendar.php:58
 msgid "Description"
-msgstr ""
+msgstr "توضیحات"
 
 #: src/Settings/Calendar.php:51
 msgid "Description (optional)"
-msgstr ""
+msgstr "توضیحات (اختیاری)"
 
 #: src/Settings/Calendar.php:71 src/Settings/StatusManager.php:44
 #: src/Utils/AssetsManager.php:57
 msgid "Edit"
-msgstr ""
+msgstr "ویرایش"
 
 #: src/Reports/CategoryOrdersTable.php:57
 msgid "Edit Category"
-msgstr ""
+msgstr "ویرایش دسته‌بندی"
 
 #: src/Reports/OrderItemsTable.php:82
 msgid "Edit Product"
-msgstr ""
+msgstr "ویرایش محصول"
 
 #: src/Settings/SMS.php:100
 msgid "Enable Delivery Delay SMS"
-msgstr ""
+msgstr "فعال‌سازی پیامک تأخیر تحویل"
 
 #: src/API/Webhook.php:93
 msgid "Enable sending webhook notifications."
-msgstr ""
+msgstr "فعال‌سازی ارسال اعلان‌های وب‌هوک."
 
 #: src/Settings/SMS.php:36
 msgid "Enable SMS for Customers"
-msgstr ""
+msgstr "فعال‌سازی پیامک برای مشتریان"
 
 #: src/Settings/SMS.php:29
 msgid "Enable SMS for Manager"
-msgstr ""
+msgstr "فعال‌سازی پیامک برای مدیر"
 
 #: src/Settings/SMS.php:39
 msgid "Enable SMS notifications for customers."
-msgstr ""
+msgstr "فعال‌سازی اعلان‌های پیامکی برای مشتریان."
 
 #: src/Settings/SMS.php:32
 msgid "Enable SMS notifications for managers."
-msgstr ""
+msgstr "فعال‌سازی اعلان‌های پیامکی برای مدیران."
 
 #: src/Settings/SMS.php:78
 msgid "Enable Status Change SMS"
-msgstr ""
+msgstr "فعال‌سازی پیامک تغییر وضعیت"
 
 #: src/Settings/SMS.php:46
 msgid "Enable to send SMS using predefined patterns."
-msgstr ""
+msgstr "فعال‌سازی برای ارسال پیامک با استفاده از الگوهای از پیش تعریف‌شده."
 
 #: src/API/Webhook.php:90
 msgid "Enable Webhook"
-msgstr ""
+msgstr "فعال‌سازی وب‌هوک"
 
 #: src/Settings/SMS.php:110
 msgid "Enter Melipayamak pattern ID for delivery delay SMS."
-msgstr ""
+msgstr "شناسه الگوی ملی‌پیامک را برای پیامک تأخیر تحویل وارد کنید."
 
 #: src/Settings/SMS.php:88
 msgid "Enter Melipayamak pattern ID for status change SMS."
-msgstr ""
+msgstr "شناسه الگوی ملی‌پیامک را برای پیامک تغییر وضعیت وارد کنید."
 
 #: src/Settings/SMS.php:67
 msgid "Enter your Melipayamak password."
-msgstr ""
+msgstr "رمز عبور ملی‌پیامک خود را وارد کنید."
 
 #: src/Settings/SMS.php:74
 msgid "Enter your Melipayamak sender number (used for simple SMS)."
-msgstr ""
+msgstr "شماره فرستنده ملی‌پیامک خود را وارد کنید (برای پیامک‌های ساده)."
 
 #: src/Settings/SMS.php:60
 msgid "Enter your Melipayamak username."
-msgstr ""
+msgstr "نام کاربری ملی‌پیامک خود را وارد کنید."
 
 #: src/Utils/AssetsManager.php:56
 msgid "Error occurred"
-msgstr ""
+msgstr "خطایی رخ داد"
 
 #: src/Delivery/DeliveryDisplay.php:37
 msgid "Estimated Delivery (select variation):"
-msgstr ""
+msgstr "تحویل تخمینی (انتخاب نوع):"
 
 #: src/Delivery/DeliveryDisplay.php:35
 msgid "Estimated Delivery:"
-msgstr ""
+msgstr "تحویل تخمینی:"
 
 #: src/Utils/AssetsManager.php:69
 msgid "Export Logs"
-msgstr ""
+msgstr "خروجی لاگ‌ها"
 
 #: src/Utils/AssetsManager.php:68
 msgid "Export Order Items"
-msgstr ""
+msgstr "خروجی آیتم‌های سفارش"
 
 #: src/Reports/OrderItemsPage.php:34 src/Reports/ReportsPage.php:34
 #: src/Reports/ReportsPage.php:72 src/Reports/ReportsPage.php:101
 msgid "Export to CSV"
-msgstr ""
+msgstr "خروجی به CSV"
 
 #: src/Reports/OrderItemsPage.php:35 src/Reports/ReportsPage.php:35
 #: src/Reports/ReportsPage.php:73 src/Reports/ReportsPage.php:102
 msgid "Export to Excel"
-msgstr ""
+msgstr "خروجی به اکسل"
 
 #: src/Utils/AssetsManager.php:67
 msgid "Exporting..."
-msgstr ""
+msgstr "در حال خروجی گرفتن..."
 
 #: src/Settings/Calendar.php:176
 msgid "Failed to delete holiday"
-msgstr ""
+msgstr "حذف تعطیلی ناموفق بود"
 
 #: src/Settings/StatusManager.php:286
 msgid "Failed to insert delivery date"
-msgstr ""
+msgstr "درج تاریخ تحویل ناموفق بود"
 
 #: src/Settings/StatusManager.php:252
 msgid "Failed to insert status"
-msgstr ""
+msgstr "درج وضعیت ناموفق بود"
 
 #: src/Settings/Calendar.php:107
 msgid "Failed to save holiday"
-msgstr ""
+msgstr "ذخیره تعطیلی ناموفق بود"
 
 #: src/Settings/StatusManager.php:270
 msgid "Failed to update delivery date"
-msgstr ""
+msgstr "به‌روزرسانی تاریخ تحویل ناموفق بود"
 
 #: src/Settings/Calendar.php:147
 msgid "Failed to update holiday"
-msgstr ""
+msgstr "به‌روزرسانی تعطیلی ناموفق بود"
 
 #: src/Settings/StatusManager.php:236
 msgid "Failed to update status"
-msgstr ""
+msgstr "به‌روزرسانی وضعیت ناموفق بود"
 
 #: src/Reports/CategoryOrdersTable.php:113 src/Reports/OrderItemsPage.php:33
 #: src/Reports/ReportsPage.php:33 src/Reports/ReportsPage.php:71
 #: src/Reports/ReportsPage.php:100
 msgid "Filter"
-msgstr ""
+msgstr "فیلتر"
 
 #: src/Settings/Calendar.php:31
 msgid "Friday"
-msgstr ""
+msgstr "جمعه"
 
 #: src/Reports/OrderItemsPage.php:31 src/Reports/ReportsPage.php:69
 #: src/Reports/ReportsPage.php:98
 msgid "From Date"
-msgstr ""
+msgstr "از تاریخ"
 
 #: src/Settings/Settings.php:36
 msgid "General"
-msgstr ""
+msgstr "عمومی"
 
 #: src/Settings/Settings.php:85
 msgid "General Settings"
-msgstr ""
+msgstr "تنظیمات عمومی"
 
 #: src/API/Webhook.php:79
 msgid "Generate a secure key for API authentication."
-msgstr ""
+msgstr "ایجاد یک کلید امن برای احراز هویت API."
 
 #: src/API/Webhook.php:100
 msgid "Get capacity information. Parameters: date, entity_type, entity_id."
-msgstr ""
+msgstr "دریافت اطلاعات ظرفیت. پارامترها: date، entity_type، entity_id."
 
 #: src/API/Webhook.php:101
 msgid ""
 "Get order items. Parameters: status, category, date_from, date_to, "
 "persian_date."
 msgstr ""
+"دریافت آیتم‌های سفارش. پارامترها: status، category، date_from، date_to، "
+"persian_date."
 
 #: src/API/Webhook.php:102
 msgid ""
 "Get reports. Types: category-orders, full-capacity. Parameters: date_from, "
 "date_to, persian_date."
 msgstr ""
+"دریافت گزارش‌ها. انواع: category-orders، full-capacity. پارامترها: "
+"date_from، date_to، persian_date."
 
 #: src/API/RESTController.php:208 src/Reports/OrderItemsPage.php:84
 #: src/Reports/OrderItemsPage.php:133 src/Reports/OrderItemsTable.php:65
 msgid "Guest"
-msgstr ""
+msgstr "مهمان"
 
 #: src/Settings/Calendar.php:179
 msgid "Holiday deleted"
-msgstr ""
+msgstr "تعطیلی حذف شد"
 
 #: src/Settings/Calendar.php:112
 msgid "Holiday saved"
-msgstr ""
+msgstr "تعطیلی ذخیره شد"
 
 #: src/Settings/Calendar.php:151 src/Utils/AssetsManager.php:65
 msgid "Holiday updated"
-msgstr ""
+msgstr "تعطیلی به‌روزرسانی شد"
 
 #: src/Settings/Settings.php:37
 msgid "Holidays"
-msgstr ""
+msgstr "تعطیلات"
 
 #: src/Utils/AssetsManager.php:66
 msgid "Holidays reordered"
-msgstr ""
+msgstr "تعطیلات بازچینش شدند"
 
 #: src/Settings/Calendar.php:18
 msgid "Holidays Settings"
-msgstr ""
+msgstr "تنظیمات تعطیلات"
 
 #: src/Reports/OrderItemsTable.php:23 src/Reports/ReservedProductsTable.php:20
 msgid "Image"
-msgstr ""
+msgstr "تصویر"
 
 #: src/Capacity/CapacityCounter.php:138
 msgid "Initial status set"
-msgstr ""
+msgstr "وضعیت اولیه تنظیم شد"
 
 #: src/API/RESTController.php:94
 msgid "Invalid API key"
-msgstr ""
+msgstr "کلید API نامعتبر است"
 
 #: src/Settings/StatusManager.php:200
 msgid "Invalid data"
-msgstr ""
+msgstr "داده نامعتبر"
 
 #: src/Settings/Calendar.php:92 src/Settings/Calendar.php:130
 #: src/Utils/AssetsManager.php:64
 msgid "Invalid date"
-msgstr ""
+msgstr "تاریخ نامعتبر"
 
 #: src/Settings/StatusManager.php:206
 msgid "Invalid date format"
-msgstr ""
+msgstr "فرمت تاریخ نامعتبر"
 
 #: src/Settings/StatusManager.php:174
 msgid "Invalid input data"
-msgstr ""
+msgstr "داده ورودی نامعتبر"
 
 #: src/Delivery/DeliveryCalculator.php:650
 msgid "Invalid product"
-msgstr ""
+msgstr "محصول نامعتبر"
 
 #: src/API/RESTController.php:308
 msgid "Invalid report type"
-msgstr ""
+msgstr "نوع گزارش نامعتبر"
 
 #: src/Reports/DashboardPage.php:152
 msgid "Invalid request"
-msgstr ""
+msgstr "درخواست نامعتبر"
 
 #: src/Reports/ReservedProductsTable.php:98
 msgid "Invalid reservation date."
-msgstr ""
+msgstr "تاریخ رزرو نامعتبر."
 
 #: src/Settings/StatusManager.php:103 src/Settings/StatusManager.php:138
 msgid "Invalid status index"
-msgstr ""
+msgstr "شاخص وضعیت نامعتبر"
 
 #: src/Reports/OrderItemsTable.php:24
 msgid "Item ID"
-msgstr ""
+msgstr "شناسه آیتم"
 
 #: src/Reports/OrderItemsPage.php:73 src/Reports/OrderItemsPage.php:121
 #: src/Reports/OrderItemsTable.php:25
 msgid "Item Name"
-msgstr ""
+msgstr "نام آیتم"
 
 #: src/Reports/OrderItemsTable.php:26
 msgid "Item Quantity"
-msgstr ""
+msgstr "تعداد آیتم"
 
 #: src/Reports/AdminPage.php:76
 msgid "Items per page"
-msgstr ""
+msgstr "آیتم‌ها در هر صفحه"
 
 #: src/CustomerUI/StatusTracker.php:168 src/Delivery/DeliveryDisplay.php:65
 #: src/Utils/AssetsManager.php:71
 msgid "Loading..."
-msgstr ""
+msgstr "در حال بارگذاری..."
 
 #: src/Reports/AdminPage.php:102
 msgid "Logs per page"
-msgstr ""
+msgstr "لاگ‌ها در هر صفحه"
 
 #: src/Delivery/DeliveryDisplay.php:99 src/Delivery/DeliveryDisplay.php:118
 msgid "Max Delivery Days"
-msgstr ""
+msgstr "حداکثر روزهای تحویل"
 
 #: src/Settings/Settings.php:105
 msgid "Max Number of days to add to order date for default delivery."
 msgstr ""
+"حداکثر تعداد روزهایی که به تاریخ سفارش برای تحویل پیش‌فرض اضافه می‌شود."
 
 #: src/Delivery/DeliveryDisplay.php:83
 msgid "Max Production Days"
-msgstr ""
+msgstr "حداکثر روزهای تولید"
 
 #: src/Delivery/DeliveryDisplay.php:85
 msgid ""
 "Maximum days required to produce this product. Overrides category and "
 "default settings."
 msgstr ""
+"حداکثر روزهای مورد نیاز برای تولید این محصول. تنظیمات دسته‌بندی و پیش‌فرض را "
+"نادیده می‌گیرد."
 
 #: src/Delivery/DeliveryDisplay.php:101 src/Delivery/DeliveryDisplay.php:121
 msgid "Maximum delivery days for products in this category."
-msgstr ""
+msgstr "حداکثر روزهای تحویل برای محصولات در این دسته‌بندی."
 
 #: src/Capacity/CapacityManager.php:48 src/Capacity/CapacityManager.php:60
 msgid ""
 "Maximum number of products in this category that can be produced daily. "
 "Leave empty for no limit."
 msgstr ""
+"حداکثر تعداد محصولات در این دسته‌بندی که می‌توانند روزانه تولید شوند. برای "
+"بدون محدودیت خالی بگذارید."
 
 #: src/Capacity/CapacityManager.php:26
 msgid ""
 "Maximum number of this product that can be produced daily. Leave empty to "
 "inherit from category."
 msgstr ""
+"حداکثر تعداد این محصول که می‌تواند روزانه تولید شود. برای ارث‌بری از "
+"دسته‌بندی خالی بگذارید."
 
 #: src/Capacity/CapacityManager.php:37
 msgid ""
 "Maximum number of this variation that can be produced daily. Leave empty to "
 "inherit from product."
 msgstr ""
+"حداکثر تعداد این نوع که می‌تواند روزانه تولید شود. برای ارث‌بری از محصول "
+"خالی بگذارید."
 
 #: src/Delivery/DeliveryDisplay.php:114
 msgid "Minimum  days required to produce products in this category."
-msgstr ""
+msgstr "حداقل روزهای مورد نیاز برای تولید محصولات در این دسته‌بندی."
 
 #: src/Delivery/DeliveryDisplay.php:96
 msgid "Minimum days required to produce products in this category."
-msgstr ""
+msgstr "حداقل روزهای مورد نیاز برای تولید محصولات در این دسته‌بندی."
 
 #: src/Settings/Calendar.php:27
 msgid "Monday"
-msgstr ""
+msgstr "دوشنبه"
 
 #: src/Settings/StatusManager.php:67 src/Settings/StatusManager.php:98
 #: src/Utils/AssetsManager.php:54
 msgid "Name and color are required"
-msgstr ""
+msgstr "نام و رنگ الزامی هستند"
 
 #. Author of the plugin
 msgid "neodesign"
-msgstr ""
+msgstr "نیودیزاین"
 
 #: src/Delivery/DeliveryCalculator.php:660
 msgid "No available delivery date"
-msgstr ""
+msgstr "تاریخ تحویل در دسترس نیست"
 
 #: src/Reports/ReportsPage.php:80
 msgid "No category reservations found for the specified filters."
-msgstr ""
+msgstr "هیچ رزرو دسته‌بندی برای فیلترهای مشخص‌شده یافت نشد."
 
 #: src/Reports/CategoryOrdersTable.php:61 src/Reports/ReportsPage.php:186
 #: src/Reports/ReportsPage.php:264
 msgid "No Limit"
-msgstr ""
+msgstr "بدون محدودیت"
 
 #: src/Settings/Settings.php:241
 msgid "No open order statuses selected."
-msgstr ""
+msgstr "هیچ وضعیت باز سفارشی انتخاب نشده است."
 
 #: src/Settings/Settings.php:262
 msgid "No open orders to reset."
-msgstr ""
+msgstr "هیچ سفارش بازی برای بازنشانی وجود ندارد."
 
 #: src/Reports/ReportsPage.php:42
 msgid "No reserved products found for the specified date or category."
-msgstr ""
+msgstr "هیچ محصول رزروشده‌ای برای تاریخ یا دسته‌بندی مشخص‌شده یافت نشد."
 
 #: src/Reports/ReportsPage.php:109
 msgid "No status logs found for the specified filters."
-msgstr ""
+msgstr "هیچ لاگ وضعیتی برای فیلترهای مشخص‌شده یافت نشد."
 
 #: src/Reports/StatusLogsTable.php:24 src/Reports/ReportsPage.php:484
 #: src/Reports/ReportsPage.php:548
 msgid "Note"
-msgstr ""
+msgstr "یادداشت"
 
 #: src/Delivery/DeliveryDisplay.php:77
 msgid ""
 "Number of days required to produce this product. Overrides category and "
 "default settings."
 msgstr ""
+"تعداد روزهای مورد نیاز برای تولید این محصول. تنظیمات دسته‌بندی و پیش‌فرض را "
+"نادیده می‌گیرد."
 
 #: src/Settings/Settings.php:98
 msgid "Number of days to add to order date for default delivery."
-msgstr ""
+msgstr "تعداد روزهایی که به تاریخ سفارش برای تحویل پیش‌فرض اضافه می‌شود."
 
 #: src/Settings/Settings.php:143
 msgid "Open Order Statuses"
-msgstr ""
+msgstr "وضعیت‌های باز سفارش"
 
 #: src/Settings/Settings.php:200 src/Settings/SMS.php:94
 #: src/Settings/SMS.php:137
 msgid "Order #{order_id} status changed to {status}."
-msgstr ""
+msgstr "وضعیت سفارش #{order_id} به {status} تغییر کرد."
 
 #: src/Reports/OrderItemsTable.php:20
 msgid "Order / Customer"
-msgstr ""
+msgstr "سفارش / مشتری"
 
 #: src/Reports/OrderItemsPage.php:75 src/Reports/OrderItemsPage.php:123
 #: src/Reports/OrderItemsTable.php:22
 msgid "Order Date"
-msgstr ""
+msgstr "تاریخ سفارش"
 
 #: src/Reports/OrderItemsPage.php:23 src/Reports/OrderItemsPage.php:72
 #: src/Reports/OrderItemsPage.php:120
 msgid "Order ID"
-msgstr ""
+msgstr "شناسه سفارش"
 
 #: src/Reports/OrderItemsTable.php:11
 msgid "Order Item"
-msgstr ""
+msgstr "آیتم سفارش"
 
 #: src/Reports/StatusLogsTable.php:20 src/Reports/ReportsPage.php:96
 #: src/Reports/ReportsPage.php:480 src/Reports/ReportsPage.php:544
 msgid "Order Item ID"
-msgstr ""
+msgstr "شناسه آیتم سفارش"
 
 #: src/Settings/SMS.php:154 src/Settings/SMS.php:228
 msgid "Order item not found"
-msgstr ""
+msgstr "آیتم سفارش یافت نشد"
 
 #: src/Reports/AdminPage.php:44 src/Reports/AdminPage.php:45
 #: src/Reports/OrderItemsTable.php:12
 msgid "Order Items"
-msgstr ""
+msgstr "آیتم‌های سفارش"
 
 #: src/Reports/OrderItemsPage.php:19
 msgid "Order Items Status"
-msgstr ""
+msgstr "وضعیت آیتم‌های سفارش"
 
 #: src/Reports/OrderItemsTable.php:21
 msgid "Order Status"
-msgstr ""
+msgstr "وضعیت سفارش"
 
 #: src/Settings/Settings.php:38 src/Settings/StatusManager.php:21
 msgid "Order Statuses"
-msgstr ""
+msgstr "وضعیت‌های سفارش"
 
 #: src/Settings/SMS.php:279
 msgid "Phone disabled"
-msgstr ""
+msgstr "تلفن غیرفعال است"
 
 #: src/Settings/SMS.php:53
 msgid "Phone number for admin SMS notifications."
-msgstr ""
+msgstr "شماره تلفن برای اعلان‌های پیامکی مدیر."
 
 #: src/Reports/ReportsPage.php:337 src/Reports/ReportsPage.php:405
 #: src/Reports/ReservedProductsTable.php:22
 msgid "Product ID"
-msgstr ""
+msgstr "شناسه محصول"
 
 #: src/Reports/ReportsPage.php:336 src/Reports/ReportsPage.php:404
 #: src/Reports/ReservedProductsTable.php:21
 msgid "Product Name"
-msgstr ""
+msgstr "نام محصول"
 
 #: src/Reports/CategoryOrdersTable.php:21 src/Reports/ReportsPage.php:178
 #: src/Reports/ReportsPage.php:255
 msgid "Production Capacity"
-msgstr ""
+msgstr "ظرفیت تولید"
 
 #: src/Settings/Settings.php:299 src/Utils/AssetsManager.php:72
 msgid "Production capacity reset successfully."
-msgstr ""
+msgstr "ظرفیت تولید با موفقیت بازنشانی شد."
 
 #: src/Reports/DashboardPage.php:27
 msgid "Production Dashboard"
-msgstr ""
+msgstr "داشبورد تولید"
 
 #: src/Delivery/DeliveryDisplay.php:75 src/Delivery/DeliveryDisplay.php:94
 #: src/Delivery/DeliveryDisplay.php:111
 msgid "Production Days"
-msgstr ""
+msgstr "روزهای تولید"
 
 #: src/Reports/AdminPage.php:33 src/Reports/AdminPage.php:34
 msgid "Production Manager"
-msgstr ""
+msgstr "مدیر تولید"
 
 #: src/Settings/Settings.php:50
 msgid "Production Manager Settings"
-msgstr ""
+msgstr "تنظیمات مدیر تولید"
 
 #: src/Reports/AdminPage.php:86
 msgid "Products per page"
-msgstr ""
+msgstr "محصولات در هر صفحه"
 
 #: src/API/RESTController.php:102
 msgid "Rate limit exceeded"
-msgstr ""
+msgstr "از حد مجاز فراتر رفت"
 
 #: src/Settings/Settings.php:158
 msgid ""
 "Recalculate delivery dates for open orders and reserve capacity based on "
 "order date and production time."
 msgstr ""
+"محاسبه مجدد تاریخ‌های تحویل برای سفارش‌های باز و رزرو ظرفیت بر اساس تاریخ "
+"سفارش و زمان تولید."
 
 #: includes/bootstrap.php:118 src/Capacity/CapacityCounter.php:123
 #: src/Settings/StatusManager.php:37 src/Settings/StatusManager.php:309
 msgid "Received"
-msgstr ""
+msgstr "دریافت‌شده"
 
 #: src/Reports/AdminPage.php:53 src/Reports/AdminPage.php:54
 #: src/Reports/ReportsPage.php:50
 msgid "Reports"
-msgstr ""
+msgstr "گزارش‌ها"
 
 #: src/Reports/CategoryOrdersTable.php:24 src/Reports/ReportsPage.php:180
 #: src/Reports/ReportsPage.php:257 src/Reports/ReportsPage.php:339
 #: src/Reports/ReportsPage.php:407 src/Reports/ReservedProductsTable.php:24
 msgid "Reservation Date"
-msgstr ""
+msgstr "تاریخ رزرو"
 
 #: src/Reports/CategoryOrdersTable.php:22 src/Reports/ReportsPage.php:179
 #: src/Reports/ReportsPage.php:256 src/Reports/ReportsPage.php:338
 #: src/Reports/ReportsPage.php:406 src/Reports/ReservedProductsTable.php:23
 msgid "Reserved Count"
-msgstr ""
+msgstr "تعداد رزروشده"
 
 #: src/Reports/ReservedProductsTable.php:11
 msgid "Reserved Product"
-msgstr ""
+msgstr "محصول رزروشده"
 
 #: src/Reports/ReportsPage.php:24 src/Reports/ReservedProductsTable.php:12
 msgid "Reserved Products"
-msgstr ""
+msgstr "محصولات رزروشده"
 
 #: src/Settings/Settings.php:157
 msgid "Reset Capacity"
-msgstr ""
+msgstr "بازنشانی ظرفیت"
 
 #: src/Settings/Settings.php:155
 msgid "Reset Production Capacity"
-msgstr ""
+msgstr "بازنشانی ظرفیت تولید"
 
 #: src/Settings/Calendar.php:25
 msgid "Saturday"
-msgstr ""
+msgstr "شنبه"
 
 #: src/Utils/AssetsManager.php:58
 msgid "Save"
-msgstr ""
+msgstr "ذخیره"
 
 #: src/Reports/ReportsPage.php:32
 msgid "Search Products"
-msgstr ""
+msgstr "جستجوی محصولات"
 
 #: src/Reports/OrderItemsTable.php:284
 msgid "Select Date"
-msgstr ""
+msgstr "انتخاب تاریخ"
 
 #: src/Settings/Calendar.php:50
 msgid "Select date"
-msgstr ""
+msgstr "انتخاب تاریخ"
 
 #: src/Settings/Calendar.php:41
 msgid "Select days to mark as holidays each week."
-msgstr ""
+msgstr "روزهایی را که می‌خواهید هر هفته به‌عنوان تعطیل مشخص شوند، انتخاب کنید."
 
 #: src/Reports/OrderItemsTable.php:101 src/Utils/AssetsManager.php:59
 msgid "Select Status"
-msgstr ""
+msgstr "انتخاب وضعیت"
 
 #: src/Settings/Settings.php:151
 msgid ""
 "Select WooCommerce order statuses to consider as open for production "
 "capacity reset."
 msgstr ""
+"وضعیت‌های سفارش ووکامرس را که باید به‌عنوان باز برای بازنشانی ظرفیت تولید در "
+"نظر گرفته شوند، انتخاب کنید."
 
 #: src/Settings/Settings.php:124
 msgid "Select WooCommerce order statuses to display in the order items table."
 msgstr ""
+"وضعیت‌های سفارش ووکامرس را که باید در جدول آیتم‌های سفارش نمایش داده شوند، "
+"انتخاب کنید."
 
 #: src/Settings/SMS.php:103
 msgid "Send SMS when delivery date is delayed."
-msgstr ""
+msgstr "ارسال پیامک در صورت تأخیر تاریخ تحویل."
 
 #: src/Settings/SMS.php:81
 msgid "Send SMS when order item status changes."
-msgstr ""
+msgstr "ارسال پیامک در صورت تغییر وضعیت آیتم سفارش."
 
 #: src/Reports/OrderItemsTable.php:52
 #, php-format
 msgid "Set Status to %s"
-msgstr ""
+msgstr "تنظیم وضعیت به %s"
 
 #: src/Settings/Settings.php:22 src/Settings/Settings.php:23
 msgid "Settings"
-msgstr ""
+msgstr "تنظیمات"
 
 #: src/Settings/Settings.php:39
 msgid "SMS"
-msgstr ""
+msgstr "پیامک"
 
 #: src/Settings/SMS.php:142 src/Settings/SMS.php:216
 msgid "SMS configuration incomplete or disabled"
-msgstr ""
+msgstr "پیکربندی پیامک ناقص است یا غیرفعال شده است"
 
 #: src/CustomerUI/StatusTracker.php:170
 msgid "SMS notification settings updated"
-msgstr ""
+msgstr "تنظیمات اعلان پیامکی به‌روزرسانی شد"
 
 #: src/Settings/SMS.php:64
 msgid "SMS Password"
-msgstr ""
+msgstr "رمز عبور پیامک"
 
 #: src/Settings/SMS.php:71
 msgid "SMS Sender Number"
-msgstr ""
+msgstr "شماره فرستنده پیامک"
 
 #: src/Utils/AssetsManager.php:30
 msgid "SMS Sent"
-msgstr ""
+msgstr "پیامک ارسال شد"
 
 #: src/Reports/DashboardPage.php:43
 msgid "SMS Sent Today"
-msgstr ""
+msgstr "پیامک‌های ارسال‌شده امروز"
 
 #: src/Settings/SMS.php:26
 msgid "SMS Settings"
-msgstr ""
+msgstr "تنظیمات پیامک"
 
 #: src/Reports/DashboardPage.php:57
 msgid "SMS Statistics"
-msgstr ""
+msgstr "آمار پیامک"
 
 #: src/Settings/SMS.php:57
 msgid "SMS Username"
-msgstr ""
+msgstr "نام کاربری پیامک"
 
 #: src/Reports/StatusLogsTable.php:21 src/Reports/OrderItemsPage.php:76
 #: src/Reports/OrderItemsPage.php:124 src/Reports/OrderItemsTable.php:27
 #: src/Reports/ReportsPage.php:481 src/Reports/ReportsPage.php:545
 msgid "Status"
-msgstr ""
+msgstr "وضعیت"
 
 #: src/Settings/StatusManager.php:80
 msgid "Status added"
-msgstr ""
+msgstr "وضعیت اضافه شد"
 
 #: src/Settings/SMS.php:85
 msgid "Status Change Pattern ID"
-msgstr ""
+msgstr "شناسه الگوی تغییر وضعیت"
 
 #: src/Settings/SMS.php:92
 msgid "Status Change SMS Template"
-msgstr ""
+msgstr "قالب پیامک تغییر وضعیت"
 
 #: src/Settings/StatusManager.php:135
 msgid "Status deleted"
-msgstr ""
+msgstr "وضعیت حذف شد"
 
 #: src/Reports/StatusLogsTable.php:11
 msgid "Status Log"
-msgstr ""
+msgstr "لاگ وضعیت"
 
 #: src/Reports/StatusLogsTable.php:12 src/Reports/ReportsPage.php:52
 msgid "Status Logs"
-msgstr ""
+msgstr "لاگ‌های وضعیت"
 
 #: src/Settings/StatusManager.php:23 src/Settings/StatusManager.php:30
 msgid "Status Name"
-msgstr ""
+msgstr "نام وضعیت"
 
 #: src/Settings/StatusManager.php:72 src/Settings/StatusManager.php:108
 msgid "Status name already exists"
-msgstr ""
+msgstr "نام وضعیت از قبل وجود دارد"
 
 #: src/Settings/StatusManager.php:116 src/Utils/AssetsManager.php:60
 msgid "Status updated"
-msgstr ""
+msgstr "وضعیت به‌روزرسانی شد"
 
 #: src/Settings/StatusManager.php:184
 msgid "Status updated successfully"
-msgstr ""
+msgstr "وضعیت با موفقیت به‌روزرسانی شد"
 
 #: src/CustomerUI/StatusTracker.php:142
 msgid "Status: "
-msgstr ""
+msgstr "وضعیت: "
 
 #: src/Settings/StatusManager.php:159 src/Utils/AssetsManager.php:61
 msgid "Statuses reordered"
-msgstr ""
+msgstr "وضعیت‌ها بازچینش شدند"
 
 #: src/Reports/OrderItemsTable.php:253
 msgid "Statuses updated."
-msgstr ""
+msgstr "وضعیت‌ها به‌روزرسانی شدند."
 
 #: src/Settings/Calendar.php:26
 msgid "Sunday"
-msgstr ""
+msgstr "یکشنبه"
 
 #: src/Settings/Calendar.php:30
 msgid "Thursday"
-msgstr ""
+msgstr "پنج‌شنبه"
 
 #: src/Reports/OrderItemsPage.php:32 src/Reports/ReportsPage.php:70
 #: src/Reports/ReportsPage.php:99
 msgid "To Date"
-msgstr ""
+msgstr "تا تاریخ"
 
 #: src/Reports/DashboardPage.php:31
 msgid "Total Capacity"
-msgstr ""
+msgstr "کل ظرفیت"
 
 #: src/Reports/CategoryOrdersTable.php:44
 msgid "Total Reservations"
-msgstr ""
+msgstr "کل رزروها"
 
 #: src/Settings/Calendar.php:28
 msgid "Tuesday"
-msgstr ""
+msgstr "سه‌شنبه"
 
 #: src/CustomerUI/StatusTracker.php:169 src/Delivery/DeliveryDisplay.php:66
 msgid "Unable to calculate delivery date."
-msgstr ""
+msgstr "امکان محاسبه تاریخ تحویل وجود ندارد."
 
 #: src/Reports/OrderItemsPage.php:48 src/Reports/OrderItemsPage.php:98
 #: src/Reports/OrderItemsTable.php:226 src/Reports/ReportsPage.php:120
@@ -1003,55 +1031,55 @@ msgstr ""
 #: src/Settings/StatusManager.php:125 src/Settings/StatusManager.php:145
 #: src/Settings/StatusManager.php:166 src/Settings/StatusManager.php:191
 msgid "Unauthorized"
-msgstr ""
+msgstr "غیرمجاز"
 
 #: src/Reports/StatusLogsTable.php:46 src/Reports/ReportsPage.php:491
 #: src/Reports/ReportsPage.php:556
 msgid "Unknown"
-msgstr ""
+msgstr "ناشناخته"
 
 #: src/API/Webhook.php:86
 msgid "URL to receive webhook notifications for status changes."
-msgstr ""
+msgstr "آدرس URL برای دریافت اعلان‌های وب‌هوک برای تغییرات وضعیت."
 
 #: src/Settings/SMS.php:43
 msgid "Use SMS Pattern"
-msgstr ""
+msgstr "استفاده از الگوی پیامک"
 
 #: src/API/Webhook.php:98
 msgid "Use the following endpoints with the API key in the X-API-Key header:"
-msgstr ""
+msgstr "از نقاط پایانی زیر با کلید API در هدر X-API-Key استفاده کنید:"
 
 #: src/Reports/DashboardPage.php:35
 msgid "Used Capacity Today"
-msgstr ""
+msgstr "ظرفیت استفاده‌شده امروز"
 
 #: src/API/Webhook.php:67
 msgid "Webhook & API"
-msgstr ""
+msgstr "وب‌هوک و API"
 
 #: src/API/Webhook.php:73
 msgid "Webhook & API Settings"
-msgstr ""
+msgstr "تنظیمات وب‌هوک و API"
 
 #: src/API/Webhook.php:83
 msgid "Webhook URL"
-msgstr ""
+msgstr "آدرس وب‌هوک"
 
 #: src/Settings/Calendar.php:29
 msgid "Wednesday"
-msgstr ""
+msgstr "چهارشنبه"
 
 #: src/Settings/Calendar.php:21
 msgid "Weekly Holidays"
-msgstr ""
+msgstr "تعطیلات هفتگی"
 
 #. Name of the plugin
 msgid "WooCommerce Production Manager"
-msgstr ""
+msgstr "مدیر تولید ووکامرس"
 
 #: woocommerce-production-manager.php:26
 msgid ""
 "WooCommerce Production Manager requires WooCommerce to be installed and "
 "active."
-msgstr ""
+msgstr "مدیر تولید ووکامرس نیازمند نصب و فعال بودن ووکامرس است."

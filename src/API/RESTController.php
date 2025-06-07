@@ -91,7 +91,7 @@ class RESTController extends WP_REST_Controller {
         $stored_key = get_option('wpm_api_key', '');
 
         if (empty($stored_key) || $api_key !== $stored_key) {
-            return new \WP_Error('invalid_api_key', __('Invalid API key', WPM_TEXT_DOMAIN), ['status' => 401]);
+            return new \WP_Error('invalid_api_key', __('Invalid API key', 'woocommerce-production-manager'), ['status' => 401]);
         }
 
         // Rate limiting (max 100 requests per hour per IP)
@@ -99,7 +99,7 @@ class RESTController extends WP_REST_Controller {
         $cache_key = 'api_rate_' . md5($ip);
         $requests = \WPM\Utils\Cache::get($cache_key, 0);
         if ($requests >= 100) {
-            return new \WP_Error('rate_limit_exceeded', __('Rate limit exceeded', WPM_TEXT_DOMAIN), ['status' => 429]);
+            return new \WP_Error('rate_limit_exceeded', __('Rate limit exceeded', 'woocommerce-production-manager'), ['status' => 429]);
         }
         \WPM\Utils\Cache::set($cache_key, $requests + 1, 3600);
 
@@ -205,7 +205,7 @@ class RESTController extends WP_REST_Controller {
                 'order_id' => $item->order_id,
                 'order_item_id' => $item->order_item_id,
                 'item_name' => $item->order_item_name,
-                'customer_name' => $item->customer_name ?: __('Guest', WPM_TEXT_DOMAIN),
+                'customer_name' => $item->customer_name ?: __('Guest', 'woocommerce-production-manager'),
                 'order_date' => $request->get_param('persian_date') ? Jalalian::fromDateTime($item->order_date)->format('Y/m/d') : $item->order_date,
                 'status' => $item->status,
                 'delivery_date' => $request->get_param('persian_date') ? Jalalian::fromDateTime($item->delivery_date)->format('Y/m/d') : $item->delivery_date
@@ -305,7 +305,7 @@ class RESTController extends WP_REST_Controller {
             return rest_ensure_response($data);
         }
 
-        return new \WP_Error('invalid_type', __('Invalid report type', WPM_TEXT_DOMAIN), ['status' => 400]);
+        return new \WP_Error('invalid_type', __('Invalid report type', 'woocommerce-production-manager'), ['status' => 400]);
     }
 }
 ?>

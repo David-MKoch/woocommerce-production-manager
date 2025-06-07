@@ -21,9 +21,9 @@ class CapacityManager {
     public static function add_product_capacity_field() {
         woocommerce_wp_text_input([
             'id'          => 'wpm_product_capacity',
-            'label'       => __('Daily Production Capacity', WPM_TEXT_DOMAIN),
+            'label'       => __('Daily Production Capacity', 'woocommerce-production-manager'),
             'desc_tip'    => true,
-            'description' => __('Maximum number of this product that can be produced daily. Leave empty to inherit from category.', WPM_TEXT_DOMAIN),
+            'description' => __('Maximum number of this product that can be produced daily. Leave empty to inherit from category.', 'woocommerce-production-manager'),
             'type'        => 'number',
             'value'       => self::get_capacity('product', get_the_ID())
         ]);
@@ -32,9 +32,9 @@ class CapacityManager {
     public static function add_variation_capacity_field($loop, $variation_data, $variation) {
         woocommerce_wp_text_input([
             'id'          => 'wpm_variation_capacity_' . $variation->ID,
-            'label'       => __('Daily Production Capacity', WPM_TEXT_DOMAIN),
+            'label'       => __('Daily Production Capacity', 'woocommerce-production-manager'),
             'desc_tip'    => true,
-            'description' => __('Maximum number of this variation that can be produced daily. Leave empty to inherit from product.', WPM_TEXT_DOMAIN),
+            'description' => __('Maximum number of this variation that can be produced daily. Leave empty to inherit from product.', 'woocommerce-production-manager'),
             'type'        => 'number',
             'value'       => self::get_capacity('variation', $variation->ID)
         ]);
@@ -43,9 +43,9 @@ class CapacityManager {
     public static function add_category_capacity_field() {
         ?>
         <div class="form-field">
-            <label for="wpm_category_capacity"><?php esc_html_e('Daily Production Capacity', WPM_TEXT_DOMAIN); ?></label>
+            <label for="wpm_category_capacity"><?php esc_html_e('Daily Production Capacity', 'woocommerce-production-manager'); ?></label>
             <input type="number" name="wpm_category_capacity" id="wpm_category_capacity" min="0">
-            <p><?php esc_html_e('Maximum number of products in this category that can be produced daily. Leave empty for no limit.', WPM_TEXT_DOMAIN); ?></p>
+            <p><?php esc_html_e('Maximum number of products in this category that can be produced daily. Leave empty for no limit.', 'woocommerce-production-manager'); ?></p>
         </div>
         <?php
     }
@@ -54,10 +54,10 @@ class CapacityManager {
         $capacity = self::get_capacity('category', $term->term_id);
         ?>
         <tr class="form-field">
-            <th><label for="wpm_category_capacity"><?php esc_html_e('Daily Production Capacity', WPM_TEXT_DOMAIN); ?></label></th>
+            <th><label for="wpm_category_capacity"><?php esc_html_e('Daily Production Capacity', 'woocommerce-production-manager'); ?></label></th>
             <td>
                 <input type="number" name="wpm_category_capacity" id="wpm_category_capacity" value="<?php echo esc_attr($capacity); ?>" min="0">
-                <p><?php esc_html_e('Maximum number of products in this category that can be produced daily. Leave empty for no limit.', WPM_TEXT_DOMAIN); ?></p>
+                <p><?php esc_html_e('Maximum number of products in this category that can be produced daily. Leave empty for no limit.', 'woocommerce-production-manager'); ?></p>
             </td>
         </tr>
         <?php
@@ -83,7 +83,7 @@ class CapacityManager {
                 $parent_capacity = self::get_capacity('category', $parent_id);
                 if ($parent_capacity !== 0 && $capacity > $parent_capacity) {
                     wp_die(sprintf(
-                        __('Category capacity (%d) cannot exceed parent category capacity (%d).', WPM_TEXT_DOMAIN),
+                        __('Category capacity (%d) cannot exceed parent category capacity (%d).', 'woocommerce-production-manager'),
                         $capacity,
                         $parent_capacity
                     ));

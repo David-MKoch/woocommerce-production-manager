@@ -8,8 +8,8 @@ defined('ABSPATH') || exit;
 class StatusLogsTable extends WP_List_Table {
     public function __construct() {
         parent::__construct([
-            'singular' => __('Status Log', WPM_TEXT_DOMAIN),
-            'plural'   => __('Status Logs', WPM_TEXT_DOMAIN),
+            'singular' => __('Status Log', 'woocommerce-production-manager'),
+            'plural'   => __('Status Logs', 'woocommerce-production-manager'),
             'ajax'     => false
         ]);
     }
@@ -17,11 +17,11 @@ class StatusLogsTable extends WP_List_Table {
     public function get_columns() {
         return [
             'cb' => '<input type="checkbox" />',
-            'order_item_id' => __('Order Item ID', WPM_TEXT_DOMAIN),
-            'status' => __('Status', WPM_TEXT_DOMAIN),
-            'changed_by' => __('Changed By', WPM_TEXT_DOMAIN),
-            'changed_at' => __('Changed At', WPM_TEXT_DOMAIN),
-            'note' => __('Note', WPM_TEXT_DOMAIN)
+            'order_item_id' => __('Order Item ID', 'woocommerce-production-manager'),
+            'status' => __('Status', 'woocommerce-production-manager'),
+            'changed_by' => __('Changed By', 'woocommerce-production-manager'),
+            'changed_at' => __('Changed At', 'woocommerce-production-manager'),
+            'note' => __('Note', 'woocommerce-production-manager')
         ];
     }
 
@@ -43,7 +43,7 @@ class StatusLogsTable extends WP_List_Table {
             case 'status':
                 return esc_html($item->status);
             case 'changed_by':
-                return esc_html($item->changed_by_name ?: __('Unknown', WPM_TEXT_DOMAIN));
+                return esc_html($item->changed_by_name ?: __('Unknown', 'woocommerce-production-manager'));
             case 'changed_at':
                 return esc_html(\WPM\Utils\PersianDate::to_persian($item->changed_at, 'Y/m/d H:i'));
             case 'note':

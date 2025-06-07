@@ -8,8 +8,8 @@ defined('ABSPATH') || exit;
 class CategoryOrdersTable extends WP_List_Table {
     public function __construct() {
         parent::__construct([
-            'singular' => __('Category Reservation', WPM_TEXT_DOMAIN),
-            'plural'   => __('Category Reservations', WPM_TEXT_DOMAIN),
+            'singular' => __('Category Reservation', 'woocommerce-production-manager'),
+            'plural'   => __('Category Reservations', 'woocommerce-production-manager'),
             'ajax'     => false
         ]);
     }
@@ -17,11 +17,11 @@ class CategoryOrdersTable extends WP_List_Table {
     public function get_columns() {
         return [
             'cb' => '<input type="checkbox" />',
-            'category_name' => __('Category', WPM_TEXT_DOMAIN),
-            'max_capacity' => __('Production Capacity', WPM_TEXT_DOMAIN),
-            'reserved_count' => __('Reserved Count', WPM_TEXT_DOMAIN),
-            'capacity_usage' => __('Capacity Usage', WPM_TEXT_DOMAIN),
-            'reservation_date' => __('Reservation Date', WPM_TEXT_DOMAIN)
+            'category_name' => __('Category', 'woocommerce-production-manager'),
+            'max_capacity' => __('Production Capacity', 'woocommerce-production-manager'),
+            'reserved_count' => __('Reserved Count', 'woocommerce-production-manager'),
+            'capacity_usage' => __('Capacity Usage', 'woocommerce-production-manager'),
+            'reservation_date' => __('Reservation Date', 'woocommerce-production-manager')
         ];
     }
 
@@ -41,7 +41,7 @@ class CategoryOrdersTable extends WP_List_Table {
         switch ($column_name) {
             case 'category_name':
                 if ($item->term_id == 0) {
-                    return esc_html__('Total Reservations', WPM_TEXT_DOMAIN);
+                    return esc_html__('Total Reservations', 'woocommerce-production-manager');
                 }
                 $term = get_term($item->term_id, 'product_cat');
                 if (is_wp_error($term) || !$term) {
@@ -54,11 +54,11 @@ class CategoryOrdersTable extends WP_List_Table {
                 $edit_url = admin_url('term.php?taxonomy=product_cat&tag_ID=' . $item->term_id);
                 $category_name = sprintf('<a href="%s">%s</a>', esc_url($category_url), esc_html($item->category_name));
                 $actions = [
-                    'edit' => sprintf('<a href="%s">%s</a>', esc_url($edit_url), __('Edit Category', WPM_TEXT_DOMAIN))
+                    'edit' => sprintf('<a href="%s">%s</a>', esc_url($edit_url), __('Edit Category', 'woocommerce-production-manager'))
                 ];
                 return $category_name . $this->row_actions($actions);
             case 'max_capacity':
-                return $item->term_id == 0 ? esc_html__('-', WPM_TEXT_DOMAIN) : esc_html($item->max_capacity ?: __('No Limit', WPM_TEXT_DOMAIN));
+                return $item->term_id == 0 ? esc_html__('-', 'woocommerce-production-manager') : esc_html($item->max_capacity ?: __('No Limit', 'woocommerce-production-manager'));
             case 'reserved_count':
                 return esc_html($item->reserved_count);
             case 'capacity_usage':
@@ -97,7 +97,7 @@ class CategoryOrdersTable extends WP_List_Table {
             ?>
             <div class="alignleft actions">
                 <select name="category_id">
-                    <option value="0"><?php esc_html_e('All Categories', WPM_TEXT_DOMAIN); ?></option>
+                    <option value="0"><?php esc_html_e('All Categories', 'woocommerce-production-manager'); ?></option>
                     <?php
                     $categories = get_terms(['taxonomy' => 'product_cat', 'hide_empty' => false]);
                     foreach ($categories as $category) {
@@ -110,7 +110,7 @@ class CategoryOrdersTable extends WP_List_Table {
                     }
                     ?>
                 </select>
-                <?php submit_button(__('Filter', WPM_TEXT_DOMAIN), '', 'filter_action', false); ?>
+                <?php submit_button(__('Filter', 'woocommerce-production-manager'), '', 'filter_action', false); ?>
             </div>
             <?php
         }

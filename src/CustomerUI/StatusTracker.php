@@ -26,7 +26,7 @@ class StatusTracker {
         foreach ($items as $key => $value) {
             $new_items[$key] = $value;
             if ($key === 'orders') {
-                $new_items['wpm-order-status'] = __('Order Status', WPM_TEXT_DOMAIN);
+                $new_items['wpm-order-status'] = __('Order Status', 'woocommerce-production-manager');
             }
         }
         return $new_items;
@@ -35,7 +35,7 @@ class StatusTracker {
     /*public static function render_status_page() {
         global $wpdb;
         if (!is_user_logged_in()) {
-            wc_add_notice(__('Please log in to view order statuses.', WPM_TEXT_DOMAIN), 'error');
+            wc_add_notice(__('Please log in to view order statuses.', 'woocommerce-production-manager'), 'error');
             wp_redirect(wc_get_page_permalink('myaccount'));
             exit;
         }
@@ -68,18 +68,18 @@ class StatusTracker {
 
         ?>
         <div class="wpm-status-tracker">
-            <h2><?php esc_html_e('Order Status', WPM_TEXT_DOMAIN); ?></h2>
+            <h2><?php esc_html_e('Order Status', 'woocommerce-production-manager'); ?></h2>
 
             <!-- Order Items Table -->
             <table class="shop_table wpm-order-status-table">
                 <thead>
                     <tr>
-                        <th><?php esc_html_e('Order ID', WPM_TEXT_DOMAIN); ?></th>
-                        <th><?php esc_html_e('Item Name', WPM_TEXT_DOMAIN); ?></th>
-                        <th><?php esc_html_e('Order Date', WPM_TEXT_DOMAIN); ?></th>
-                        <th><?php esc_html_e('Status', WPM_TEXT_DOMAIN); ?></th>
-                        <th><?php esc_html_e('Delivery Date', WPM_TEXT_DOMAIN); ?></th>
-                        <th><?php esc_html_e('Progress', WPM_TEXT_DOMAIN); ?></th>
+                        <th><?php esc_html_e('Order ID', 'woocommerce-production-manager'); ?></th>
+                        <th><?php esc_html_e('Item Name', 'woocommerce-production-manager'); ?></th>
+                        <th><?php esc_html_e('Order Date', 'woocommerce-production-manager'); ?></th>
+                        <th><?php esc_html_e('Status', 'woocommerce-production-manager'); ?></th>
+                        <th><?php esc_html_e('Delivery Date', 'woocommerce-production-manager'); ?></th>
+                        <th><?php esc_html_e('Progress', 'woocommerce-production-manager'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -98,7 +98,7 @@ class StatusTracker {
                         </tr>
                         <tr class="wpm-status-log">
                             <td colspan="6">
-                                <strong><?php esc_html_e('Status History', WPM_TEXT_DOMAIN); ?>:</strong>
+                                <strong><?php esc_html_e('Status History', 'woocommerce-production-manager'); ?>:</strong>
                                 <ul>
                                     <?php
                                     $logs = $wpdb->get_results($wpdb->prepare(
@@ -108,7 +108,7 @@ class StatusTracker {
                                     foreach ($logs as $log) {
                                         $date = PersianDate::to_persian($log->changed_at, 'Y/m/d H:i');
                                         $note = $log->note ? esc_html($log->note) : esc_html($log->status);
-                                        echo '<li>' . sprintf(esc_html__('%s: %s', WPM_TEXT_DOMAIN), esc_html($date), $note) . '</li>';
+                                        echo '<li>' . sprintf(esc_html__('%s: %s', 'woocommerce-production-manager'), esc_html($date), $note) . '</li>';
                                     }
                                     ?>
                                 </ul>
@@ -139,8 +139,8 @@ class StatusTracker {
 
         ?>
         <div class="wpm-production-status">
-            <div><? echo esc_html__('Status: ', WPM_TEXT_DOMAIN); ?> <span><?php echo esc_html($result->status); ?></span></div>
-            <div><? echo esc_html__('Delivery Date: ', WPM_TEXT_DOMAIN); ?> <span><?php echo esc_html($delivery_date); ?></span></div>
+            <div><? echo esc_html__('Status: ', 'woocommerce-production-manager'); ?> <span><?php echo esc_html($result->status); ?></span></div>
+            <div><? echo esc_html__('Delivery Date: ', 'woocommerce-production-manager'); ?> <span><?php echo esc_html($delivery_date); ?></span></div>
         </div>
         <div class="wpm-progress-bar">
             <div class="wpm-progress" style="width: <?php echo esc_attr(self::get_progress_percentage($result->status)); ?>%;"></div>
@@ -165,9 +165,9 @@ class StatusTracker {
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce'   => wp_create_nonce('wpm_customer_ui'),
                 'i18n'    => [
-                    'loading' => __('Loading...', WPM_TEXT_DOMAIN),
-                    'error'   => __('Unable to calculate delivery date.', WPM_TEXT_DOMAIN),
-                    'smsUpdated' => __('SMS notification settings updated', WPM_TEXT_DOMAIN)
+                    'loading' => __('Loading...', 'woocommerce-production-manager'),
+                    'error'   => __('Unable to calculate delivery date.', 'woocommerce-production-manager'),
+                    'smsUpdated' => __('SMS notification settings updated', 'woocommerce-production-manager')
                 ]
             ]);
         }

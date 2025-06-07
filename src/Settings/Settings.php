@@ -19,8 +19,8 @@ class Settings {
     public static function add_menu_page() {
         add_submenu_page(
             'wpm-dashboard',
-            __('Settings', WPM_TEXT_DOMAIN),
-            __('Settings', WPM_TEXT_DOMAIN),
+            __('Settings', 'woocommerce-production-manager'),
+            __('Settings', 'woocommerce-production-manager'),
             'manage_woocommerce',
             'wpm-settings',
             [__CLASS__, 'render_page']
@@ -33,11 +33,11 @@ class Settings {
 
     public static function render_page() {
         $tabs = [
-            'general' => __('General', WPM_TEXT_DOMAIN),
-            'holidays' => __('Holidays', WPM_TEXT_DOMAIN),
-            'statuses' => __('Order Statuses', WPM_TEXT_DOMAIN),
-            'sms' => __('SMS', WPM_TEXT_DOMAIN),
-			'advanced' => __('Advanced', WPM_TEXT_DOMAIN),
+            'general' => __('General', 'woocommerce-production-manager'),
+            'holidays' => __('Holidays', 'woocommerce-production-manager'),
+            'statuses' => __('Order Statuses', 'woocommerce-production-manager'),
+            'sms' => __('SMS', 'woocommerce-production-manager'),
+			'advanced' => __('Advanced', 'woocommerce-production-manager'),
         ];
         $current_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'general';
 
@@ -47,7 +47,7 @@ class Settings {
 
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Production Manager Settings', WPM_TEXT_DOMAIN); ?></h1>
+            <h1><?php esc_html_e('Production Manager Settings', 'woocommerce-production-manager'); ?></h1>
             <nav class="nav-tab-wrapper">
                 <?php foreach ($tabs as $tab => $name) : ?>
                     <a href="?page=wpm-settings&tab=<?php echo esc_attr($tab); ?>" class="nav-tab <?php echo $current_tab === $tab ? 'nav-tab-active' : ''; ?>"><?php echo esc_html($name); ?></a>
@@ -82,38 +82,38 @@ class Settings {
         ?>
         <form method="post" id="wpm-settings-form">
             <div class="wpm-tab-content">
-                <h2><?php esc_html_e('General Settings', WPM_TEXT_DOMAIN); ?></h2>
+                <h2><?php esc_html_e('General Settings', 'woocommerce-production-manager'); ?></h2>
                 <table class="form-table">
                     <tr>
-                        <th><label for="wpm_default_capacity"><?php esc_html_e('Default Daily Production Capacity', WPM_TEXT_DOMAIN); ?></label></th>
+                        <th><label for="wpm_default_capacity"><?php esc_html_e('Default Daily Production Capacity', 'woocommerce-production-manager'); ?></label></th>
                         <td>
                             <input type="number" name="wpm_default_capacity" id="wpm_default_capacity" value="<?php echo esc_attr(get_option('wpm_default_capacity', 1)); ?>" min="1">
-                            <p><?php esc_html_e('Default maximum number of products that can be produced daily.', WPM_TEXT_DOMAIN); ?></p>
+                            <p><?php esc_html_e('Default maximum number of products that can be produced daily.', 'woocommerce-production-manager'); ?></p>
                         </td>
                     </tr>
                     <tr>
-                        <th><label for="wpm_default_delivery_days"><?php esc_html_e('Default Delivery Days', WPM_TEXT_DOMAIN); ?></label></th>
+                        <th><label for="wpm_default_delivery_days"><?php esc_html_e('Default Delivery Days', 'woocommerce-production-manager'); ?></label></th>
                         <td>
                             <input type="number" name="wpm_default_delivery_days" id="wpm_default_delivery_days" value="<?php echo esc_attr(get_option('wpm_default_delivery_days', 3)); ?>" min="1">
-                            <p><?php esc_html_e('Number of days to add to order date for default delivery.', WPM_TEXT_DOMAIN); ?></p>
+                            <p><?php esc_html_e('Number of days to add to order date for default delivery.', 'woocommerce-production-manager'); ?></p>
                         </td>
                     </tr>
 					<tr>
-                        <th><label for="wpm_default_max_delivery_days"><?php esc_html_e('Default Max Delivery Days', WPM_TEXT_DOMAIN); ?></label></th>
+                        <th><label for="wpm_default_max_delivery_days"><?php esc_html_e('Default Max Delivery Days', 'woocommerce-production-manager'); ?></label></th>
                         <td>
                             <input type="number" name="wpm_default_max_delivery_days" id="wpm_default_max_delivery_days" value="<?php echo esc_attr(get_option('wpm_default_max_delivery_days', 3)); ?>" min="1">
-                            <p><?php esc_html_e('Max Number of days to add to order date for default delivery.', WPM_TEXT_DOMAIN); ?></p>
+                            <p><?php esc_html_e('Max Number of days to add to order date for default delivery.', 'woocommerce-production-manager'); ?></p>
                         </td>
                     </tr>
                     <tr>
-                        <th><label for="wpm_daily_cutoff_time"><?php esc_html_e('Daily Cutoff Time', WPM_TEXT_DOMAIN); ?></label></th>
+                        <th><label for="wpm_daily_cutoff_time"><?php esc_html_e('Daily Cutoff Time', 'woocommerce-production-manager'); ?></label></th>
                         <td>
                             <input type="time" name="wpm_daily_cutoff_time" id="wpm_daily_cutoff_time" value="<?php echo esc_attr(get_option('wpm_daily_cutoff_time', '14:00')); ?>">
-                            <p><?php esc_html_e('Daily cutoff time for processing orders.', WPM_TEXT_DOMAIN); ?></p>
+                            <p><?php esc_html_e('Daily cutoff time for processing orders.', 'woocommerce-production-manager'); ?></p>
                         </td>
                     </tr>
                     <tr>
-                        <th><?php esc_html_e('Allowed Order Statuses', WPM_TEXT_DOMAIN); ?></th>
+                        <th><?php esc_html_e('Allowed Order Statuses', 'woocommerce-production-manager'); ?></th>
                         <td>
                             <?php foreach ($wc_statuses as $status_key => $status_label) : ?>
                                 <label>
@@ -121,7 +121,7 @@ class Settings {
                                     <?php echo esc_html($status_label); ?>
                                 </label><br>
                             <?php endforeach; ?>
-                            <p><?php esc_html_e('Select WooCommerce order statuses to display in the order items table.', WPM_TEXT_DOMAIN); ?></p>
+                            <p><?php esc_html_e('Select WooCommerce order statuses to display in the order items table.', 'woocommerce-production-manager'); ?></p>
                         </td>
                     </tr>
                 </table>
@@ -136,11 +136,11 @@ class Settings {
         $selected_statuses = get_option('wpm_open_order_statuses', array_keys($wc_statuses));
         ?>
         <div class="wpm-tab-content">
-            <h2><?php esc_html_e('Advanced Settings', WPM_TEXT_DOMAIN); ?></h2>
+            <h2><?php esc_html_e('Advanced Settings', 'woocommerce-production-manager'); ?></h2>
             <form method="post" id="wpm-advanced-settings-form">
                 <table class="form-table">
                     <tr>
-                        <th><?php esc_html_e('Open Order Statuses', WPM_TEXT_DOMAIN); ?></th>
+                        <th><?php esc_html_e('Open Order Statuses', 'woocommerce-production-manager'); ?></th>
                         <td>
                             <?php foreach ($wc_statuses as $status_key => $status_label) : ?>
                                 <label>
@@ -148,21 +148,21 @@ class Settings {
                                     <?php echo esc_html($status_label); ?>
                                 </label><br>
                             <?php endforeach; ?>
-                            <p><?php esc_html_e('Select WooCommerce order statuses to consider as open for production capacity reset.', WPM_TEXT_DOMAIN); ?></p>
+                            <p><?php esc_html_e('Select WooCommerce order statuses to consider as open for production capacity reset.', 'woocommerce-production-manager'); ?></p>
                         </td>
                     </tr>
                     <tr>
-                        <th><?php esc_html_e('Reset Production Capacity', WPM_TEXT_DOMAIN); ?></th>
+                        <th><?php esc_html_e('Reset Production Capacity', 'woocommerce-production-manager'); ?></th>
                         <td>
-                            <button type="button" class="button wpm-reset-capacity"><?php esc_html_e('Reset Capacity', WPM_TEXT_DOMAIN); ?></button>
-                            <p><?php esc_html_e('Recalculate delivery dates for open orders and reserve capacity based on order date and production time.', WPM_TEXT_DOMAIN); ?></p>
+                            <button type="button" class="button wpm-reset-capacity"><?php esc_html_e('Reset Capacity', 'woocommerce-production-manager'); ?></button>
+                            <p><?php esc_html_e('Recalculate delivery dates for open orders and reserve capacity based on order date and production time.', 'woocommerce-production-manager'); ?></p>
                         </td>
                     </tr>
                     <tr>
-                        <th><?php esc_html_e('Cache Management', WPM_TEXT_DOMAIN); ?></th>
+                        <th><?php esc_html_e('Cache Management', 'woocommerce-production-manager'); ?></th>
                         <td>
-                            <button type="button" class="button button-primary wpm-clear-cache"><?php esc_html_e('Clear Cache', WPM_TEXT_DOMAIN); ?></button>
-                            <p><?php esc_html_e('Clear cached data to refresh calculations and settings.', WPM_TEXT_DOMAIN); ?></p>
+                            <button type="button" class="button button-primary wpm-clear-cache"><?php esc_html_e('Clear Cache', 'woocommerce-production-manager'); ?></button>
+                            <p><?php esc_html_e('Clear cached data to refresh calculations and settings.', 'woocommerce-production-manager'); ?></p>
                         </td>
                     </tr>
                 </table>
@@ -197,10 +197,10 @@ class Settings {
                 update_option('wpm_sms_sender_number', sanitize_text_field($data['wpm_sms_sender_number'] ?? ''));
                 update_option('wpm_enable_status_sms', isset($data['wpm_enable_status_sms']) ? 1 : 0);
                 update_option('wpm_sms_status_pattern_id', sanitize_text_field($data['wpm_sms_status_pattern_id'] ?? ''));
-                update_option('wpm_sms_template', sanitize_textarea_field($data['wpm_sms_template'] ?? __('Order #{order_id} status changed to {status}.', WPM_TEXT_DOMAIN)));
+                update_option('wpm_sms_template', sanitize_textarea_field($data['wpm_sms_template'] ?? __('Order #{order_id} status changed to {status}.', 'woocommerce-production-manager')));
                 update_option('wpm_enable_delay_sms', isset($data['wpm_enable_delay_sms']) ? 1 : 0);
                 update_option('wpm_sms_delay_pattern_id', sanitize_text_field($data['wpm_sms_delay_pattern_id'] ?? ''));
-                update_option('wpm_delay_sms_template', sanitize_textarea_field($data['wpm_delay_sms_template'] ?? __('Dear {customer_name}, your order #{order_id} is delayed. New delivery date: {delivery_date}.', WPM_TEXT_DOMAIN)));
+                update_option('wpm_delay_sms_template', sanitize_textarea_field($data['wpm_delay_sms_template'] ?? __('Dear {customer_name}, your order #{order_id} is delayed. New delivery date: {delivery_date}.', 'woocommerce-production-manager')));
                 
                 break;
             case 'advanced':
@@ -231,14 +231,14 @@ class Settings {
         check_ajax_referer('wpm_Admin', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
-            wp_send_json_error(['message' => __('Unauthorized', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Unauthorized', 'woocommerce-production-manager')]);
         }
 
         global $wpdb;
 
         $open_statuses = get_option('wpm_open_order_statuses', array_keys(wc_get_order_statuses()));
         if (empty($open_statuses)) {
-            wp_send_json_error(['message' => __('No open order statuses selected.', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('No open order statuses selected.', 'woocommerce-production-manager')]);
         }
 
         // Convert statuses to format for SQL (e.g., 'wc-pending', 'wc-processing')
@@ -259,7 +259,7 @@ class Settings {
         ", $open_statuses));
 
         if (!$items) {
-            wp_send_json_success(['message' => __('No open orders to reset.', WPM_TEXT_DOMAIN)]);
+            wp_send_json_success(['message' => __('No open orders to reset.', 'woocommerce-production-manager')]);
         }
 
         // Clear existing capacity reservations
@@ -296,16 +296,16 @@ class Settings {
             //do_action('wpm_order_item_delivery_date_changed', $item_data['order_item_id'], $item_data['delivery_date']);
         }
         
-        wp_send_json_success(['message' => __('Production capacity reset successfully.', WPM_TEXT_DOMAIN)]);
+        wp_send_json_success(['message' => __('Production capacity reset successfully.', 'woocommerce-production-manager')]);
     }
 	
 	public static function clear_cache() {
         check_ajax_referer('wpm_admin', 'nonce');
         if (!current_user_can('manage_woocommerce')) {
-            wp_send_json_error(['message' => __('Unauthorized', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Unauthorized', 'woocommerce-production-manager')]);
         }
         \WPM\Utils\Cache::clear();
-        wp_send_json_success(['message' => __('Cache cleared successfully', WPM_TEXT_DOMAIN)]);
+        wp_send_json_success(['message' => __('Cache cleared successfully', 'woocommerce-production-manager')]);
     }
 }
 ?>

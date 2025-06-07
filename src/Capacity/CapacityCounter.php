@@ -120,7 +120,7 @@ class CapacityCounter {
                 self::update_capacity_count($entity_type, $entity_id, $delivery_date['delivery_date'], $quantity);
 
                 // Store delivery date
-                $default_status = get_option('wpm_statuses', [['name' => __('Received', WPM_TEXT_DOMAIN), 'color' => '#0073aa']])[0]['name'];
+                $default_status = get_option('wpm_statuses', [['name' => __('Received', 'woocommerce-production-manager'), 'color' => '#0073aa']])[0]['name'];
 				$user_id = get_current_user_id();
                 $wpdb->insert(
                     "{$wpdb->prefix}wpm_order_items_status",
@@ -135,7 +135,7 @@ class CapacityCounter {
                     ['%d', '%d', '%s', '%s', '%d', '%s']
                 );
 				
-				\WPM\Settings\StatusManager::log_status_change($item_id, $default_status, $user_id, __('Initial status set', WPM_TEXT_DOMAIN));
+				\WPM\Settings\StatusManager::log_status_change($item_id, $default_status, $user_id, __('Initial status set', 'woocommerce-production-manager'));
             }
         }
     }

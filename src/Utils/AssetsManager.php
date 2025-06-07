@@ -25,9 +25,9 @@ class AssetsManager {
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('wpm_dashboard'),
                 'i18n' => [
-                    'capacityUsed' => __('Capacity Used', WPM_TEXT_DOMAIN),
-                    'delayedOrders' => __('Delayed Orders', WPM_TEXT_DOMAIN),
-                    'smsSent' => __('SMS Sent', WPM_TEXT_DOMAIN)
+                    'capacityUsed' => __('Capacity Used', 'woocommerce-production-manager'),
+                    'delayedOrders' => __('Delayed Orders', 'woocommerce-production-manager'),
+                    'smsSent' => __('SMS Sent', 'woocommerce-production-manager')
                 ]
             ]);
         }else{
@@ -51,25 +51,25 @@ class AssetsManager {
                 'nonce'   => wp_create_nonce('wpm_Admin'),
                 'statuses' => $status_options,
                 'i18n'    => [
-                    'requiredFields' => __('Name and color are required', WPM_TEXT_DOMAIN),
-                    'delete' => __('Delete', WPM_TEXT_DOMAIN),
-                    'error' => __('Error occurred', WPM_TEXT_DOMAIN),
-                    'edit' => __('Edit', WPM_TEXT_DOMAIN),
-                    'save' => __('Save', WPM_TEXT_DOMAIN),
-                    'selectStatus' => __('Select Status', WPM_TEXT_DOMAIN),
-                    'statusUpdated' => __('Status updated', WPM_TEXT_DOMAIN),
-                    'statusesReordered' => __('Statuses reordered', WPM_TEXT_DOMAIN),
-                    'deliveryDateUpdated' => __('Delivery date updated', WPM_TEXT_DOMAIN),
-                    'confirmDelete' => __('Are you sure you want to delete this?', WPM_TEXT_DOMAIN),
-                    'invalidDate' => __('Invalid date', WPM_TEXT_DOMAIN),
-                    'holidayUpdated' => __('Holiday updated', WPM_TEXT_DOMAIN),
-                    'holidaysReordered' => __('Holidays reordered', WPM_TEXT_DOMAIN),
-                    'exporting' => __('Exporting...', WPM_TEXT_DOMAIN),
-                    'exportOrderItems' => __('Export Order Items', WPM_TEXT_DOMAIN),
-                    'exportLogs' => __('Export Logs', WPM_TEXT_DOMAIN),
-                    'cacheCleared' => __('Cache cleared successfully.', WPM_TEXT_DOMAIN),
-                    'loading' => __('Loading...', WPM_TEXT_DOMAIN),
-                    'capacityReset' => __('Production capacity reset successfully.', WPM_TEXT_DOMAIN),
+                    'requiredFields' => __('Name and color are required', 'woocommerce-production-manager'),
+                    'delete' => __('Delete', 'woocommerce-production-manager'),
+                    'error' => __('Error occurred', 'woocommerce-production-manager'),
+                    'edit' => __('Edit', 'woocommerce-production-manager'),
+                    'save' => __('Save', 'woocommerce-production-manager'),
+                    'selectStatus' => __('Select Status', 'woocommerce-production-manager'),
+                    'statusUpdated' => __('Status updated', 'woocommerce-production-manager'),
+                    'statusesReordered' => __('Statuses reordered', 'woocommerce-production-manager'),
+                    'deliveryDateUpdated' => __('Delivery date updated', 'woocommerce-production-manager'),
+                    'confirmDelete' => __('Are you sure you want to delete this?', 'woocommerce-production-manager'),
+                    'invalidDate' => __('Invalid date', 'woocommerce-production-manager'),
+                    'holidayUpdated' => __('Holiday updated', 'woocommerce-production-manager'),
+                    'holidaysReordered' => __('Holidays reordered', 'woocommerce-production-manager'),
+                    'exporting' => __('Exporting...', 'woocommerce-production-manager'),
+                    'exportOrderItems' => __('Export Order Items', 'woocommerce-production-manager'),
+                    'exportLogs' => __('Export Logs', 'woocommerce-production-manager'),
+                    'cacheCleared' => __('Cache cleared successfully.', 'woocommerce-production-manager'),
+                    'loading' => __('Loading...', 'woocommerce-production-manager'),
+                    'capacityReset' => __('Production capacity reset successfully.', 'woocommerce-production-manager'),
                 ]
             ]);
         }

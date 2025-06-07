@@ -647,7 +647,7 @@ class DeliveryCalculator {
         $quantity = absint($_POST['quantity'] ?? 1);
 
         if (!$product_id) {
-            wp_send_json_error(['message' => __('Invalid product', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Invalid product', 'woocommerce-production-manager')]);
         }
 
         $result = self::calculate_delivery_date($product_id, $variation_id, $quantity);
@@ -657,7 +657,7 @@ class DeliveryCalculator {
             wp_send_json_success(['delivery_date' => $jalali_date]);
         }
 
-        wp_send_json_error(['message' => __('No available delivery date', WPM_TEXT_DOMAIN)]);
+        wp_send_json_error(['message' => __('No available delivery date', 'woocommerce-production-manager')]);
     }
 }
 ?>

@@ -15,20 +15,20 @@ class Calendar {
         ?>
         <form method="post" id="wpm-settings-form">
             <div class="wpm-tab-content">
-                <h2><?php esc_html_e('Holidays Settings', WPM_TEXT_DOMAIN); ?></h2>
+                <h2><?php esc_html_e('Holidays Settings', 'woocommerce-production-manager'); ?></h2>
                 <table class="form-table">
                     <tr>
-                        <th><?php esc_html_e('Weekly Holidays', WPM_TEXT_DOMAIN); ?></th>
+                        <th><?php esc_html_e('Weekly Holidays', 'woocommerce-production-manager'); ?></th>
                         <td>
                             <?php
                             $days = [
-                                'saturday' => __('Saturday', WPM_TEXT_DOMAIN),
-                                'sunday' => __('Sunday', WPM_TEXT_DOMAIN),
-                                'monday' => __('Monday', WPM_TEXT_DOMAIN),
-                                'tuesday' => __('Tuesday', WPM_TEXT_DOMAIN),
-                                'wednesday' => __('Wednesday', WPM_TEXT_DOMAIN),
-                                'thursday' => __('Thursday', WPM_TEXT_DOMAIN),
-                                'friday' => __('Friday', WPM_TEXT_DOMAIN)
+                                'saturday' => __('Saturday', 'woocommerce-production-manager'),
+                                'sunday' => __('Sunday', 'woocommerce-production-manager'),
+                                'monday' => __('Monday', 'woocommerce-production-manager'),
+                                'tuesday' => __('Tuesday', 'woocommerce-production-manager'),
+                                'wednesday' => __('Wednesday', 'woocommerce-production-manager'),
+                                'thursday' => __('Thursday', 'woocommerce-production-manager'),
+                                'friday' => __('Friday', 'woocommerce-production-manager')
                             ];
                             $weekly_holidays = get_option('wpm_weekly_holidays', []);
                             foreach ($days as $key => $label) :
@@ -38,25 +38,25 @@ class Calendar {
                                     <?php echo esc_html($label); ?>
                                 </label><br>
                             <?php endforeach; ?>
-                            <p><?php esc_html_e('Select days to mark as holidays each week.', WPM_TEXT_DOMAIN); ?></p>
+                            <p><?php esc_html_e('Select days to mark as holidays each week.', 'woocommerce-production-manager'); ?></p>
                         </td>
                     </tr>
                 </table>
             </div>
             <?php submit_button(); ?>
         </form>
-        <h3><?php esc_html_e('Custom Holidays', WPM_TEXT_DOMAIN); ?></h3>
+        <h3><?php esc_html_e('Custom Holidays', 'woocommerce-production-manager'); ?></h3>
         <div id="wpm-holidays-form">
-            <input type="text" id="wpm-holiday-date" class="persian-datepicker" placeholder="<?php esc_attr_e('Select date', WPM_TEXT_DOMAIN); ?>">
-            <input type="text" id="wpm-holiday-description" placeholder="<?php esc_attr_e('Description (optional)', WPM_TEXT_DOMAIN); ?>">
-            <button type="button" class="button button-primary wpm-add-holiday"><?php esc_html_e('Add Holiday', WPM_TEXT_DOMAIN); ?></button>
+            <input type="text" id="wpm-holiday-date" class="persian-datepicker" placeholder="<?php esc_attr_e('Select date', 'woocommerce-production-manager'); ?>">
+            <input type="text" id="wpm-holiday-description" placeholder="<?php esc_attr_e('Description (optional)', 'woocommerce-production-manager'); ?>">
+            <button type="button" class="button button-primary wpm-add-holiday"><?php esc_html_e('Add Holiday', 'woocommerce-production-manager'); ?></button>
         </div>
         <table class="wp-list-table widefat fixed striped wpm-holidays-list" id="wpm-holidays-table">
             <thead>
                 <tr>
-                    <th><?php esc_html_e('Date', WPM_TEXT_DOMAIN); ?></th>
-                    <th><?php esc_html_e('Description', WPM_TEXT_DOMAIN); ?></th>
-                    <th><?php esc_html_e('Actions', WPM_TEXT_DOMAIN); ?></th>
+                    <th><?php esc_html_e('Date', 'woocommerce-production-manager'); ?></th>
+                    <th><?php esc_html_e('Description', 'woocommerce-production-manager'); ?></th>
+                    <th><?php esc_html_e('Actions', 'woocommerce-production-manager'); ?></th>
                 </tr>
             </thead>
             <tbody id="wpm-holidays-sortable">
@@ -68,8 +68,8 @@ class Calendar {
                         <td class="wpm-holiday-date"><?php echo esc_html(\WPM\Utils\PersianDate::to_persian($holiday->date)); ?></td>
                         <td class="wpm-holiday-description"><?php echo esc_html($holiday->description); ?></td>
                         <td>
-                            <button class="button wpm-edit-holiday"><?php esc_html_e('Edit', WPM_TEXT_DOMAIN); ?></button>
-                            <button class="button wpm-delete-holiday"><?php esc_html_e('Delete', WPM_TEXT_DOMAIN); ?></button>
+                            <button class="button wpm-edit-holiday"><?php esc_html_e('Edit', 'woocommerce-production-manager'); ?></button>
+                            <button class="button wpm-delete-holiday"><?php esc_html_e('Delete', 'woocommerce-production-manager'); ?></button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -82,14 +82,14 @@ class Calendar {
         check_ajax_referer('wpm_Admin', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
-            wp_send_json_error(['message' => __('Unauthorized', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Unauthorized', 'woocommerce-production-manager')]);
         }
 
         $date = sanitize_text_field($_POST['date']);
         $description = sanitize_text_field($_POST['description']);
 
         if (empty($date) || !\WPM\Utils\PersianDate::is_valid_persian_date($date)) {
-            wp_send_json_error(['message' => __('Invalid date', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Invalid date', 'woocommerce-production-manager')]);
         }
 
         global $wpdb;
@@ -104,12 +104,12 @@ class Calendar {
         );
 
         if ($inserted === false) {
-            wp_send_json_error(['message' => __('Failed to save holiday', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Failed to save holiday', 'woocommerce-production-manager')]);
         }
 
         $holiday_id = $wpdb->insert_id;
         wp_send_json_success([
-            'message' => __('Holiday saved', WPM_TEXT_DOMAIN),
+            'message' => __('Holiday saved', 'woocommerce-production-manager'),
             'index' => $holiday_id,
             'holiday' => ['date' => $date, 'description' => $description]
         ]);
@@ -119,7 +119,7 @@ class Calendar {
         check_ajax_referer('wpm_Admin', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
-            wp_send_json_error(['message' => __('Unauthorized', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Unauthorized', 'woocommerce-production-manager')]);
         }
 
         $holiday_id = absint($_POST['index']);
@@ -127,7 +127,7 @@ class Calendar {
         $description = sanitize_text_field($_POST['description']);
 
         if (empty($date) || !\WPM\Utils\PersianDate::is_valid_persian_date($date)) {
-            wp_send_json_error(['message' => __('Invalid date', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Invalid date', 'woocommerce-production-manager')]);
         }
 
         global $wpdb;
@@ -144,11 +144,11 @@ class Calendar {
         );
 
         if ($updated === false) {
-            wp_send_json_error(['message' => __('Failed to update holiday', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Failed to update holiday', 'woocommerce-production-manager')]);
         }
 
         wp_send_json_success([
-            'message' => __('Holiday updated', WPM_TEXT_DOMAIN),
+            'message' => __('Holiday updated', 'woocommerce-production-manager'),
             'holiday' => [
                 'date' => $date,
                 'description' => $description
@@ -160,7 +160,7 @@ class Calendar {
         check_ajax_referer('wpm_Admin', 'nonce');
 
         if (!current_user_can('manage_woocommerce')) {
-            wp_send_json_error(['message' => __('Unauthorized', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Unauthorized', 'woocommerce-production-manager')]);
         }
 
         $holiday_id = absint($_POST['index']);
@@ -173,10 +173,10 @@ class Calendar {
         );
 
         if ($deleted === false) {
-            wp_send_json_error(['message' => __('Failed to delete holiday', WPM_TEXT_DOMAIN)]);
+            wp_send_json_error(['message' => __('Failed to delete holiday', 'woocommerce-production-manager')]);
         }
 
-        wp_send_json_success(['message' => __('Holiday deleted', WPM_TEXT_DOMAIN)]);
+        wp_send_json_success(['message' => __('Holiday deleted', 'woocommerce-production-manager')]);
     }
 
     public static function sanitize_weekly_holidays($value) {

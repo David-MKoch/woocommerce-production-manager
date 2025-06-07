@@ -24,37 +24,37 @@ class DashboardPage {
 
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Production Dashboard', WPM_TEXT_DOMAIN); ?></h1>
+            <h1><?php esc_html_e('Production Dashboard', 'woocommerce-production-manager'); ?></h1>
             <div class="wpm-dashboard">
                 <div class="wpm-stats">
                     <div class="wpm-stat-box">
-                        <h3><?php esc_html_e('Total Capacity', WPM_TEXT_DOMAIN); ?></h3>
+                        <h3><?php esc_html_e('Total Capacity', 'woocommerce-production-manager'); ?></h3>
                         <p><?php echo esc_html($total_capacity ?: 0); ?></p>
                     </div>
                     <div class="wpm-stat-box">
-                        <h3><?php esc_html_e('Used Capacity Today', WPM_TEXT_DOMAIN); ?></h3>
+                        <h3><?php esc_html_e('Used Capacity Today', 'woocommerce-production-manager'); ?></h3>
                         <p><?php echo esc_html($used_capacity ?: 0); ?></p>
                     </div>
                     <div class="wpm-stat-box">
-                        <h3><?php esc_html_e('Delayed Orders', WPM_TEXT_DOMAIN); ?></h3>
+                        <h3><?php esc_html_e('Delayed Orders', 'woocommerce-production-manager'); ?></h3>
                         <p><?php echo esc_html($delayed_orders ?: 0); ?></p>
                     </div>
                     <div class="wpm-stat-box">
-                        <h3><?php esc_html_e('SMS Sent Today', WPM_TEXT_DOMAIN); ?></h3>
+                        <h3><?php esc_html_e('SMS Sent Today', 'woocommerce-production-manager'); ?></h3>
                         <p><?php echo esc_html($sms_sent ?: 0); ?></p>
                     </div>
                 </div>
                 <div class="wpm-charts">
                     <div class="wpm-chart-section">
-                        <h2><?php esc_html_e('Capacity Usage (Last 30 Days)', WPM_TEXT_DOMAIN); ?></h2>
+                        <h2><?php esc_html_e('Capacity Usage (Last 30 Days)', 'woocommerce-production-manager'); ?></h2>
                         <canvas id="capacityChart"></canvas>
                     </div>
                     <div class="wpm-chart-section">
-                        <h2><?php esc_html_e('Delayed Orders (Last 30 Days)', WPM_TEXT_DOMAIN); ?></h2>
+                        <h2><?php esc_html_e('Delayed Orders (Last 30 Days)', 'woocommerce-production-manager'); ?></h2>
                         <canvas id="delayedOrdersChart"></canvas>
                     </div>
                     <div class="wpm-chart-section">
-                        <h2><?php esc_html_e('SMS Statistics', WPM_TEXT_DOMAIN); ?></h2>
+                        <h2><?php esc_html_e('SMS Statistics', 'woocommerce-production-manager'); ?></h2>
                         <canvas id="smsChart"></canvas>
                     </div>
                 </div>
@@ -149,7 +149,7 @@ class DashboardPage {
                 break;
         }
 
-        wp_send_json_error(['message' => __('Invalid request', WPM_TEXT_DOMAIN)]);
+        wp_send_json_error(['message' => __('Invalid request', 'woocommerce-production-manager')]);
     }
 }
 ?>

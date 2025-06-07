@@ -30,8 +30,8 @@ class AdminPage {
 
     public static function add_menu_pages() {
         $dashboard_hook = add_menu_page(
-            __('Production Manager', WPM_TEXT_DOMAIN),
-            __('Production Manager', WPM_TEXT_DOMAIN),
+            __('Production Manager', 'woocommerce-production-manager'),
+            __('Production Manager', 'woocommerce-production-manager'),
             'manage_woocommerce',
             'wpm-dashboard',
             [DashboardPage::class, 'render_page'],
@@ -41,8 +41,8 @@ class AdminPage {
 
         $order_items_hook = add_submenu_page(
             'wpm-dashboard',
-            __('Order Items', WPM_TEXT_DOMAIN),
-            __('Order Items', WPM_TEXT_DOMAIN),
+            __('Order Items', 'woocommerce-production-manager'),
+            __('Order Items', 'woocommerce-production-manager'),
             'manage_woocommerce',
             'wpm-order-items',
             [OrderItemsPage::class, 'render_page']
@@ -50,8 +50,8 @@ class AdminPage {
 
         $reports_hook = add_submenu_page(
             'wpm-dashboard',
-            __('Reports', WPM_TEXT_DOMAIN),
-            __('Reports', WPM_TEXT_DOMAIN),
+            __('Reports', 'woocommerce-production-manager'),
+            __('Reports', 'woocommerce-production-manager'),
             'manage_woocommerce',
             'wpm-reports',
             [ReportsPage::class, 'render_page']
@@ -73,7 +73,7 @@ class AdminPage {
             // No screen options for dashboard yet
         } elseif ($screen->id === 'production-manager_page_wpm-order-items') {
             add_screen_option('per_page', [
-                'label' => __('Items per page', WPM_TEXT_DOMAIN),
+                'label' => __('Items per page', 'woocommerce-production-manager'),
                 'default' => 20,
                 'option' => 'wpm_order_items_per_page'
             ]);
@@ -83,7 +83,7 @@ class AdminPage {
             $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'status_logs';
             if (isset($_GET['section']) && $_GET['section'] === 'reserved-products') {
                 add_screen_option('per_page', [
-                    'label' => __('Products per page', WPM_TEXT_DOMAIN),
+                    'label' => __('Products per page', 'woocommerce-production-manager'),
                     'default' => 20,
                     'option' => 'wpm_reserved_products_per_page'
                 ]);
@@ -91,7 +91,7 @@ class AdminPage {
 
             } elseif ($tab === 'category') {
                 add_screen_option('per_page', [
-                    'label' => __('Categories per page', WPM_TEXT_DOMAIN),
+                    'label' => __('Categories per page', 'woocommerce-production-manager'),
                     'default' => 20,
                     'option' => 'wpm_category_orders_per_page'
                 ]);
@@ -99,7 +99,7 @@ class AdminPage {
 
             } elseif ($tab === 'status_logs') {
                 add_screen_option('per_page', [
-                    'label' => __('Logs per page', WPM_TEXT_DOMAIN),
+                    'label' => __('Logs per page', 'woocommerce-production-manager'),
                     'default' => 20,
                     'option' => 'wpm_status_logs_per_page'
                 ]);

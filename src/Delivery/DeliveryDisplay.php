@@ -32,9 +32,9 @@ class DeliveryDisplay {
         ?>
         <div class="wpm-delivery-date" data-product-id="<?php echo esc_attr($product_id); ?>">
             <?php if (!$is_variable) : ?>
-                <p><?php esc_html_e('Estimated Delivery:', WPM_TEXT_DOMAIN); ?> <span class="wpm-delivery-date-text"><?php echo $delivery_days[$product_id]; ?> روز کاری</span></p>
+                <p><?php esc_html_e('Estimated Delivery:', 'woocommerce-production-manager'); ?> <span class="wpm-delivery-date-text"><?php echo $delivery_days[$product_id]; ?> روز کاری</span></p>
             <?php else : ?>
-                <p><?php esc_html_e('Estimated Delivery (select variation):', WPM_TEXT_DOMAIN); ?><span class="wpm-delivery-date-text"><?php echo $delivery_days[$product_id]; ?> روز کاری</span></p>
+                <p><?php esc_html_e('Estimated Delivery (select variation):', 'woocommerce-production-manager'); ?><span class="wpm-delivery-date-text"><?php echo $delivery_days[$product_id]; ?> روز کاری</span></p>
             <?php endif; ?>
         </div>
         <?php
@@ -62,8 +62,8 @@ class DeliveryDisplay {
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce'   => wp_create_nonce('wpm_delivery'),
                 'i18n'    => [
-                    'loading' => __('Loading...', WPM_TEXT_DOMAIN),
-                    'error'   => __('Unable to calculate delivery date.', WPM_TEXT_DOMAIN)
+                    'loading' => __('Loading...', 'woocommerce-production-manager'),
+                    'error'   => __('Unable to calculate delivery date.', 'woocommerce-production-manager')
                 ]
             ]);
         }
@@ -72,17 +72,17 @@ class DeliveryDisplay {
     public static function add_product_delivery_days_field() {
         woocommerce_wp_text_input([
             'id'          => 'wpm_delivery_days',
-            'label'       => __('Production Days', WPM_TEXT_DOMAIN),
+            'label'       => __('Production Days', 'woocommerce-production-manager'),
             'desc_tip'    => true,
-            'description' => __('Number of days required to produce this product. Overrides category and default settings.', WPM_TEXT_DOMAIN),
+            'description' => __('Number of days required to produce this product. Overrides category and default settings.', 'woocommerce-production-manager'),
             'type'        => 'number',
             'value'       => get_post_meta(get_the_ID(), 'wpm_delivery_days', true)
         ]);
 		woocommerce_wp_text_input([
             'id'          => 'wpm_max_delivery_days',
-            'label'       => __('Max Production Days', WPM_TEXT_DOMAIN),
+            'label'       => __('Max Production Days', 'woocommerce-production-manager'),
             'desc_tip'    => true,
-            'description' => __('Maximum days required to produce this product. Overrides category and default settings.', WPM_TEXT_DOMAIN),
+            'description' => __('Maximum days required to produce this product. Overrides category and default settings.', 'woocommerce-production-manager'),
             'type'        => 'number',
             'value'       => get_post_meta(get_the_ID(), 'wpm_max_delivery_days', true)
         ]);
@@ -91,14 +91,14 @@ class DeliveryDisplay {
     public static function add_category_delivery_days_field() {
         ?>
         <div class="form-field">
-            <label for="wpm_delivery_days"><?php esc_html_e('Production Days', WPM_TEXT_DOMAIN); ?></label>
+            <label for="wpm_delivery_days"><?php esc_html_e('Production Days', 'woocommerce-production-manager'); ?></label>
             <input type="number" name="wpm_delivery_days" id="wpm_delivery_days" min="0">
-            <p class="description"><?php esc_html_e('Minimum days required to produce products in this category.', WPM_TEXT_DOMAIN); ?></p>
+            <p class="description"><?php esc_html_e('Minimum days required to produce products in this category.', 'woocommerce-production-manager'); ?></p>
         </div>
 		<div class="form-field">
-            <label for="wpm_max_delivery_days"><?php esc_html_e('Max Delivery Days', WPM_TEXT_DOMAIN); ?></label>
+            <label for="wpm_max_delivery_days"><?php esc_html_e('Max Delivery Days', 'woocommerce-production-manager'); ?></label>
             <input type="number" name="wpm_max_delivery_days" id="wpm_max_delivery_days" min="0">
-            <p class="description"><?php esc_html_e('Maximum delivery days for products in this category.', WPM_TEXT_DOMAIN); ?></p>
+            <p class="description"><?php esc_html_e('Maximum delivery days for products in this category.', 'woocommerce-production-manager'); ?></p>
         </div>
         <?php
     }
@@ -108,17 +108,17 @@ class DeliveryDisplay {
 		$max_delivery_days = get_term_meta($term->term_id, 'wpm_max_delivery_days', true);
         ?>
         <tr class="form-field">
-            <th><label for="wpm_delivery_days"><?php esc_html_e('Production Days', WPM_TEXT_DOMAIN); ?></label></th>
+            <th><label for="wpm_delivery_days"><?php esc_html_e('Production Days', 'woocommerce-production-manager'); ?></label></th>
             <td>
                 <input type="number" name="wpm_delivery_days" id="wpm_delivery_days" value="<?php echo esc_attr($delivery_days); ?>" min="0">
-                <p class="description"><?php esc_html_e('Minimum  days required to produce products in this category.', WPM_TEXT_DOMAIN); ?></p>
+                <p class="description"><?php esc_html_e('Minimum  days required to produce products in this category.', 'woocommerce-production-manager'); ?></p>
             </td>
         </tr>
 		<tr class="form-field">
-            <th><label for="wpm_max_delivery_days"><?php esc_html_e('Max Delivery Days', WPM_TEXT_DOMAIN); ?></label></th>
+            <th><label for="wpm_max_delivery_days"><?php esc_html_e('Max Delivery Days', 'woocommerce-production-manager'); ?></label></th>
             <td>
                 <input type="number" name="wpm_max_delivery_days" id="wpm_max_delivery_days" value="<?php echo esc_attr($max_delivery_days); ?>" min="0">
-                <p class="description"><?php esc_html_e('Maximum delivery days for products in this category.', WPM_TEXT_DOMAIN); ?></p>
+                <p class="description"><?php esc_html_e('Maximum delivery days for products in this category.', 'woocommerce-production-manager'); ?></p>
             </td>
         </tr>
         <?php

@@ -8,8 +8,8 @@ defined('ABSPATH') || exit;
 class OrderItemsTable extends WP_List_Table {
     public function __construct() {
         parent::__construct([
-            'singular' => __('Order Item', WPM_TEXT_DOMAIN),
-            'plural'   => __('Order Items', WPM_TEXT_DOMAIN),
+            'singular' => __('Order Item', 'woocommerce-production-manager'),
+            'plural'   => __('Order Items', 'woocommerce-production-manager'),
             'ajax'     => false
         ]);
     }
@@ -17,15 +17,15 @@ class OrderItemsTable extends WP_List_Table {
     public function get_columns() {
         $columns = [
             'cb' => '<input type="checkbox" />',
-            'order_customer' => __('Order / Customer', WPM_TEXT_DOMAIN),
-            'order_status' => __('Order Status', WPM_TEXT_DOMAIN),
-            'order_date' => __('Order Date', WPM_TEXT_DOMAIN),
-            'image' => __('Image', WPM_TEXT_DOMAIN),
-            'item_id' => __('Item ID', WPM_TEXT_DOMAIN),
-            'item_name' => __('Item Name', WPM_TEXT_DOMAIN),
-            'item_quantity' => __('Item Quantity', WPM_TEXT_DOMAIN),
-            'status' => __('Status', WPM_TEXT_DOMAIN),
-            'delivery_date' => __('Delivery Date', WPM_TEXT_DOMAIN)
+            'order_customer' => __('Order / Customer', 'woocommerce-production-manager'),
+            'order_status' => __('Order Status', 'woocommerce-production-manager'),
+            'order_date' => __('Order Date', 'woocommerce-production-manager'),
+            'image' => __('Image', 'woocommerce-production-manager'),
+            'item_id' => __('Item ID', 'woocommerce-production-manager'),
+            'item_name' => __('Item Name', 'woocommerce-production-manager'),
+            'item_quantity' => __('Item Quantity', 'woocommerce-production-manager'),
+            'status' => __('Status', 'woocommerce-production-manager'),
+            'delivery_date' => __('Delivery Date', 'woocommerce-production-manager')
         ];
         return apply_filters('wpm_order_items_columns', $columns);
     }
@@ -46,10 +46,10 @@ class OrderItemsTable extends WP_List_Table {
     public function get_bulk_actions() {
         $statuses = get_option('wpm_statuses', []);
         $actions = [
-            'bulk_change_delivery_date' => __('Change Delivery Date', WPM_TEXT_DOMAIN)
+            'bulk_change_delivery_date' => __('Change Delivery Date', 'woocommerce-production-manager')
         ];
         foreach ($statuses as $index => $status) {
-            $actions['bulk_set_status_' . $index] = sprintf(__('Set Status to %s', WPM_TEXT_DOMAIN), $status['name']);
+            $actions['bulk_set_status_' . $index] = sprintf(__('Set Status to %s', 'woocommerce-production-manager'), $status['name']);
         }
         return $actions;
     }
@@ -62,7 +62,7 @@ class OrderItemsTable extends WP_List_Table {
                 return $image_url ? '<img src="' . esc_url($image_url) . '" alt="' . esc_attr($item->order_item_name) . '" class="wpm-item-image" data-large="' . esc_url($large_image_url) . '" style="max-width: 50px; height: auto;" />' : '-';
             case 'order_customer':
                 $order_edit_url = admin_url('post.php?post=' . $item->order_id . '&action=edit');
-                return sprintf('<a href="%s">#%d</a> %s', $order_edit_url, $item->order_id, esc_html($item->customer_name ?: __('Guest', WPM_TEXT_DOMAIN)));
+                return sprintf('<a href="%s">#%d</a> %s', $order_edit_url, $item->order_id, esc_html($item->customer_name ?: __('Guest', 'woocommerce-production-manager')));
             case 'order_status':
                 $status_label = wc_get_order_status_name($item->order_status);
                 return sprintf('<mark class="order-status status-%s"><span>%s</span></mark>', esc_attr($item->order_status), esc_html($status_label));
@@ -79,7 +79,7 @@ class OrderItemsTable extends WP_List_Table {
                     $product_view_url, 
                     esc_html($item->order_item_name)
                 );
-                $actions['edit'] = sprintf('<a href="%s">%s</a>', esc_url($product_edit_url), __('Edit Product', WPM_TEXT_DOMAIN));
+                $actions['edit'] = sprintf('<a href="%s">%s</a>', esc_url($product_edit_url), __('Edit Product', 'woocommerce-production-manager'));
                 return $item_name . $this->row_actions($actions);
             case 'order_date':
                 return esc_html(\WPM\Utils\PersianDate::to_persian($item->order_date));
@@ -98,7 +98,7 @@ class OrderItemsTable extends WP_List_Table {
                     esc_attr($status_color ?: '#ccc'),
                     esc_attr($item->order_item_id),
                     esc_attr($item->order_id),
-                    esc_html($current_status ?: __('Select Status', WPM_TEXT_DOMAIN))
+                    esc_html($current_status ?: __('Select Status', 'woocommerce-production-manager'))
                 );
             case 'delivery_date':
                 return sprintf(
@@ -223,7 +223,7 @@ class OrderItemsTable extends WP_List_Table {
         global $wpdb;
 
         if (!current_user_can('manage_woocommerce')) {
-            wp_die(__('Unauthorized', WPM_TEXT_DOMAIN));
+            wp_die(__('Unauthorized', 'woocommerce-production-manager'));
         }
 
         $action = $this->current_action();
@@ -250,7 +250,7 @@ class OrderItemsTable extends WP_List_Table {
                         ['%d']
                     );
                 }
-				add_settings_error('wpm_order_items', 'bulk_action', __('Statuses updated.', WPM_TEXT_DOMAIN), 'updated');
+				add_settings_error('wpm_order_items', 'bulk_action', __('Statuses updated.', 'woocommerce-production-manager'), 'updated');
             }
         } elseif ($action === 'bulk_change_delivery_date') {
             $delivery_date = isset($_REQUEST['bulk_delivery_date']) ? \WPM\Utils\PersianDate::to_gregorian(sanitize_text_field($_REQUEST['bulk_delivery_date'])) : '';
@@ -268,7 +268,7 @@ class OrderItemsTable extends WP_List_Table {
                         ['%d']
                     );
                 }
-				add_settings_error('wpm_order_items', 'bulk_action', __('Delivery dates updated.', WPM_TEXT_DOMAIN), 'updated');
+				add_settings_error('wpm_order_items', 'bulk_action', __('Delivery dates updated.', 'woocommerce-production-manager'), 'updated');
             }
         }
 
@@ -280,9 +280,9 @@ class OrderItemsTable extends WP_List_Table {
         if ($which === 'top') {
             ?>
             <div class="alignleft actions">
-                <label for="bulk_delivery_date" class="screen-reader-text"><?php esc_html_e('Bulk Delivery Date', WPM_TEXT_DOMAIN); ?></label>
-                <input type="text" id="bulk_delivery_date" name="bulk_delivery_date" class="persian-datepicker" placeholder="<?php esc_attr_e('Select Date', WPM_TEXT_DOMAIN); ?>">
-                <input type="submit" name="doaction" class="button action" value="<?php esc_attr_e('Apply', WPM_TEXT_DOMAIN); ?>">
+                <label for="bulk_delivery_date" class="screen-reader-text"><?php esc_html_e('Bulk Delivery Date', 'woocommerce-production-manager'); ?></label>
+                <input type="text" id="bulk_delivery_date" name="bulk_delivery_date" class="persian-datepicker" placeholder="<?php esc_attr_e('Select Date', 'woocommerce-production-manager'); ?>">
+                <input type="submit" name="doaction" class="button action" value="<?php esc_attr_e('Apply', 'woocommerce-production-manager'); ?>">
             </div>
             <?php
         }
